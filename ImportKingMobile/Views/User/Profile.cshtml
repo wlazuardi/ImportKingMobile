@@ -1,0 +1,64 @@
+﻿@{ ViewData["Title"] = "Profile"; }
+
+<section class="py-3 px-4">
+
+    <form id="registerForm">
+        <div class="mb-3">
+            <label class="form-label">First Name</label>
+            <div>
+                <input type="hidden" name="userId" />
+                <input class="form-control" placeholder="First Name" name="firstName" type="text" disabled="disabled">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Last Name</label>
+            <div>
+                <input class="form-control" placeholder="Last Name" name="lastName" type="text" disabled="disabled">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <div>
+                <input class="form-control" placeholder="Email" name="email" type="email" disabled="disabled" value="@ViewBag.User.Email">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Phone Number</label>
+            <div>
+                <input class="form-control" placeholder="Phone Number" name="phoneNumber" type="text" disabled="disabled">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">User Type</label>
+            <div>
+                <input class="form-control" name="userTypeId" type="hidden">
+                <input class="form-control" placeholder="User Type" name="userType" type="text" disabled="disabled">
+            </div>
+        </div>
+        <button id="btnEdit" type="button" class="btn btn-primary w-100">Edit</button>
+        <button id="btnSubmit" type="submit" class="btn btn-primary w-100 mb-2" style="display:none">Submit</button>
+        <button id="btnCancel" type="button" class="btn btn-danger w-100" style="display:none">Cancel Edit</button>
+    </form>
+
+</section>
+
+<div class="preloader" id="preloader" style="display:none;">
+    <div class="spinner-grow" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<p class="text-center mx-3" id="spinner" style="display:none;">
+    <span class="spinner-grow spinner-grow-sm" role="status"></span>
+    <span class="spinner-grow spinner-grow-sm" role="status"></span>
+    <span class="spinner-grow spinner-grow-sm" role="status"></span>
+</p>
+
+<p class="text-center mx-3" id="result"></p>
+
+<br>
+
+@section Scripts
+{
+    <script src="~/js/app/page.profile.js" type="text/javascript"></script>
+} 

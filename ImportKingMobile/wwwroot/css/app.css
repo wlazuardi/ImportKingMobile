@@ -1,0 +1,56 @@
+﻿.modal-dialog-bottom {
+    margin: 0.5rem;
+    pointer-events: none;
+    display: block;
+    position: absolute;
+    /*bottom: 67px;*/
+    left: 0;
+    right: 0;
+}
+
+.modal-dialog-long {
+    margin-bottom: 100px;
+}
+
+.input-Qty {
+    width: 50px;
+    text-align: right;
+}
+
+.progressbar-element {
+    position: absolute;
+    cursor: progress;
+    z-index: 999;
+    background-color: rgba(255,255,255,.85);
+}
+
+.spinner-grow {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    vertical-align: text-bottom;
+    background-color: currentColor;
+    border-radius: 50%;
+    opacity: 0;
+    animation: spinner-grow .75s linear infinite;
+}
+
+@keyframes spinner-grow {
+    0% {
+        transform: scale(0)
+    }
+
+    50% {
+        opacity: 1
+    }
+}
+
+.payment-proceed {
+    position: fixed;
+    bottom: 75px;
+    left: 0;
+    right: 0;
+    box-shadow: #a1a1a1 1px 1px 10px 6px;
+    border-radius: 5px;
+    background: white;
+}

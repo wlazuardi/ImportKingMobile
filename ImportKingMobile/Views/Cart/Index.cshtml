@@ -1,0 +1,36 @@
+﻿@{ ViewData["Title"] = "Cart"; }
+
+<section>
+    <h5 class="title-section">Shopping Cart</h5>
+    <ul class="px-3 list-menu mt-3" id="productList" style="margin-bottom: 80px;">
+    </ul>
+</section>
+
+<p class="text-center mx-3" id="spinner">
+    <span class="spinner-grow spinner-grow-sm" role="status"></span>
+    <span class="spinner-grow spinner-grow-sm" role="status"></span>
+    <span class="spinner-grow spinner-grow-sm" role="status"></span>
+</p>
+
+<br>
+
+<div class="payment-proceed mx-2 p-2">
+    <div class="row">
+        <div class="col-6">
+            <div class="fw-bold small">Total Order</div>
+            <div id="totalPrice">IDR 0</div>
+        </div>
+        <div class="col-6">
+            <button id="btnSubmit" class="btn btn-sm btn-primary float-end mt-1">Submit Order</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        var userMail = '@ViewBag.User.Email';
+    </script>
+    <script src="~/js/app/plugin.modal.js" type="text/javascript"></script>
+    <script src="~/js/app/page.cart.js" type="text/javascript"></script>
+} 

@@ -1,0 +1,43 @@
+﻿@{ ViewData["Title"] = "Stock Viewer"; }
+
+@*<section class="px-3 pt-0 pb-2 fixed-top bg-white" style="top: 55px;">
+        <input type="text" placeholder="Search" class="bg-secondary-light border-0 form-control">
+    </section>*@
+
+<section class="py-3 px-4">
+    <form id="searchForm" class="mb-3">
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <div>
+                <input id="categories" name="categories" type="text" class="form-control bg-light" />
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Type</label>
+            <div>
+                <input id="types" name="types" type="text" class="form-control bg-light" />
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Color</label>
+            <div>
+                <input id="colors" name="colors" type="text" class="form-control bg-light" />
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100"> Check Stock </button>
+    </form>
+    <ul class="list-menu" id="productList" style="display:none;">
+    </ul>
+    <p class="text-center" id="spinner" style="display:none;">
+        <span class="spinner-grow spinner-grow-sm" role="status"></span>
+        <span class="spinner-grow spinner-grow-sm" role="status"></span>
+        <span class="spinner-grow spinner-grow-sm" role="status"></span>
+    </p>
+    <p class="text-center" id="result" style="display:none;"></p>
+    <br>
+</section>
+
+@section Scripts
+{
+    <script src="~/js/app/page.stock-viewer.js" type="text/javascript"></script>
+} 

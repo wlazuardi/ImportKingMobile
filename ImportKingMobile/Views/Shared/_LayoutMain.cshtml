@@ -1,0 +1,138 @@
+﻿<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no">
+
+    <meta name="description" content="Ecommerce app template description can be written">
+    <meta name="keywords" content="Ecommerce, e-auction, e-commerce, online shopping">
+    <meta name=”theme-color” content=”#0d6efd>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <title>@ViewData["Title"] - ImportKingMobile</title>
+
+    <link href="~/images/favicon.ico" rel="shortcut icon" type="image/x-icon">
+
+    <!-- Bootstrap -->
+    <link href="~/css/bootstrap.css" rel="stylesheet" type="text/css" />
+
+    <!-- custom style -->
+    <link href="~/css/ui.css" rel="stylesheet" type="text/css" />
+
+    <!-- Fonticon -->
+    <link href="~/fonts/material-icon/css/round.css" rel="stylesheet" type="text/css" />
+
+    <link href="~/css/app.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+
+    <!-- Preloader-->
+    <div class="preloader" id="preloader">
+        <div class="spinner-grow" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <!-- Preloader //end -->
+
+
+    <header class="app-header onlight fixed-top">
+
+        <a href="#offcanvas_left_123" data-bs-toggle="offcanvas" role="button" class="btn-header">
+            <i class="material-icons md-menu"></i>
+        </a>
+
+        <h5 class="title-header">  Import King  </h5>
+
+        <a href="~/User/Profile" class="btn-header">
+            <i class="material-icons md-account_circle"></i>
+        </a>
+
+    </header> <!-- app-header.// -->
+
+    <main class="app-content">
+        @RenderBody()
+    </main> <!-- app-content.// -->
+
+    <nav class="nav-bottom">
+        <a id="linkHome" href="~/Home/Index" class="nav-link active">
+            <i class="icon material-icons md-home"></i><span class="text">Home</span>
+        </a>
+        <a id="linkCart" href="~/Cart" class="nav-link">
+            <i class="icon material-icons md-shopping_cart"></i><span class="text">My Cart</span>
+        </a>
+        <a id="linkOrder" href="~/Order" class="nav-link">
+            <i class="icon material-icons md-shopping_bag"></i><span class="text">My Order</span>
+        </a>
+        <a id="linkProfile" href="~/User/Profile" class="nav-link">
+            <i class="icon material-icons md-account_circle"></i><span class="text">My Profile</span>
+        </a>
+    </nav> <!-- nav-bottom -->
+
+
+    <aside class="offcanvas offcanvas-start" tabindex="-1" id="offcanvas_left_123">
+        <header class="p-3 border-bottom bg-light">
+            <button type="button" class="float-end btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <a href="~/User/Profile" class="icontext">
+                <img src="~/images/avatars/1.png" class="icon avatar-sm" alt="">
+                <div class="text">
+                    @if (ViewBag.User == null)
+                    {
+                        <h6 class="mb-0">Hi Guest</h6>
+                        <small>Click to login</small>
+                    }
+                    else
+                    {
+                        <h6 class="mb-0">Hi @ViewBag.User.FirstName</h6>
+                        <small>My profile</small>
+                    }
+
+                </div>
+            </a>
+        </header>
+        <article class="offcanvas-body">
+            <nav class="nav-sidebar mt-2">
+                <a href="~/StockViewer"> <i class="material-icons md-search"></i> Check Stock </a>
+                @if (ViewBag.User != null)
+                {
+                    <a id="linkLogout"> <i class="material-icons md-login"></i> Logout </a>
+                }
+                @*<a href="index.html"> <i class="material-icons md-apps"></i> All pages </a>
+                    <a href="#"> <i class="material-icons md-local_offer"></i> New offers</a>
+                    <a href="#"> <i class="material-icons md-store"></i> Wholsesalers </a>
+                    <hr>
+                    <a href="#"> <i class="material-icons md-info"></i> About us</a>
+                    <a href="#"> <i class="material-icons md-chat"></i> Help &amp; support </a>
+                    <a href="#"> <i class="material-icons md-local_police"></i> Services </a>
+                    <hr>
+                    <a href="#"> <i class="material-icons md-account_circle"></i> Profile </a>
+                    <a href="#"> <i class="material-icons md-settings"></i> Settings</a>
+                    <a href="#"> <i class="material-icons md-local_shipping"></i> My orders</a>*@
+            </nav>
+        </article> <!-- offcanvas-body .// -->
+    </aside> <!-- offcanvas.// -->
+    <!-- jQuery -->
+    <script src="~/js/jquery-3.5.0.min.js" type="text/javascript"></script>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="~/js/bootstrap.bundle.js" type="text/javascript"></script>
+
+    <!-- custom javascript -->
+    <script src="~/js/script.js" type="text/javascript"></script>
+
+    <!-- PWA -->
+    <script src="~/js/pwa.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" />
+
+    <script src="~/js/app/app.core.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
