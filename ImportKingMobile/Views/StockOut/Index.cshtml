@@ -1,0 +1,49 @@
+﻿@{ 
+    ViewData["Title"] = "Stock Out"; 
+}
+
+<section class="py-3 px-4">
+    <form id="searchForm" class="mb-3">
+        <div class="mb-3">
+            <label class="form-label">Warehouse</label>
+            <div>
+                <input id="warehouses" name="warehouses" type="text" class="form-control bg-light" />
+            </div>
+        </div>
+        <button id="btnAddProduct" type="button" class="btn btn-primary w-100" disabled="disabled"> 
+            <i class="material-icons md-add"></i> Add Product
+        </button>
+    </form>
+    <ul class="list-menu" id="productList">
+    </ul>
+    <p class="text-center" id="spinner" style="display:none;">
+        <span class="spinner-grow spinner-grow-sm" role="status"></span>
+        <span class="spinner-grow spinner-grow-sm" role="status"></span>
+        <span class="spinner-grow spinner-grow-sm" role="status"></span>
+    </p>
+    <p class="text-center" id="result" style="display:none;"></p>
+    <br>
+</section>
+
+<br>
+
+<div class="payment-proceed mx-2 p-2">
+    <div class="row">
+        <div class="col-6">
+            <div class="fw-bold small">Total Order</div>
+            <div id="totalPrice">IDR 0</div>
+        </div>
+        <div class="col-6">
+            <button id="btnSubmitStockOut" class="btn btn-sm btn-primary float-end mt-1">Submit Order</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        var userMail = '@ViewBag.User.Email';
+    </script>
+    <script src="~/js/app/plugin.modal.js" asp-append-version="true" type="text/javascript"></script>
+    <script src="~/js/app/page.stock-out.js" asp-append-version="true" type="text/javascript"></script>
+} 

@@ -4,7 +4,7 @@
         this.id = id;
     };
 
-    Modal.prototype.show = function (title, body, modalClass, buttons) {
+    Modal.prototype.show = function (title, body, modalClass, buttons, onShown) {
         var buttonList = '';
         if (buttons) {
             for (var i in buttons) {
@@ -40,6 +40,15 @@
             var buttonName = $(this).attr('name');
             var callback = buttons[buttonName];
             callback();
+        });
+
+        $('#modal' + this.id).on('shown.bs.modal', function () {
+            if (onShown) onShown();
+        });
+
+        var that = this;
+        $('#modal' + this.id).on('hidden.bs.modal', function () {
+            $('#modal' + that.id).remove();
         });
 
         $('#modal' + this.id).modal('show');

@@ -24,7 +24,8 @@
                 <input id="colors" name="colors" type="text" class="form-control bg-light" />
             </div>
         </div>
-        <button type="submit" class="btn btn-primary w-100"> Check Stock </button>
+        <button id="btnCheckStock" type="button" class="btn btn-primary w-100"> Check Stock </button>
+        <button id="btnCheckPhotos" type="button" class="btn btn-primary w-100 mt-2"> Check Photos & Videos </button>
     </form>
     <ul class="list-menu" id="productList" style="display:none;">
     </ul>
@@ -39,5 +40,9 @@
 
 @section Scripts
 {
-    <script src="~/js/app/page.stock-viewer.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var userMail = '@ViewBag.User.Email';
+    </script>
+    <script src="~/js/app/plugin.modal.js" asp-append-version="true" type="text/javascript"></script>
+    <script src="~/js/app/page.stock-viewer.js" asp-append-version="true" type="text/javascript"></script>
 } 

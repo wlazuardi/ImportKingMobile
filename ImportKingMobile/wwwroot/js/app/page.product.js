@@ -123,7 +123,7 @@
                                     '</div>' +
                                     '<div class="col-5">' +
                                     '<button class="btn btn-primary px-1 btn-sm btn-Qty-Min"><i class="material-icons md-remove"></i></button>' +
-                                    '<input name="qty" type="number" data-price="' + price + '" class="form-control input-Qty d-inline form-control-sm mx-1" value="1">' +
+                                    '<input name="qty" type="number" data-price="' + price + '" class="form-control input-Qty d-inline form-control-sm mx-1 px-1" value="1">' +
                                     '<button class="btn btn-primary px-1 btn-sm btn-Qty-Plus"><i class="material-icons md-add"></i></button>' +
                                     '</div>' +
                                     '</div>' +
@@ -142,7 +142,7 @@
 
                                         if (qty) {
 
-                                            $('.modal').progressBar('show');
+                                            $('.modal').progressBar();
                                             $.ajax({
                                                 url: 'https://importking.mooo.com/api/Carts',
                                                 method: 'POST',

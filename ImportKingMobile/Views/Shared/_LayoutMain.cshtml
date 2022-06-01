@@ -6,7 +6,7 @@
 
     <meta name="description" content="Ecommerce app template description can be written">
     <meta name="keywords" content="Ecommerce, e-auction, e-commerce, online shopping">
-    <meta name=”theme-color” content=”#0d6efd>
+    <meta name=”theme-color” content=”#519120>
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <title>@ViewData["Title"] - ImportKingMobile</title>
@@ -36,13 +36,15 @@
     <!-- Preloader //end -->
 
 
-    <header class="app-header onlight fixed-top">
+    <header class="app-header onlight fixed-top bg-primary">
 
         <a href="#offcanvas_left_123" data-bs-toggle="offcanvas" role="button" class="btn-header">
             <i class="material-icons md-menu"></i>
         </a>
 
-        <h5 class="title-header">  Import King  </h5>
+        <h5 class="title-header">
+            <img src="~/images/logo_inverse.png" class="app-logo-main"/>
+        </h5>
 
         <a href="~/User/Profile" class="btn-header">
             <i class="material-icons md-account_circle"></i>
@@ -58,12 +60,26 @@
         <a id="linkHome" href="~/Home/Index" class="nav-link active">
             <i class="icon material-icons md-home"></i><span class="text">Home</span>
         </a>
-        <a id="linkCart" href="~/Cart" class="nav-link">
-            <i class="icon material-icons md-shopping_cart"></i><span class="text">My Cart</span>
+        <a id="linkStockViewer" href="~/StockViewer" class="nav-link">
+            <i class="icon material-icons md-search"></i> <span class="text">Check Stock</span>
         </a>
-        <a id="linkOrder" href="~/Order" class="nav-link">
-            <i class="icon material-icons md-shopping_bag"></i><span class="text">My Order</span>
-        </a>
+
+        @if (ViewBag.User != null && ViewBag.User.UserType == 3)
+        {
+            <a id="linkStockViewer" href="~/StockOut" class="nav-link">            
+                <i class="icon material-icons md-list_alt"></i><span class="text">Stock Out</span>
+            </a>
+        }
+        else
+        {
+            <a id="linkCart" href="~/Cart" class="nav-link">
+                <i class="icon material-icons md-shopping_cart"></i><span class="text">My Cart</span>
+            </a>
+            <a id="linkOrder" href="~/Order" class="nav-link">
+                    <i class="icon material-icons md-shopping_bag"></i><span class="text">My Order</span>
+            </a>
+        }
+
         <a id="linkProfile" href="~/User/Profile" class="nav-link">
             <i class="icon material-icons md-account_circle"></i><span class="text">My Profile</span>
         </a>
@@ -73,8 +89,21 @@
     <aside class="offcanvas offcanvas-start" tabindex="-1" id="offcanvas_left_123">
         <header class="p-3 border-bottom bg-light">
             <button type="button" class="float-end btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            <a href="~/User/Profile" class="icontext">
-                <img src="~/images/avatars/1.png" class="icon avatar-sm" alt="">
+            <a href="~/User/Profile" class="icontext">                
+                @if (ViewBag.User == null)
+                {
+                    <img src="~/images/avatars/1.png" class="icon avatar-sm" alt="">
+                }
+                else if(ViewBag.User.LastName != null && ViewBag.User.LastName != "") {
+                    <span class="icon avatar-sm">
+                        @ViewBag.User.FirstName.Substring(0, 1)@ViewBag.User.LastName.Substring(0, 1)
+                    </span>
+                }  
+                else {
+                    <span class="icon avatar-sm">
+                        @ViewBag.User.FirstName.Substring(0, 1)
+                    </span>
+                }         
                 <div class="text">
                     @if (ViewBag.User == null)
                     {
@@ -93,6 +122,17 @@
         <article class="offcanvas-body">
             <nav class="nav-sidebar mt-2">
                 <a href="~/StockViewer"> <i class="material-icons md-search"></i> Check Stock </a>
+                
+                @if (ViewBag.User != null && ViewBag.User.UserType == 3)
+                {
+                    <a href="~/StockOut"> <i class="material-icons md-list_alt"></i> Stock Out </a>
+                }
+                else
+                {
+                    <a href="~/Cart"> <i class="icon material-icons md-shopping_cart"></i> My Cart </a>
+                    <a href="~/Order"> <i class="icon material-icons md-shopping_bag"></i>My Order </a>
+                }
+
                 @if (ViewBag.User != null)
                 {
                     <a id="linkLogout"> <i class="material-icons md-login"></i> Logout </a>
@@ -112,26 +152,35 @@
         </article> <!-- offcanvas-body .// -->
     </aside> <!-- offcanvas.// -->
     <!-- jQuery -->
-    <script src="~/js/jquery-3.5.0.min.js" type="text/javascript"></script>
+    <script src="~/js/jquery-3.5.0.min.js" asp-append-version="true" type="text/javascript"></script>
 
     <!-- Bootstrap 5 JS -->
-    <script src="~/js/bootstrap.bundle.js" type="text/javascript"></script>
+    <script src="~/js/bootstrap.bundle.js" asp-append-version="true" type="text/javascript"></script>
 
     <!-- custom javascript -->
-    <script src="~/js/script.js" type="text/javascript"></script>
+    <script src="~/js/script.js" asp-append-version="true" type="text/javascript"></script>
 
     <!-- PWA -->
-    <script src="~/js/pwa.js"></script>
+    <script src="~/js/pwa.js" asp-append-version="true"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js" asp-append-version="true"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js" asp-append-version="true"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" asp-append-version="true"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" />
 
-    <script src="~/js/app/app.core.js"></script>
+    <!-- React -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script src="~/js/app/app.core.js" asp-append-version="true"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

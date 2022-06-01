@@ -15,5 +15,6 @@ namespace ImportKingMobile.Models
         public string PhotoUrl { get; set; }
         public string PhoneNumber { get; set; }
         public int UserType { get; set; }
+        public string MerchantName { get; set; }
     }
 }

@@ -61,7 +61,21 @@
                     totalList += list;
                 });
 
-                $('#productList').html(totalList);
+                if (totalList == '') {
+                    var item = '<li class="text-center">' +
+                        '<img src="images/empty-cart.jpg" class="w-50">' +
+                        '<div>Your shopping cart is empty.</div>' + 
+                        '<div>Browse product and add to item to cart.</div>' +
+                        '<div><a href="/Product" class="btn btn-primary btn-sm mt-2 text-white">Browse</a></div>' +
+                        '</li>';
+
+                    $('#productList').html(item);
+                    $('#btnSubmit').attr('disabled', 'disabled');
+                }
+                else {
+                    $('#productList').html(totalList);
+                    $('#btnSubmit').removeAttr('disabled');
+                }
 
                 $('.btn-Qty-Min').off('click').click(function () {
                     var qty = $(this).siblings('.input-Qty').val() || 0;
@@ -227,7 +241,7 @@
                                 dataType: 'JSON',
                                 contentType: "application/json; charset=utf-8",
                                 success: function (data) {
-                                    $oderForm.progressBar('show');
+                                    $oderForm.progressBar();
                                     App.Alert.show('success', "Success", "Your order submitted successfully", function () {
                                         modal.hide();
                                     });

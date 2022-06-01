@@ -15,7 +15,14 @@ namespace ImportKingMobile.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            //if (ViewBag.User.UserType == 3)
+            //{
+                return View();
+            //}
+            //else
+            //{
+            //    return RedirectToAction("ComingSoon", "Generic");
+            //}
         }
     }
 }

@@ -61,6 +61,7 @@
                 $('[name=lastName]').val(data.lastName);
                 $('[name=phoneNumber]').val(data.phoneNumber);
                 $('[name=userTypeId]').val(data.userType);
+                $('[name=merchantName]').val(data.merchantName);
 
                 switch (data.userType) {
                     case 0:
@@ -90,6 +91,7 @@
             $('[name=firstName]').removeAttr('disabled');
             $('[name=lastName]').removeAttr('disabled');
             $('[name=phoneNumber]').removeAttr('disabled');
+            $('[name=merchantName]').removeAttr('disabled');
         });
 
         $('#btnCancel').click(function () {
@@ -100,6 +102,7 @@
             $('[name=firstName]').attr('disabled', 'disabled');
             $('[name=lastName]').attr('disabled', 'disabled');
             $('[name=phoneNumber]').attr('disabled', 'disabled');
+            $('[name=merchantName]').attr('disabled', 'disabled');
         });
     });
 }();

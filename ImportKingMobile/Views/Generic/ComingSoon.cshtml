@@ -1,0 +1,18 @@
+﻿@{ ViewData["Title"] = "Coming Soon"; }
+
+<section>    
+    <div class="px-3 list-menu mt-5 text-center" style="margin-bottom: 80px;">
+        <img src="~/images/empty-order.jpg" class="w-50">
+        <div class="fw-bold fs-5">Comming Soon</div>
+    </div>
+</section>
+
+<br />
+
+@section Scripts
+{
+    <script type="text/javascript">
+        var userMail = '@ViewBag.User.Email';
+    </script>
+    <script src="~/js/app/plugin.modal.js" asp-append-version="true" type="text/javascript"></script>
+} 

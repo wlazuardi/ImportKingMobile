@@ -35,6 +35,13 @@
                 <input class="form-control" placeholder="User Type" name="userType" type="text" disabled="disabled">
             </div>
         </div>
+        <div class="mb-3">
+            <label class="form-label">Merchant Name</label>
+            <div>
+                <input class="form-control" name="merchantName" type="hidden">
+                <input class="form-control" placeholder="Merchant Name" name="merchantName" type="text" disabled="disabled">
+            </div>
+        </div>
         <button id="btnEdit" type="button" class="btn btn-primary w-100">Edit</button>
         <button id="btnSubmit" type="submit" class="btn btn-primary w-100 mb-2" style="display:none">Submit</button>
         <button id="btnCancel" type="button" class="btn btn-danger w-100" style="display:none">Cancel Edit</button>
@@ -60,5 +67,5 @@
 
 @section Scripts
 {
-    <script src="~/js/app/page.profile.js" type="text/javascript"></script>
+    <script src="~/js/app/page.profile.js" asp-append-version="true" type="text/javascript"></script>
 } 

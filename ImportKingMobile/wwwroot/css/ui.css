@@ -229,8 +229,8 @@ figure {
     }
 
 .bg-half {
-    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(49.999%,#0d6efd),color-stop(50%,white));
-    background-image: linear-gradient(#0d6efd 49.999%,white 50%)
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(49.999%,#519120),color-stop(50%,white));
+    background-image: linear-gradient(#519120 49.999%,white 50%)
 }
 
 .bg-gray {
@@ -261,8 +261,8 @@ figure {
         -webkit-transition: 0.5s;
         transition: 0.5s;
         background: aqua;
-        background: -webkit-gradient(linear,left top,right bottom,from(#0d6efd),to(aqua));
-        background: linear-gradient(to bottom right,#0d6efd,aqua)
+        background: -webkit-gradient(linear,left top,right bottom,from(#519120),to(aqua));
+        background: linear-gradient(to bottom right,#519120,aqua)
     }
 
     .overlay-gradient:hover:before {
@@ -388,7 +388,7 @@ p:last-child {
         }
 
     .app-header.onlight .btn-header, .app-header.onlight .btn-header i {
-        color: #0d6efd
+        color: white;
     }
 
 body.scrolling-down .app-header, body.scrolling-up .app-header {
@@ -482,11 +482,11 @@ body.scrolling-down .app-header, body.scrolling-up .app-header {
         }
 
         .nav-bottom .nav-link.active {
-            color: #0d6efd
+            color: #519120
         }
 
             .nav-bottom .nav-link.active .text {
-                color: #0d6efd
+                color: #519120
             }
 
 .slider-banner-owl .owl-nav .owl-next, .slider-banner-owl .owl-nav .owl-prev {
@@ -570,7 +570,7 @@ body.scrolling-down .app-header, body.scrolling-up .app-header {
     justify-content: center;
     border-radius: 100%;
     color: #fff;
-    background: #0d6efd;
+    background: #519120;
     display: inline-block;
     display: -webkit-inline-box;
     display: -ms-inline-flexbox;
@@ -589,11 +589,11 @@ body.scrolling-down .app-header, body.scrolling-up .app-header {
 
 .btn-light {
     background-color: #f2f2f2;
-    color: #0d6efd
+    color: #519120
 }
 
     .btn-light i {
-        color: #0d6efd
+        color: #519120
     }
 
     .btn-light:hover {
@@ -676,7 +676,7 @@ body.scrolling-down .app-header, body.scrolling-up .app-header {
     }
 
     .itemside a.title:hover {
-        color: #0d6efd
+        color: #519120
     }
 
     .itemside select {
@@ -858,7 +858,7 @@ dl[class=row] {
 
         .list-normal li:before {
             content: "•";
-            color: #0d6efd;
+            color: #519120;
             display: inline-block;
             width: 1em;
             margin-left: -1em
@@ -975,7 +975,7 @@ a[class*=product] {
 }
 
     a[class*=product]:hover .title {
-        color: #0d6efd
+        color: #519120
     }
 
 [class*=product] {
@@ -1399,7 +1399,7 @@ a.box, a.card {
     width: 44px;
     height: 44px;
     line-height: 44px;
-    font-size: 26px
+    font-size: 18px
 }
 
 .avatar-md {
@@ -1423,7 +1423,7 @@ a.box, a.card {
     position: relative;
     overflow: hidden;
     border: 0;
-    background: #0d6efd;
+    background: #519120;
     background-size: cover;
     background-position: center center
 }
@@ -1503,7 +1503,7 @@ a.box, a.card {
 .item-category-grid {
     height: 96px;
     text-align: center;
-    background-color: #ddebff;
+    background-color: #e9f3e7;
     color: initial;
     padding: 0.625rem 0;
     margin-top: 0.25rem;
@@ -1526,7 +1526,7 @@ a.box, a.card {
     .item-category-grid i {
         font-size: 28px;
         line-height: 32px;
-        color: #0d6efd
+        color: #519120
     }
 
     .item-category-grid .text {
@@ -1693,7 +1693,7 @@ a.box, a.card {
     }
 
     .list-menu .icon {
-        background-color: #ddebff
+        background-color: #e9f3e7
     }
 
     .list-menu .title {
@@ -1751,8 +1751,8 @@ a.box, a.card {
     }
 
         .checkbox-btn input:checked ~ .btn {
-            border-color: #0d6efd;
-            background-color: #0d6efd;
+            border-color: #519120;
+            background-color: #519120;
             color: #fff
         }
 
@@ -1773,7 +1773,7 @@ a.box, a.card {
     }
 
     .js-check.active {
-        border-color: #0d6efd
+        border-color: #519120
     }
 
     .js-check:hover:not(.active) {
@@ -1799,7 +1799,7 @@ section {
 }
 
 .preloader {
-    background-color: #0d6efd;
+    background-color: #519120;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -1935,4 +1935,8 @@ section {
 
 .error {
     color: red;
+}
+
+.app-logo-main {
+    width: 200px;
 }

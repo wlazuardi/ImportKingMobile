@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace ImportKingMobile.Services
 {
     public class IdentityService : IIdentityService
     {
-        IHttpContextAccessor httpContext;
+        private readonly IHttpContextAccessor httpContext;
 
         public IdentityService(IHttpContextAccessor httpContext)
         {
@@ -39,11 +40,16 @@ namespace ImportKingMobile.Services
                 .FirstOrDefault()
                 .Value;
 
+            int userTypeInt = 0;
+
+            int.TryParse(userType, out userTypeInt);
+
             return new User()
             {
                 FirstName = firstName,
                 LastName = lastName,
-                Email = email
+                Email = email,
+                UserType = userTypeInt
             };
         }
     }
