@@ -419,12 +419,14 @@
                                     if (item.stock > 0) {
                                         icon = '<i class="material-icons md-check_circle_outline text-success mr-0"></i>';
                                     }
+                                    var textClass = App.Utils.isHexLight(item.colorCode) ? 'text-dark' : 'text-light';
+
                                     var item = '<li class="nav-item">' +
                                         '<a class="icontext">' +
                                         '<div class="text">' +
                                         '<h6 class="title">' + item.categoryName + '</h6>' +
                                         '<div>' + item.brand + ' ' + item.typeName + '</div>' +
-                                        '<span class="badge text-capitalize" style="background:' + item.colorCode + ';">' + item.colorName + '</span>' +
+                                        '<span class="badge text-capitalize ' + textClass + '" style="background:' + item.colorCode + ';">' + item.colorName + '</span>' +
                                         '</div>' +
                                         icon +
                                         '</a>' +

@@ -1,0 +1,15 @@
+﻿@{ ViewData["Title"] = "My Order"; }
+
+<div id="root">
+
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        var userMail = '@ViewBag.User.Email';
+        var orderId = '@ViewBag.OrderId';
+    </script>
+    <script src="~/js/app/plugin.modal.js" asp-append-version="true" type="text/javascript"></script>
+    <script src="~/js/app/page.order-detail.js" asp-append-version="true" type="text/babel"></script>
+} 

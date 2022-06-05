@@ -23,9 +23,25 @@ class OrderPage extends React.Component {
 
     componentDidMount() {
         fetch("https://importking.mooo.com/api/Orders/GetByEmail/" + userMail)
-            .then(res => res.json())
+            .then((res) => {
+                if (res.status == 200) {
+                    return res.json();
+                }
+                else {
+                    throw {
+                        message: res.statusText
+                    };
+                }
+            })
             .then(
                 (result) => {
+                    // Order by updated date desc
+                    result.sort(function (a, b) {
+                        var aDate = (new Date(a.updatedDate)).getTime();
+                        var bDate = (new Date(b.updatedDate)).getTime();
+                        return bDate - aDate;
+                    });
+
                     this.setState({
                         isLoaded: true,
                         items: result,
@@ -83,13 +99,37 @@ class OrderPage extends React.Component {
         });
     }
 
+    goToDetail = (orderId, e) => {        
+        location.href = '/Order/' + orderId + '/Detail';
+    }
+
     render() {
         const { error, isLoaded, statuses, filteredItems, filteredStatus } = this.state;
 
         if (error) {
-            return <div>Error: {error.message}</div>;
+            return (
+                <div>
+                    <section class="px-3 pb-3 pt-1 mb-2 bg-primary">
+                        <input type="search" placeholder="Search" class="bg-primary-light border-0 form-control text-white" />
+                    </section>
+                    <div class="alert alert-danger mx-2" role="alert">Error: {error.message}</div>
+                </div>
+            );
         } else if (!isLoaded) {
-            return <div>Loading...</div>;
+            return (
+                <div>
+                    <section class="px-3 pb-3 pt-1 mb-2 bg-primary">
+                        <input type="search" placeholder="Search" class="bg-primary-light border-0 form-control text-white"/>
+                    </section>
+                    <div>
+                        <p class="text-center mt-3" id="spinner">
+                            <span class="spinner-grow spinner-grow-sm" role="status"></span>
+                            <span class="spinner-grow spinner-grow-sm" role="status"></span>
+                            <span class="spinner-grow spinner-grow-sm" role="status"></span>
+                        </p>
+                    </div>
+                </div>
+            );
         } else {
             return (
                 <div>
@@ -114,7 +154,7 @@ class OrderPage extends React.Component {
                         ):
                         (
                             filteredItems.map(item => (
-                                <div class="card border-secondary mb-3 mx-2" key={item.orderId}>
+                                <div class="card border-secondary mb-3 mx-2" key={item.orderId} onClick={this.goToDetail.bind(this, item.orderId)}>
                                     <div class="card-header p-2">
                                         {item.orderNo}
                                         <span class="float-end badge bg-success">{item.status}</span>

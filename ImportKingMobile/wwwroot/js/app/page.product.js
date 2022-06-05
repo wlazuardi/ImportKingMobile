@@ -85,13 +85,16 @@
                                         'data-price="' + item.price + '" ' +
                                         'class="btn btn-sm btn-primary btn-AddCart float-end" > Add +</button ></div >';
                                 }
+
+                                var textClass = App.Utils.isHexLight(item.colorCode) ? 'text-dark' : 'text-light';
+
                                 var item =
                                     '<li class="nav-item">' +
                                     '<a class="icontext">' +
                                     '<div class="col-9">' +
                                     '<h6 class="title">' + item.categoryName + '</h6>' +
                                     '<div>' + item.brand + ' ' + item.typeName + '</div>' +
-                                    '<span class="badge text-capitalize" style="background:' + item.colorCode + ';">' + item.colorName + '</span>' +
+                                    '<span class="badge text-capitalize ' + textClass + '" style="background:' + item.colorCode + ';">' + item.colorName + '</span>' +
                                     '<span class="mx-2">IDR. ' + App.Utils.formatCurrency(item.price) + '</span>' +
                                     '</div>' +
                                     btn +
@@ -110,6 +113,7 @@
                                 var colorCode = $(this).attr('data-colorCode');
                                 var colorName = $(this).attr('data-colorName');
                                 var price = $(this).attr('data-price');
+                                var textClass = App.Utils.isHexLight(colorCode) ? 'text-dark' : 'text-light';
 
                                 var item =
                                     '<div class="row">' +
@@ -118,7 +122,7 @@
                                     '<input type="hidden" name="price" value="' + price + '">' +
                                     '<div class="title">' + categoryName + '</div>' +
                                     '<div>' + brand + '</div>' +
-                                    '<span class="badge text-capitalize" style="background:' + colorCode + ';">' + colorName + '</span > ' +
+                                    '<span class="badge text-capitalize ' + textClass + '" style="background:' + colorCode + ';">' + colorName + '</span > ' +
                                     '<span>IDR. ' + App.Utils.formatCurrency(price) + '</span>' +
                                     '</div>' +
                                     '<div class="col-5">' +

@@ -18,14 +18,14 @@ namespace ImportKingMobile.Controllers
 
         public IActionResult Index()
         {
-            //if (ViewBag.User.UserType == 3)
-            //{
-                return View();
-            //}
-            //else
-            //{
-            //    return RedirectToAction("ComingSoon", "Generic");
-            //}
+            return View();            
+        }
+
+        [Route("Order/{orderId}/Detail")]
+        public IActionResult Detail(int orderId)
+        {
+            ViewBag.OrderId = orderId;
+            return View();
         }
     }
 }

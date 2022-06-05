@@ -21,11 +21,13 @@
                         isAvailable = true;
                     }
 
+                    var textClass = App.Utils.isHexLight(item.colorCode) ? 'text-dark' : 'text-light';
+
                     products += '<li class="nav-item">' +
                         '<a href="" class="icontext" >' +                            
                             '<span class="icon icon-sm rounded">' + acronym.toUpperCase() + '</span>' +
-                        '<div class="text"><h6 class="title">' + item.categoryName + ' / ' + item.brand + ' - ' + item.typeName + (isAvailable == false ? '<i class="icon material-icons md-block text-danger ml-2" style="background:none;"></i>' : '') + '</h6>' +
-                                '<span class="badge text-capitalize" style="background:' + item.colorCode + ';">' + item.colorName + '</span>' +
+                            '<div class="text"><h6 class="title">' + item.categoryName + ' / ' + item.brand + ' - ' + item.typeName + (isAvailable == false ? '<i class="icon material-icons md-block text-danger ml-2" style="background:none;"></i>' : '') + '</h6>' +
+                            '<span class="badge text-capitalize ' + textClass + '" style="background:' + item.colorCode + ';">' + item.colorName + '</span>' +
                             '</div> '
                         '</a>'
                     '</li>';

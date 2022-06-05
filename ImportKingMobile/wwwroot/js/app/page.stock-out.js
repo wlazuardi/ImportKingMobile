@@ -42,6 +42,7 @@
                     var colorCode = item.colorCode;
                     var colorName = item.colorName;
                     var subTotal = (price * qty) || 0;
+                    var textClass = App.Utils.isHexLight(colorCode) ? 'text-dark' : 'text-light';
 
                     var list = '<li class="row mb-3">' +
                         '<div class="col-7">' +
@@ -50,13 +51,13 @@
                         '<input type="hidden" name="price" value="' + price + '">' +
                         '<div class="title">' + categoryName + '</div>' +
                         '<div>' + brand + '</div>' +
-                        '<span class="badge text-capitalize" style="background:' + colorCode + ';">' + colorName + '</span > ' +
+                        '<span class="badge text-capitalize ' + textClass + '" style="background:' + colorCode + ';">' + colorName + '</span > ' +
                         '<span>IDR. ' + App.Utils.formatCurrency(price) + '</span>' +
                         '<div class="small fw-bold input-subTotal">SubTotal = IDR. ' + App.Utils.formatCurrency(subTotal) + '</div>' +
                         '</div>' +
                         '<div class="col-5 text-center">' +
                         '<button class="btn btn-primary px-1 btn-sm btn-Qty-Min"><i class="material-icons md-remove"></i></button>' +
-                        '<input name="qtyEdit" type="number" data-price="' + price + '" class="form-control input-Qty d-inline form-control-sm mx-1 stockOutItem" value="' + qty + '">' +
+                        '<input name="qtyEdit" type="number" data-price="' + price + '" class="form-control input-Qty d-inline form-control-sm mx-1 px-1 stockOutItem" value="' + qty + '">' +
                         '<button class="btn btn-primary px-1 btn-sm btn-Qty-Plus"><i class="material-icons md-add"></i></button>' +
                         '<div class="mt-2 text-left"><a class="btn-Delete py-1 px-1 btn btn-danger btn-sm text-white"><i class="material-icons md-delete"></i> Remove</a></div>' +
                         '</div>' +
@@ -139,7 +140,7 @@
                             '<button type="button" class="btn btn-primary px-1 btn-sm btn-Qty-Min">' +
                                 '<i class="material-icons md-remove"></i>' +
                             '</button>' +
-                            '<input name="qty" type="number" class="form-control input-Qty d-inline form-control-sm mx-1" value="1">' +
+                            '<input name="qty" type="number" class="form-control input-Qty d-inline form-control-sm mx-1 px-1" value="1">' +
                             '<button type="button" class="btn btn-primary px-1 btn-sm btn-Qty-Plus">' +
                                 '<i class="material-icons md-add"></i>' +
                             '</button>' +
