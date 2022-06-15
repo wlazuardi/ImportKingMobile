@@ -22,6 +22,8 @@
     <!-- Fonticon -->
     <link href="~/fonts/material-icon/css/round.css" rel="stylesheet" type="text/css" />
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+
     <link href="~/css/app.css" rel="stylesheet" type="text/css" />
 
 </head>
@@ -43,7 +45,7 @@
         </a>
 
         <h5 class="title-header">
-            <img src="~/images/logo_inverse.png" class="app-logo-main"/>
+            <img src="~/images/logo_inverse.png" class="app-logo-main" />
         </h5>
 
         <a href="~/User/Profile" class="btn-header">
@@ -58,30 +60,33 @@
 
     <nav class="nav-bottom">
         <a id="linkHome" href="~/Home/Index" class="nav-link active">
-            <i class="icon material-icons md-home"></i><span class="text">Home</span>
-        </a>
-        <a id="linkStockViewer" href="~/StockViewer" class="nav-link">
-            <i class="icon material-icons md-search"></i> <span class="text">Check Stock</span>
+            <i class="icon fa-solid fa-house"></i><span class="text">Home</span>
         </a>
 
         @if (ViewBag.User != null && ViewBag.User.UserType == 3)
         {
-            <a id="linkStockViewer" href="~/StockOut" class="nav-link">            
-                <i class="icon material-icons md-list_alt"></i><span class="text">Stock Out</span>
+            <a id="linkStockViewer" href="~/StockViewer" class="nav-link">
+                <i class="icon fa-solid fa-magnifying-glass"></i><span class="text">Check Stock</span>
+            </a>
+            <a id="linkStockViewer" href="~/StockOut" class="nav-link">
+                <i class="icon fa-solid fa-boxes-stacked"></i><span class="text">Stock Out</span>
             </a>
         }
         else
         {
+            <a id="linkStockViewer" href="~/Product" class="nav-link">                
+                <i class="icon fa-solid fa-tag"></i><span class="text">Products</span>
+            </a>
             <a id="linkCart" href="~/Cart" class="nav-link">
-                <i class="icon material-icons md-shopping_cart"></i><span class="text">My Cart</span>
+                <i class="icon fa-solid fa-cart-shopping"></i><span class="text">My Cart</span>
             </a>
             <a id="linkOrder" href="~/Order" class="nav-link">
-                    <i class="icon material-icons md-shopping_bag"></i><span class="text">My Order</span>
+                <i class="icon fa-solid fa-bag-shopping"></i><span class="text">My Order</span>
             </a>
         }
 
         <a id="linkProfile" href="~/User/Profile" class="nav-link">
-            <i class="icon material-icons md-account_circle"></i><span class="text">My Profile</span>
+            <i class="icon fa-solid fa-circle-user"></i><span class="text">My Profile</span>
         </a>
     </nav> <!-- nav-bottom -->
 
@@ -89,21 +94,23 @@
     <aside class="offcanvas offcanvas-start" tabindex="-1" id="offcanvas_left_123">
         <header class="p-3 border-bottom bg-light">
             <button type="button" class="float-end btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            <a href="~/User/Profile" class="icontext">                
+            <a href="~/User/Profile" class="icontext">
                 @if (ViewBag.User == null)
                 {
                     <img src="~/images/avatars/1.png" class="icon avatar-sm" alt="">
                 }
-                else if(ViewBag.User.LastName != null && ViewBag.User.LastName != "") {
+                else if (ViewBag.User.LastName != null && ViewBag.User.LastName != "")
+                {
                     <span class="icon avatar-sm">
                         @ViewBag.User.FirstName.Substring(0, 1)@ViewBag.User.LastName.Substring(0, 1)
                     </span>
-                }  
-                else {
+                }
+                else
+                {
                     <span class="icon avatar-sm">
                         @ViewBag.User.FirstName.Substring(0, 1)
                     </span>
-                }         
+                }
                 <div class="text">
                     @if (ViewBag.User == null)
                     {
@@ -121,21 +128,22 @@
         </header>
         <article class="offcanvas-body">
             <nav class="nav-sidebar mt-2">
-                <a href="~/StockViewer"> <i class="material-icons md-search"></i> Check Stock </a>
-                
                 @if (ViewBag.User != null && ViewBag.User.UserType == 3)
                 {
-                    <a href="~/StockOut"> <i class="material-icons md-list_alt"></i> Stock Out </a>
+                    <a href="~/StockViewer"> <i class="icon fa-solid fa-magnifying-glass"></i> Check Stock </a>
+                    <a href="~/StockOut"> <i class="icon fa-solid fa-boxes-stacked"></i> Stock Out </a>
                 }
                 else
                 {
-                    <a href="~/Cart"> <i class="icon material-icons md-shopping_cart"></i> My Cart </a>
-                    <a href="~/Order"> <i class="icon material-icons md-shopping_bag"></i>My Order </a>
+                    <a href="~/StockViewer"> <i class="icon fa-solid fa-magnifying-glass"></i> Check Stock </a>
+                    <a href="~/Product"> <i class="icon fa-solid fa-tag"></i> Products </a>
+                    <a href="~/Cart"> <i class="icon fa-solid fa-cart-shopping"></i> My Cart </a>
+                    <a href="~/Order"> <i class="icon fa-solid fa-bag-shopping"></i>My Order </a>
                 }
 
                 @if (ViewBag.User != null)
                 {
-                    <a id="linkLogout"> <i class="material-icons md-login"></i> Logout </a>
+                    <a id="linkLogout"> <i class="icon fa-solid fa-right-from-bracket"></i> Logout </a>
                 }
                 @*<a href="index.html"> <i class="material-icons md-apps"></i> All pages </a>
                     <a href="#"> <i class="material-icons md-local_offer"></i> New offers</a>

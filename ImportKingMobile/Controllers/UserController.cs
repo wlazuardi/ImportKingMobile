@@ -37,6 +37,12 @@ namespace ImportKingMobile.Controllers
         }
 
         [Authorize]
+        public IActionResult Address()
+        {
+            return View();
+        }
+
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("cookie");

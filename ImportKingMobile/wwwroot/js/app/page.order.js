@@ -121,13 +121,7 @@ class OrderPage extends React.Component {
                     <section class="px-3 pb-3 pt-1 mb-2 bg-primary">
                         <input type="search" placeholder="Search" class="bg-primary-light border-0 form-control text-white"/>
                     </section>
-                    <div>
-                        <p class="text-center mt-3" id="spinner">
-                            <span class="spinner-grow spinner-grow-sm" role="status"></span>
-                            <span class="spinner-grow spinner-grow-sm" role="status"></span>
-                            <span class="spinner-grow spinner-grow-sm" role="status"></span>
-                        </p>
-                    </div>
+                    <LoadSpinner />
                 </div>
             );
         } else {

@@ -4,7 +4,11 @@
         <input type="text" placeholder="Search" class="bg-secondary-light border-0 form-control">
     </section>*@
 
-<section class="py-3 px-4">
+<div id="root" class="py-3 px-4">
+
+</div>
+
+@*<section class="py-3 px-4">
     <form id="searchForm" class="mb-3">
         <div class="mb-3">
             <label class="form-label">Category</label>
@@ -35,7 +39,7 @@
     </p>
     <p class="text-center" id="result" style="display:none;"></p>
     <br>
-</section>
+</section>*@
 
 @section Scripts
 {
@@ -43,5 +47,6 @@
         var userEmail = '@ViewBag.User.Email';
     </script>
     <script src="~/js/app/plugin.modal.js" asp-append-version="true" type="text/javascript"></script>
-    <script src="~/js/app/page.product.js" asp-append-version="true" type="text/javascript"></script>
+    @*<script src="~/js/app/page.product.js" asp-append-version="true" type="text/javascript"></script>*@
+    <script src="~/js/app/page.react.product.js" asp-append-version="true" type="text/babel"></script>
 } 
