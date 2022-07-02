@@ -1,5 +1,7 @@
 ﻿using ImportKingMobile.Interfaces;
+using ImportKingMobile.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,20 +11,23 @@ namespace ImportKingMobile.Controllers
 {
     public class ProductController : BaseController
     {
-        public ProductController(IIdentityService identityService) : base(identityService)
+        AppSettings appSettings;
+
+        public ProductController(IIdentityService identityService, IOptions<AppSettings> appSettings) : base(identityService)
         {
+            this.appSettings = appSettings.Value;
         }
 
         public IActionResult Index()
         {
-            //if (ViewBag.User.UserType == 3)
-            //{
+            if (appSettings.DemoUsers.Count > 0 && appSettings.DemoUsers.Contains(ViewBag.User.Email))
+            {
                 return View();
-            //}
-            //else
-            //{
-            //    return RedirectToAction("ComingSoon", "Generic");
-            //}
+            }
+            else
+            {
+                return RedirectToAction("ComingSoon", "Generic");
+            }
         }
     }
 }

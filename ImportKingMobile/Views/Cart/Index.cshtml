@@ -1,7 +1,5 @@
 ﻿@{ ViewData["Title"] = "Shopping Cart"; }
 
-<h5 class="title-section">Shopping Cart</h5>
-
 <div id="root"></div>
 
 @section Scripts
@@ -10,5 +8,6 @@
         var userMail = '@ViewBag.User.Email';
     </script>
     <script src="~/js/app/plugin.modal.js" asp-append-version="true" type="text/javascript"></script>
+    <script src="~/js/app/react.address.components.js" asp-append-version="true" type="text/babel"></script>
     <script src="~/js/app/page.react.cart.js" asp-append-version="true" type="text/babel"></script>
 } 

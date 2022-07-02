@@ -207,9 +207,28 @@ $(document).ready(function () {
             element.closest('.form-group>div').append(error);
         },
         highlight: function (element, errorClass, validClass) {
+            if ($(element).hasClass('select2-hidden-accessible')) {
+                var element = $(element).parent().find('.select2-selection');
+                $(element).addClass('form-control border border-danger');
+            }
+            else if ($(element).hasClass('form-control-card'))
+            {
+                var element = $(element).parents('.card');
+                $(element).addClass('border border-danger');
+                $(element).removeClass('border border-primary');
+            }
             $(element).addClass('is-invalid');
         },
         unhighlight: function (element, errorClass, validClass) {
+            if ($(element).hasClass('select2-hidden-accessible')) {
+                var element = $(element).parent().find('.select2-selection');
+                $(element).removeClass('form-control border border-danger');
+            }
+            else if ($(element).hasClass('form-control-card')) {
+                var element = $(element).parents('.card');
+                $(element).removeClass('border border-danger');
+                $(element).addClass('border border-primary');
+            }
             $(element).removeClass('is-invalid');
         }
     });

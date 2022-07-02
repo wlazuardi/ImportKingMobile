@@ -11,6 +11,10 @@
     }
 
     componentDidMount() {
+        this.loadCart();
+    }
+
+    loadCart() {
         this.setState({
             isLoading: true
         });
@@ -242,9 +246,15 @@
                                 cartList.map((cart, index) => (
                                     <li class="row mb-3">
                                         <div class="col-7">
-                                            <div class="title">{cart.categoryName}</div>
-                                            <div>{cart.brand}</div>
-                                            <span class={cart.colorCodeClass} style={{ backgroundColor: cart.colorCode }}>{cart.colorName}</span>
+                                            <div class="title">{(cart.productId > -1) ? cart.categoryName : 'Other'}</div>
+                                            <div>{(cart.productId > -1) ? (cart.brand + ' ' + cart.typeName) : cart.customProductType}</div>
+                                            {
+                                                (cart.productId > -1) ? (
+                                                    <span class={cart.colorCodeClass} style={{ backgroundColor: cart.colorCode }}>{cart.colorName}</span>
+                                                ) : (
+                                                    <span class={cart.colorCodeClass} style={{ backgroundColor: '#000' }}>{cart.customProductColor}</span>
+                                                )
+                                            }                                            
                                             <span>IDR. {App.Utils.formatCurrency(cart.price)}</span>
                                             <div class="small fw-bold input-subTotal">IDR. {App.Utils.formatCurrency(cart.subTotal)}</div>
                                         </div>
@@ -265,6 +275,9 @@
                                                 </a>
                                             </div>
                                         </div>
+                                        {
+                                            cart.isOutOfStock ? (<div class="small text-danger">This product maybe run out of stock</div>) : (<div></div>)
+                                        }
                                     </li>
                                 ))
                             }
@@ -324,11 +337,26 @@ class CartPage extends React.Component {
             cartList: [],
             isShownOrderForm: false,
             selectedAddress: null,
+            isShownAddressModal: false,
+            isShownAddAddressModal: false,
+            orderFormRules: {
+                addressId: {
+                    required: true
+                },
+                courier: {
+                    required: true
+                }
+            },
             orderData: {
             }
         };
 
         this.myRef = React.createRef();
+        this.orderModalRef = React.createRef();
+        this.cartListRef = React.createRef();
+        this.addressModalRef = React.createRef();
+        this.addressListRef = React.createRef();
+        this.modalAddressFormRef = React.createRef();
     }
 
     handleCartUpdated(alert) {
@@ -375,11 +403,21 @@ class CartPage extends React.Component {
                 .then(result => {
                     console.log(result);
                     var selectedAddress = result.filter(x => x.isDefault == true);
-                    selectedAddress = (selectedAddress.length) ? selectedAddress[0] : null;
+                    var orderData = self.state.orderData;
+
+                    if (selectedAddress.length) {
+                        selectedAddress = selectedAddress[0];
+                        orderData.addressId = selectedAddress.addressId;
+                    }
+                    else {
+                        selectedAddress = null;
+                        orderData.addressId = "";
+                    }
 
                     self.setState({
                         isShownProgress: false,
-                        selectedAddress: selectedAddress
+                        selectedAddress: selectedAddress,
+                        orderData: orderData
                     });
                 }, error => {
                     console.log(error);
@@ -398,11 +436,71 @@ class CartPage extends React.Component {
     }
 
     handleSubmitOrderForm() {
-
+        this.myRef.current.handleSubmit();
     }
 
     handleSubmitOrderFormCallback(e) {
-        console.log(e);
+        let { cartList, orderData, selectedAddress } = this.state;
+        let totalPrice = 0;
+
+        if (cartList && cartList.length) {
+            cartList.forEach(cart => {
+                totalPrice += cart.subTotal;
+            });
+        }
+
+        var formData = {
+            email: userMail,
+            orderValue: totalPrice,
+            status: 'New',
+            orderNo: 'X',
+            shippingName: selectedAddress.name,
+            shippingPhone: selectedAddress.phone,
+            shippingAddress: selectedAddress.fullAddress,
+            shippingCity: selectedAddress.city,
+            shippingProvince: selectedAddress.province,
+            shippingZipCode: selectedAddress.zipCode,
+            shippingCourier: orderData.courier,
+            comments: orderData.comments
+        }
+
+        fetch('https://importking.mooo.com/api/Orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        })
+            .then(result => {
+                if (result.status == 200) {
+                    return result.json();
+                }
+                else {
+                    throw {
+                        message: result.statusText
+                    }
+                }
+            })
+            .then(result => {
+                this.setState({
+                    alert: {
+                        isShown: true,
+                        mode: 'success',
+                        title: 'Success',
+                        message: 'Order submitted successfully'
+                    },
+                    isShownOrderForm: false
+                });
+
+                this.cartListRef.current.loadCart();
+            }, error => {
+                this.setState({
+                    alert: {
+                        isShown: true,
+                        mode: 'danger',
+                        title: 'Error',
+                        message: error.message
+                    }
+                });
+            });
     }
 
     handlePopUpHidden() {
@@ -428,7 +526,7 @@ class CartPage extends React.Component {
 
     handleCourierChange(e) {
         var order = this.state.orderData;
-        order.courier = e.value;
+        order.courier = e.target.value;
         this.setState({
             orderData: order
         });
@@ -436,7 +534,66 @@ class CartPage extends React.Component {
 
     handleAddNewAddress(e) {
         e.preventDefault();
-        console.log();
+        this.setState({
+            isShownAddressModal: true,
+            isShownOrderForm: false
+        });
+    }
+
+    handleChangeAddress(e) {
+        e.preventDefault();
+        this.setState({
+            isShownAddressModal: true,
+            isShownOrderForm: false
+        });
+    }
+
+    handleAddAddress() {
+        this.modalAddressFormRef.current.setState({
+            isShownAdd: true,
+            formData: {
+                alias: '',
+                name: '',
+                phone: '',
+                fullAddress: '',
+                city: '',
+                province: '',
+                zipCode: '',
+                isDefault: false
+            }
+        });
+    }
+
+    handleEditAddress(address) {
+        this.modalAddressFormRef.current.setState({
+            isShownAdd: true,
+            formData: address
+        });
+    }
+
+    handleSubmit() {
+        this.addressListRef.current.loadAddresses();
+        this.addressModalRef.current.handleUpdate();
+    }
+
+    handleAddressPopUpHidden() {
+        console.log('handleAddressPopUpHidden');
+        this.setState({
+            isShownAddressModal: false,
+            isShownOrderForm: true
+        });
+    }
+
+    handleItemClick(address) {
+        var orderData = this.state.orderData;
+        orderData.addressId = address.addressId;
+
+        this.setState({
+            selectedAddress: address,
+            isShownAddressModal: false,
+            isShownOrderForm: true,
+            oderData: orderData
+        });
     }
 
     render() {
@@ -448,19 +605,32 @@ class CartPage extends React.Component {
 
         var { selectedAddress } = this.state;
 
+        var anyOutOfStockProduct = false;
+
+        if (this.state.cartList.length > 0) {
+            var temp = this.state.cartList.filter(x => x.isOutOfStock);
+            if (temp.length > 0) {
+                anyOutOfStockProduct = true;
+            }
+        }
+
         return (
             <div>
                 {
                     (this.state.alert) ?
-                        <Alert isShown={this.state.alert.isShown} mode={this.state.alert.mode} title={this.state.alert.title} message={this.state.alert.message} onHidden={this.handleAlertHidden.bind(this)} /> :
+                        <Toast isShown={this.state.alert.isShown} mode={this.state.alert.mode} title={this.state.alert.title} message={this.state.alert.message} onHidden={this.handleAlertHidden.bind(this)} /> :
+                        <div></div>
+                }
+                <h5 class="pt-3 px-3">Shopping Cart</h5>
+                <CartList ref={this.cartListRef} onUpdated={this.handleCartUpdated.bind(this)} onListUpdate={this.handleListUpdate.bind(this)} />
+
+                {
+                    (this.state.cartList.length > 0) ?
+                        <CartFooter cartList={this.state.cartList} handleSubmitOrder={this.handleSubmitOrder.bind(this)} /> :
                         <div></div>
                 }
 
-                <CartList onUpdated={this.handleCartUpdated.bind(this)} onListUpdate={this.handleListUpdate.bind(this)} />
-
-                <CartFooter cartList={this.state.cartList} handleSubmitOrder={this.handleSubmitOrder.bind(this)} />
-
-                <ModalPopUp id="orderModal" isShown={this.state.isShownOrderForm} class="modal" onHidden={this.handlePopUpHidden.bind(this)}>
+                <ModalPopUp id="orderModal" ref={this.orderModalRef} isShown={this.state.isShownOrderForm} class="modal" onHidden={this.handlePopUpHidden.bind(this)}>
                     <div class="modal-dialog" role="document">
                         <Progress isShown={this.state.isShownProgress} class="modal-content">
                             <div class="modal-header">
@@ -470,16 +640,23 @@ class CartPage extends React.Component {
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <FormValidate ref={this.myRef} novalidate="novalidate" submitHandler={this.handleSubmitOrderFormCallback.bind(this)}>
+                                <FormValidate ref={this.myRef} novalidate="novalidate" rules={this.state.orderFormRules} submitHandler={this.handleSubmitOrderFormCallback.bind(this)}>
+                                    <div class="alert alert-info">This is the last step. Make sure your order and shipping information is already correct.</div>
                                     <div class="mb-3">
                                         <label class="form-label">Shipping Address</label>
                                         <div class="w-100">
                                             <div class="card border-primary">
                                                 {
                                                     (selectedAddress) ? (
-                                                        <div class="card-body p-2">
-                                                            <div>{selectedAddress.name} ({selectedAddress.phone})</div>
-                                                            <div>{selectedAddress.fullAddress}, {selectedAddress.city}, {selectedAddress.province}, {selectedAddress.zipCode}</div>
+                                                        <div>
+                                                            <div class="card-header p-2 bg-primary text-white">
+                                                                {selectedAddress.alias}
+                                                            </div>
+                                                            <div class="card-body p-2" onClick={this.handleChangeAddress.bind(this)}>
+                                                                <div>{selectedAddress.name} ({selectedAddress.phone})</div>
+                                                                <div>{selectedAddress.fullAddress}, {selectedAddress.city}, {selectedAddress.province}, {selectedAddress.zipCode}</div>
+                                                            </div>
+                                                            <input type="text" name="addressId" value={this.state.orderData.addressId} class="form-control form-control-card d-none" />
                                                         </div>
                                                     ) : (
                                                         <div class="card-body p-2">
@@ -490,6 +667,7 @@ class CartPage extends React.Component {
                                                                 <i class="fa-solid fa-plus me-2" />
                                                                 Add Shipping Address
                                                             </button>
+                                                            <input type="text" name="addressId" value="" class="form-control form-control-card d-none" />
                                                         </div>
                                                     )
                                                 }
@@ -498,20 +676,58 @@ class CartPage extends React.Component {
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Courier</label>
-                                        <div class="w-100">
-                                            <Select2 class="form-control" width="100%" name="courier" dataSource={courier} value={this.state.orderData.courier}
-                                                onChange={this.handleCourierChange.bind(this)} dropdownParent="#orderModal" />
+                                        <div>
+                                            <select class="form-control" name="courier" value={this.state.orderData.courier} onChange={this.handleCourierChange.bind(this)}>
+                                                <option value=""></option>
+                                                <option value="Shop Courier">Shop Courier</option>
+                                                <option value="Lalamove">Lalamove</option>
+                                                <option value="Others">Others</option>
+                                            </select>
                                         </div>
                                     </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Comments</label>
+                                        <div>
+                                            <input type="text" name="comments" class="form-control" />
+                                        </div>
+                                    </div>
+                                    {
+                                        anyOutOfStockProduct ? (
+                                            <div class="alert alert-warning">Some of your products maybe run out of stock. Are you still want to submit order?</div>
+                                        ) : (<div></div>)
+
+                                    }
                                 </FormValidate>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" onClick={this.handleSubmitOrderForm.bind(this)}>Save</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" onClick={this.handleSubmitOrderForm.bind(this)}>Submit</button>
                             </div>
                         </Progress>
                     </div>
                 </ModalPopUp>
+
+                <ModalPopUp ref={this.addressModalRef} id="addressModal" isShown={this.state.isShownAddressModal} class="modal" onHidden={this.handleAddressPopUpHidden.bind(this)}>
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Maintain Shipping Address</h5>
+                                <button type="button" class="close btn btn-secondary btn-sm" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body px-2">
+                                <div class="px-2 mb-3 text-center">Choose shipping address below</div>
+                                <AddressList ref={this.addressListRef}
+                                    handleAddAddress={this.handleAddAddress.bind(this)}
+                                    handleEditAddress={this.handleEditAddress.bind(this)}
+                                    handleItemClick={this.handleItemClick.bind(this)} />
+                            </div>
+                        </div>
+                    </div>
+                </ModalPopUp>
+
+                <ModalAddressForm ref={this.modalAddressFormRef} handleSubmit={this.handleSubmit.bind(this)} />
             </div>
         );
     }

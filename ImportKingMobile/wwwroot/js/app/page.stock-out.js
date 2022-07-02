@@ -401,8 +401,8 @@
         };
 
         var recalculatePriceEdit = function (elem) {
-            var qtyEdit = parseInt($('[name=qtyEdit]').val());
-            var priceEdit = $('[name=qtyEdit]').attr('data-price');
+            var qtyEdit = parseInt($(elem).val());
+            var priceEdit = $(elem).attr('data-price');
             var subTotalEdit = priceEdit * qtyEdit;
             
             if (priceEdit && qtyEdit) {

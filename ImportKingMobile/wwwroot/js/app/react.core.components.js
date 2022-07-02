@@ -24,7 +24,7 @@ class Select2 extends React.Component {
         }
     }
 
-    componentDidMount() {        
+    componentDidMount() {
         this.$el = $(this.el);
 
         if (this.props.dropdownParent)
@@ -49,7 +49,7 @@ class Select2 extends React.Component {
         this.$el.select2().empty();
 
         this.$el.select2({
-            data: this.props.dataSource,
+            data: this.props.dataSource,            
             multiple: false,
             dropdownParent: this.$dropdownParent,
             templateResult: this.props.templateResult,
@@ -69,7 +69,7 @@ class Select2 extends React.Component {
     }
 
     render() {
-        return <input value={this.props.value} type="text" class={this.props.class} ref={el => this.el = el} />;
+        return <input value={this.props.value} name={this.props.name} type="text" class={this.props.class} ref={el => this.el = el} />;
     }
 }
 
@@ -79,12 +79,16 @@ class ModalPopUp extends React.Component {
     }
 
     onShown(e) {
+        e.stopPropagation();
         if (this.props.onHidden) {
             this.props.onHidden(e);
         }
     }
 
     onHidden(e) {
+        console.log(e);
+        e.stopPropagation();
+        console.log('onHidden', this.el);
         if (this.props.onHidden) {
             this.props.onHidden(e);
         }
@@ -111,6 +115,11 @@ class ModalPopUp extends React.Component {
         else {
             this.$el.modal('hide');
         }
+    }
+
+    handleUpdate() {
+        this.$el.modal('handleUpdate');
+        console.log('handleUpdate');
     }
 
     render() {
@@ -231,6 +240,89 @@ class Alert extends React.Component {
     }
 }
 
+class Toast extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    componentDidMount() {
+        this.toast = new bootstrap.Toast(this.el, {
+            animation: true,
+            autohide: true,
+            delay: 5000
+        });
+
+        var self = this;
+        this.$el = $(this.el);
+        this.$el.off('hidden.bs.toast').on('hidden.bs.toast', function () {
+            if (self.props.onHidden)
+                self.props.onHidden();
+        });
+
+        this.$el.off('shown.bs.toast').on('shown.bs.toast', function () {
+            if (self.props.onShown)
+                self.props.onShown();
+        });
+
+        if (this.props.isShown) {
+            this.toast.show();
+        }
+        else {
+            this.toast.hide();
+        }
+    }
+
+    componentDidUpdate() {
+        if (this.props.isShown) {
+            this.toast.show();
+        }
+        else {
+            this.toast.hide();
+        }
+    }
+
+    render() {
+        var { mode, title, message } = this.props;
+
+        var toastClass = "toast";
+
+        switch (mode) {
+            case 'success':
+                toastClass += " bg-success text-white";
+                break;
+            case 'danger':
+                toastClass += " bg-danger text-white";
+                break;
+            case 'warning':
+                toastClass += " bg-warning text-white";
+                break;
+            default:
+                toastClass += " bg-light text-dark";
+                break;
+        }
+
+        var body = message;
+        if (title) {
+            body = title + ": " + message;
+        }
+
+        return (
+            <div aria-live="assertive" aria-atomic="true">
+                <div class="toast-container position-fixed pt-5 px-3 top-10 start-50 translate-middle" style={{zIndex: 100000}}>
+                    <div ref={el => this.el = el} class={toastClass} role="alert">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                {body}
+                            </div>
+                            <button type="button" class="btn-close mt-2 me-2 m-auto text-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
 class FormValidate extends React.Component {
     constructor(props) {
         super(props);
@@ -241,6 +333,7 @@ class FormValidate extends React.Component {
         var self = this;
         this.$el.validate({
             rules: this.props.rules,
+            ignore: [],
             submitHandler: function () {
                 if (self.props.submitHandler)
                     self.props.submitHandler(this);

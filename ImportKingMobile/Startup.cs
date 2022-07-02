@@ -1,4 +1,5 @@
 using ImportKingMobile.Interfaces;
+using ImportKingMobile.Models;
 using ImportKingMobile.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -63,6 +64,8 @@ namespace ImportKingMobile
             });
             */
 
+            
+
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = "cookie";
@@ -95,7 +98,8 @@ namespace ImportKingMobile
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddHttpContextAccessor();
             services.AddHttpClient();
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();           
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

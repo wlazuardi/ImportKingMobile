@@ -98,3 +98,7 @@ span.select2-selection__arrow {
 .icon {
     font-size: 22px !important;
 }
+
+.modal {
+    overflow-y: auto;
+}

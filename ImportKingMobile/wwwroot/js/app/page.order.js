@@ -7,6 +7,32 @@
     );
 }
 
+function StatusBadge(props) {
+    var className = "float-end badge ";
+
+    switch (props.status) {
+        case "New":
+            className += "bg-info";
+            break;
+        case "In Process":
+            className += "bg-warning";
+            break;
+        case "In Delivery":
+            className += "bg-primary";
+            break;
+        case "Completed":
+            className += "bg-success";
+            break;
+        case "Cancelled":
+            className += "bg-danger";
+            break;
+    }
+
+    return (
+        <span class={className}>{props.status}</span>
+    );
+}
+
 class OrderPage extends React.Component {
     constructor(props) {
         super(props);
@@ -22,7 +48,12 @@ class OrderPage extends React.Component {
     }
 
     componentDidMount() {
-        fetch("https://importking.mooo.com/api/Orders/GetByEmail/" + userMail)
+        var url = "https://importking.mooo.com/api/Orders/GetByEmail/" + userMail;
+
+        if (this.props.mode == 'admin' || userType == 3)
+            url = "https://importking.mooo.com/api/Orders/";
+
+        fetch(url)
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -151,7 +182,7 @@ class OrderPage extends React.Component {
                                 <div class="card border-secondary mb-3 mx-2" key={item.orderId} onClick={this.goToDetail.bind(this, item.orderId)}>
                                     <div class="card-header p-2">
                                         {item.orderNo}
-                                        <span class="float-end badge bg-success">{item.status}</span>
+                                        <StatusBadge status={item.status} />
                                     </div>
                                     <div class="card-body text-secondary p-2">
                                         <span class="float-end small">{moment(item.createdDate).format('llll')}</span>
@@ -168,4 +199,4 @@ class OrderPage extends React.Component {
     }
 }
 
-ReactDOM.render(<OrderPage />, document.getElementById('root'));
+ReactDOM.render(<OrderPage mode="user"/>, document.getElementById('root'));

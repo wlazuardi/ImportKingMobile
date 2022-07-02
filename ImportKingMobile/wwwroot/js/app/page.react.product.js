@@ -41,7 +41,12 @@
                         text: '- Show All -'
                     });
 
-                    results = (results) ? results.filter(e => e.text && e.text.toLowerCase().includes('testing') == false) : [];
+                    results.push({
+                        id: -1,
+                        text: 'Others'
+                    });
+
+                    //results = (results) ? results.filter(e => e.text && e.text.toLowerCase().includes('testing') == false) : [];
 
                     this.setState({
                         categories: results
@@ -57,6 +62,22 @@
     }
 
     constructTypeDataSource() {
+        if (this.state.categoryId == -1) {
+            var results = [{
+                id: -1,
+                text: 'Others'
+            }];
+
+            this.setState({
+                types: results,
+                colors: results,
+                typeId: -1,
+                colorId: -1
+            });
+
+            return;
+        }
+
         fetch('https://importking.mooo.com/api/Warehouses/0/Categories/' + this.state.categoryId + '/Types')
             .then((res) => {
                 if (res.status == 200) {
@@ -82,7 +103,7 @@
                         text: '- Show All -'
                     });
 
-                    results = (results) ? results.filter(e => e.text && e.text.toLowerCase().includes('testing') == false) : [];
+                    //results = (results) ? results.filter(e => e.text && e.text.toLowerCase().includes('testing') == false) : [];
 
                     this.setState({
                         types: results
@@ -98,6 +119,19 @@
     }
 
     constructColorDataSource() {
+        if (this.state.categoryId == -1 && this.state.typeId == -1) {
+            var results = [{
+                id: -1,
+                text: 'Others'
+            }];
+
+            this.setState({
+                colors: results
+            });
+
+            return;
+        }
+
         fetch('https://importking.mooo.com/api/Warehouses/0/Categories/' + this.state.categoryId + '/Types/' + this.state.typeId + '/Colors')
             .then((res) => {
                 if (res.status == 200) {
@@ -124,7 +158,7 @@
                         text: '- Show All -'
                     });
 
-                    results = (results) ? results.filter(e => e.text.toLowerCase().includes('testing') == false) : [];
+                    //results = (results) ? results.filter(e => e.text.toLowerCase().includes('testing') == false) : [];
 
                     this.setState({
                         colors: results
@@ -220,8 +254,18 @@
             )
     }
 
+    handleAddCustomProduct(e) {
+        e.preventDefault();
+        if (this.props.onAddCustomProduct)
+            this.props.onAddCustomProduct();
+    }
+
     render() {
         const { categories, types, colors, isLoadingProduct } = this.state;
+
+        var isSearchMode = true;
+        if (this.state.categoryId == -1 && this.state.typeId == -1 && this.state.colorId == -1)
+            isSearchMode = false;
 
         return (
             <div>
@@ -249,7 +293,13 @@
                                 templateSelection={this.formatColor.bind(this)} />
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100" onClick={this.handleSearch.bind(this)}> Search </button>
+                    {
+                        (isSearchMode) ? (
+                            <button type="submit" class="btn btn-primary w-100" onClick={this.handleSearch.bind(this)}> Search </button>
+                        ) : (
+                            <button type="submit" class="btn btn-primary w-100" onClick={this.handleAddCustomProduct.bind(this)}> Add Custom Order </button>
+                        )
+                    }
                 </form>
             </div>
         );
@@ -283,9 +333,22 @@ class ProductList extends React.Component {
                                             <div>{product.brand} {product.typeName}</div>
                                             <span class="badge text-capitalize" style={{ backgroundColor: product.colorCode }}>{product.colorName}</span>
                                             <span class="mx-2">IDR. {App.Utils.formatCurrency(product.price)}</span>
+                                            {
+                                                (product.stock > 0) ? (
+                                                    <div></div>
+                                                ) : (
+                                                    <div class="text-danger small">This product maybe run out of stock</div>
+                                                )
+                                            }
                                         </div>
                                         <div class="col-3">
-                                            <button class="btn btn-sm btn-primary float-end" onClick={this.handleAddProduct.bind(this, product)}> Add +</button>
+                                            {
+                                                (product.stock > 0) ? (
+                                                    <button class="btn btn-sm btn-primary float-end" onClick={this.handleAddProduct.bind(this, product)}> Add +</button>
+                                                ) : (
+                                                    <button class="btn btn-sm btn-outline-primary float-end" onClick={this.handleAddProduct.bind(this, product)}> Add +</button>
+                                                )
+                                            }
                                         </div>
                                     </a>
                                 </li>
@@ -316,8 +379,18 @@ class ProductPage extends React.Component {
             productList: [],
             isModalAddShown: false,
             selectedProduct: null,
-            isSubmittingCart: false
+            isSubmittingCart: false,
+            rules: {
+                customProductType: {
+                    required: true
+                },
+                customProductColor: {
+                    required: true
+                }
+            }
         }
+
+        this.myRef = React.createRef();
     }
 
     handleSearch(e) {
@@ -379,22 +452,7 @@ class ProductPage extends React.Component {
         });
     }
 
-    addToCart(e) {
-        e.preventDefault();
-
-        var { selectedProduct } = this.state;
-
-        var data = {
-            email: userEmail,
-            productId: selectedProduct.productId,
-            price: selectedProduct.price,
-            qty: selectedProduct.qty
-        }
-
-        this.setState({
-            isSubmittingCart: true
-        });
-
+    postCart(data) {
         fetch('https://importking.mooo.com/api/Carts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -412,6 +470,7 @@ class ProductPage extends React.Component {
             (result) => {
                 this.setState({
                     isModalAddShown: false,
+                    isModalCustomAddShown: false,
                     isSubmittingCart: false,
                     alert: {
                         isShown: true,
@@ -435,9 +494,40 @@ class ProductPage extends React.Component {
         );
     }
 
+    addToCart(e) {
+        e.preventDefault();
+
+        var { selectedProduct } = this.state;
+
+        var data = {
+            email: userEmail,
+            productId: selectedProduct.productId,
+            price: selectedProduct.price,
+            qty: selectedProduct.qty,
+            isOutOfStock: selectedProduct.stock <= 0
+        }
+
+        this.setState({
+            isSubmittingCart: true
+        });
+
+        this.postCart(data);
+    }
+
+    addToCartCustom(e) {
+        e.preventDefault();
+        this.myRef.current.handleSubmit();
+    }
+
     handleModalHidden() {
         this.setState({
             isModalAddShown: false
+        });
+    }
+
+    handleModalCustomHidden() {
+        this.setState({
+            isModalCustomAddShown: false
         });
     }
 
@@ -450,10 +540,68 @@ class ProductPage extends React.Component {
         });
     }
 
+    handleAddCustomProduct() {
+        var product = {
+            productId: -1,
+            price: 0,
+            qty: 1,
+            customProductType: '',
+            selectedProduct: ''
+        };
+
+        this.setState({
+            isModalCustomAddShown: true,
+            selectedProduct: product
+        });
+    }
+
+    handleValueChange(e) {
+        var { selectedProduct } = this.state;
+        var name = e.target.name;
+        selectedProduct[name] = e.target.value;
+        this.setState({
+            selectedProduct
+        });
+    }
+
+    handleSubmitProduct() {
+        var { selectedProduct } = this.state;
+
+        var data = {
+            email: userEmail,
+            productId: -1,
+            customProductType: selectedProduct.customProductType,
+            customProductColor: selectedProduct.customProductColor,
+            price: 0,
+            qty: selectedProduct.qty,
+            isOutOfStock: 0
+        }
+
+        this.setState({
+            isSubmittingCart: true
+        });
+
+        this.postCart(data);
+    }
+
     render() {
         return (
             <div>
-                <ProductSearchForm onSearch={this.handleSearch.bind(this)} />
+                {
+                    this.state.alert ?
+                        (
+                            <Toast isShown={this.state.alert.isShown}
+                                mode={this.state.alert.mode}
+                                title={this.state.alert.title}
+                                message={this.state.alert.message}
+                                onHidden={this.handleAlertHidden.bind(this)}
+                            />
+                        ) :
+                        (
+                            <div />
+                        )
+                }
+                <ProductSearchForm onSearch={this.handleSearch.bind(this)} onAddCustomProduct={this.handleAddCustomProduct.bind(this)} />
                 <ProductList isLoading={this.state.isLoadingProduct} dataSource={this.state.productList} onAddClick={this.handleOnAddClick.bind(this)} />
                 <ModalPopUp isShown={this.state.isModalAddShown} onHidden={this.handleModalHidden.bind(this)}>
                     <div class="modal-dialog" role="document">
@@ -468,21 +616,38 @@ class ProductPage extends React.Component {
                                 {
                                     this.state.selectedProduct ?
                                         (
-                                            <div class="row">
-                                                <div class="col-7">
-                                                    <div class="title">{this.state.selectedProduct.categoryName}</div>
-                                                    <div>{this.state.selectedProduct.brand} {this.state.selectedProduct.typeName}</div>
-                                                    <span class="badge text-capitalize me-1" style={{ backgroundColor: this.state.selectedProduct.colorCode }}>{this.state.selectedProduct.colorName}</span>
-                                                    <span>IDR. {this.state.selectedProduct.price}</span>
+                                            <div>
+                                                <div class="row">
+                                                    <div class="col-7">
+                                                        <div class="title">{this.state.selectedProduct.categoryName}</div>
+                                                        <div>{this.state.selectedProduct.brand} {this.state.selectedProduct.typeName}</div>
+                                                        <span class="badge text-capitalize me-1" style={{ backgroundColor: this.state.selectedProduct.colorCode }}>{this.state.selectedProduct.colorName}</span>
+                                                        <span>IDR. {App.Utils.formatCurrency(this.state.selectedProduct.price)}</span>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        <button class="btn btn-primary px-1 btn-sm" onClick={this.deductAmount.bind(this)}>
+                                                            <i class="material-icons md-remove"></i>
+                                                        </button>
+                                                        <input name="qty" type="number" class="form-control d-inline form-control-sm mx-1 input-Qty" value={this.state.selectedProduct.qty} onChange={this.handleValueChange.bind(this)} />
+                                                        <button class="btn btn-primary px-1 btn-sm" onClick={this.addAmount.bind(this)}>
+                                                            <i class="material-icons md-add"></i>
+                                                        </button>
+                                                    </div>
+                                                    {
+                                                        (this.state.selectedProduct.stock > 0) ? (
+                                                            <div></div>
+                                                        ) : (
+                                                            <div class="text-danger small">This product maybe run out of stock</div>
+                                                        )
+                                                    }
                                                 </div>
-                                                <div class="col-5">
-                                                    <button class="btn btn-primary px-1 btn-sm" onClick={this.deductAmount.bind(this)}>
-                                                        <i class="material-icons md-remove"></i>
-                                                    </button>
-                                                    <input name="qty" type="number" class="form-control d-inline form-control-sm mx-1 input-Qty" value={this.state.selectedProduct.qty} />
-                                                    <button class="btn btn-primary px-1 btn-sm" onClick={this.addAmount.bind(this)}>
-                                                        <i class="material-icons md-add"></i>
-                                                    </button>
+                                                <div class="row pt-2">
+                                                    <div class="col-7 fw-bold">
+                                                        Subtotal
+                                                    </div>
+                                                    <div class="col-5 fw-bold text-end">
+                                                        IDR {App.Utils.formatCurrency(this.state.selectedProduct.price * this.state.selectedProduct.qty)}
+                                                    </div>
                                                 </div>
                                             </div>
                                         ) :
@@ -500,16 +665,60 @@ class ProductPage extends React.Component {
                         </Progress>
                     </div>
                 </ModalPopUp>
-                {
-                    this.state.alert ?
-                        (
-                            <Alert isShown={this.state.alert.isShown} mode={this.state.alert.mode} title={this.state.alert.title} message={this.state.alert.message} onHidden={this.handleAlertHidden.bind(this)} />
-                        ) :
-                        (
-                            <div />
-                        )
-                }
-            </div>
+                <ModalPopUp isShown={this.state.isModalCustomAddShown} onHidden={this.handleModalCustomHidden.bind(this)}>
+                    <div class="modal-dialog" role="document">
+                        <Progress class="modal-content" isShown={this.state.isSubmittingCart}>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Product</h5>
+                                <button type="button" class="close btn btn-secondary btn-sm" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                {
+                                    (this.state.selectedProduct) ? (
+                                        <FormValidate ref={this.myRef} novalidate="novalidate" rules={this.state.rules} submitHandler={this.handleSubmitProduct.bind(this)} >
+                                            <div class="row mb-3">
+                                                <div>
+                                                    <label class="form-label">Product Name</label>
+                                                    <input class="form-control form-control-sm" type="text" name="customProductType" placeholder="Clear View Case Iphone 6, etc" value={this.state.selectedProduct.customProductType} onChange={this.handleValueChange.bind(this)} />
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-7">
+                                                    <label class="form-label">Product Color</label>
+                                                    <input class="form-control form-control-sm" type="text" name="customProductColor" placeholder="Black, Blue, etc." value={this.state.selectedProduct.customProductColor} onChange={this.handleValueChange.bind(this)} />
+                                                </div>
+                                                <div class="col-5">
+                                                    <div class="form-label">Qty</div>
+                                                    <button class="btn btn-primary px-1 btn-sm" onClick={this.deductAmount.bind(this)}>
+                                                        <i class="material-icons md-remove"></i>
+                                                    </button>
+                                                    <input name="qty" type="number" class="form-control d-inline form-control-sm mx-1 input-Qty" value={this.state.selectedProduct.qty} onChange={this.handleValueChange.bind(this)} />
+                                                    <button class="btn btn-primary px-1 btn-sm" onClick={this.addAmount.bind(this)}>
+                                                        <i class="material-icons md-add"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="alert alert-info">
+                                                    For the custom product, price will be calculated after order by the admin
+                                                </div>
+                                            </div>
+                                        </FormValidate>
+                                    ) : (
+                                        <div></div>
+                                    )
+                                }
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onClick={this.addToCartCustom.bind(this)}>Add to Cart</button>
+                            </div>
+                        </Progress>
+                    </div>
+                </ModalPopUp>
+            </div >
         );
     };
 }
