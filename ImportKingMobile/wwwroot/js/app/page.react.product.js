@@ -425,7 +425,9 @@ class ProductPage extends React.Component {
         });
     }
 
-    deductAmount() {
+    deductAmount(e) {
+        e.preventDefault();
+
         var selectedProduct = this.state.selectedProduct;
         var qty = selectedProduct.qty;
 
@@ -439,7 +441,9 @@ class ProductPage extends React.Component {
         });
     }
 
-    addAmount() {
+    addAmount(e) {
+        e.preventDefault();
+
         var selectedProduct = this.state.selectedProduct;
         var qty = selectedProduct.qty;
 

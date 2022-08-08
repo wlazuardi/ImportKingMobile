@@ -11,9 +11,11 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -31,6 +33,12 @@ namespace ImportKingMobile
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+            | SecurityProtocolType.Tls11
+            | SecurityProtocolType.Tls12;
+            IdentityModelEventSource.ShowPII = true;
+
             /*
             services.AddMvc();
 
@@ -64,7 +72,7 @@ namespace ImportKingMobile
             });
             */
 
-            
+
 
             services.AddAuthentication(options =>
             {

@@ -54,7 +54,7 @@
 
     </header> <!-- app-header.// -->
 
-    <main class="app-content">
+    <main id="main-content" class="app-content">
         @RenderBody()
     </main> <!-- app-content.// -->
 
@@ -135,6 +135,7 @@
                 {
                     <a href="~/StockViewer"> <i class="icon fa-solid fa-magnifying-glass"></i> Check Stock </a>
                     <a href="~/StockOut"> <i class="icon fa-solid fa-boxes-stacked"></i> Stock Out </a>
+                    <a href="~/Cart/Pending"> <i class="icon fa-solid fa-cart-shopping"></i><span class="text">Pending Cart</span> </a>
                 }
                 else
                 {
@@ -182,6 +183,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pulltorefreshjs/0.1.22/index.umd.min.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" />
 
     <!-- React -->
@@ -196,5 +199,14 @@
     <script src="~/js/app/react.core.components.js" asp-append-version="true" type="text/babel"></script>
 
     @RenderSection("Scripts", required: false)
+
+    <script type="text/javascript">
+        const ptr = PullToRefresh.init({
+            mainElement: '#main-content',
+            onRefresh() {
+                window.location.reload();
+            }
+        });
+    </script>
 </body>
 </html>

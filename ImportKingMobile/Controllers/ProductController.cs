@@ -20,6 +20,8 @@ namespace ImportKingMobile.Controllers
 
         public IActionResult Index()
         {
+            return View();
+
             if (appSettings.DemoUsers.Count > 0 && appSettings.DemoUsers.Contains(ViewBag.User.Email))
             {
                 return View();

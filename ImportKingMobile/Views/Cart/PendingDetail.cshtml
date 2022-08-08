@@ -1,4 +1,4 @@
-﻿@{ ViewData["Title"] = "Pending Cart"; }
+﻿@{ ViewData["Title"] = "Pending Cart Detail"; }
 
 <div id="root">
 
@@ -9,7 +9,8 @@
     <script type="text/javascript">
         var userMail = '@ViewBag.User.Email';
         var userType = '@ViewBag.User.UserType';
+        var cartMail = '@ViewBag.CartEmail';
     </script>
     <script src="~/js/app/plugin.modal.js" asp-append-version="true" type="text/javascript"></script>
-    <script src="~/js/app/page.order.js" asp-append-version="true" type="text/babel"></script>
+    <script src="~/js/app/page.react.pending.cart-detail.js" asp-append-version="true" type="text/babel"></script>
 } 

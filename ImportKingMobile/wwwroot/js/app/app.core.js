@@ -28,6 +28,13 @@
         return brightness > 155;
     };
 
+    Utils.prototype.formatToLocalDate = function (date) {
+        var utcDate = new Date(date);
+        var offset = new Date().getTimezoneOffset();
+        var localDate = new Date(utcDate.getTime() - (offset * 60000));
+        return moment(localDate).format('ddd, DD-MM-YYYY @ HH:mm:ss');
+    };
+
     App.Utils = new Utils();
 
     var Confirm = function () {

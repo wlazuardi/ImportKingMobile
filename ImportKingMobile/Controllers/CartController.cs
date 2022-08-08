@@ -22,8 +22,36 @@ namespace ImportKingMobile.Controllers
 
         public IActionResult Index()
         {
+            return View();
+
             if (appSettings.DemoUsers.Count > 0 && appSettings.DemoUsers.Contains(ViewBag.User.Email))
             {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("ComingSoon", "Generic");
+            }
+        }
+
+        public IActionResult Pending()
+        {
+            if (ViewBag.User.UserType == 3)
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("ComingSoon", "Generic");
+            }
+        }
+
+        [Route("Cart/Pending/{email}/Detail")]
+        public IActionResult PendingDetail(string email)
+        {
+            if (ViewBag.User.UserType == 3)
+            {
+                ViewBag.CartEmail = email;
                 return View();
             }
             else
