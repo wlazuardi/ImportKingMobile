@@ -211,10 +211,10 @@
 
         const { categoryId, typeId, colorId } = this.state;
 
-        var url = 'https://importking.mooo.com/api/Catalogs?categoryId=' + categoryId + '&typeId=' + typeId + '&length=100&start=0';
+        var url = 'https://importking.mooo.com/api/Catalogs?categoryId=' + categoryId + '&typeId=' + typeId + '&length=100&start=0&userMail=' + userEmail;
 
         if (colorId != -1) {
-            url = 'https://importking.mooo.com/api/Catalogs?categoryId=' + categoryId + '&typeId=' + typeId + '&colorId=' + colorId + '&length=100&start=0';
+            url = 'https://importking.mooo.com/api/Catalogs?categoryId=' + categoryId + '&typeId=' + typeId + '&colorId=' + colorId + '&length=100&start=0&userMail=' + userEmail;
         }
 
         this.setState({
