@@ -204,7 +204,7 @@
                                             }
                                         </div>
                                         {
-                                            cart.createdDate == null ? (
+                                            cart.updatedDate == null ? (
                                                 <div class="small">{App.Utils.formatToLocalDate(cart.createdDate)}</div>
                                             ) : (
                                                 <div class="small">{App.Utils.formatToLocalDate(cart.updatedDate)}</div>

@@ -122,6 +122,121 @@ class OrderProcessedList extends React.Component {
     }
 }
 
+class OrderUnprocessedList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            order: props.order,
+            stockOutDetails: props.stockOutDetails
+        }
+    }
+
+    componentWillReceiveProps(props) {
+        this.setState({
+            order: props.order,
+            orderDetails: props.orderDetails,
+            stockOutDetails: props.stockOutDetails
+        });
+    };
+
+    render() {
+        const { stockOutDetails, orderDetails } = this.state;
+        let isLoading = stockOutDetails.isLoading,
+            error = stockOutDetails.error,
+            items = [],
+            originalItems = [],
+            total = 0;
+
+        if (stockOutDetails && stockOutDetails.items && orderDetails && orderDetails.items) {
+            items = stockOutDetails.items;
+            originalItems = orderDetails.items;
+
+            var unprocessedItems = [], temp = [];
+
+            temp = originalItems.filter(x =>
+                x.productId != -1 &&
+                items.map(y => y.productId).indexOf(x.productId) == -1
+            );
+
+            unprocessedItems = unprocessedItems.concat(temp);
+
+            temp = originalItems.filter(x =>
+                x.productId == -1 &&
+                items.map(y => y.customProductType.toLowerCase() + y.customProductColor.toLowerCase())
+                    .indexOf(x.customProductType.toLowerCase() + x.customProductColor.toLowerCase()) == -1
+            );
+
+            unprocessedItems = unprocessedItems.concat(temp);
+
+            items = unprocessedItems;
+        }
+
+        if (items && items.length > 0) {
+            items.forEach(x => total += (x.price * x.qty));
+        }
+
+        if (isLoading) {
+            return <LoadSpinner />;
+        }
+        else {
+            if (error) {
+                return <ErrorAlert message={error.message} />;
+            }
+            else if (items.length > 0) {
+                return (
+                    <div class="card border-secondary mb-3 mx-2 mt-2" >
+                        <div class="card-header p-2">
+                            <a data-bs-toggle="collapse" href="#collapseUnprocessed" role="button" aria-expanded="true" aria-controls="collapseUnprocessed">
+                                Unprocessed Order Items
+                            </a>
+                        </div>
+                        <div id="collapseUnprocessed" class="card-body p-2 collapse show">
+                            <ul class="list-menu">
+                                {
+                                    items.map(item => (
+                                        <li class="row mb-2">
+                                            <div class="title text-capitalize">
+                                                {
+                                                    (item.productId > -1) ? (item.categoryName) : 'Other'
+                                                }
+                                            </div>
+                                            <div class="col">
+                                                <div>
+                                                    {
+                                                        (item.productId > -1) ? (item.brand + ' ' + item.typeName) : (item.customProductType)
+                                                    }
+                                                </div>
+                                                <div>
+                                                    {
+                                                        (item.productId > -1) ?
+                                                            (<ColorBadge colorCode={item.colorCode} colorName={item.colorName} />) :
+                                                            (<ColorBadge colorCode="#000" colorName={item.customProductColor} />)
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="text-end">IDR. {App.Utils.formatCurrency(item.price)} x {item.qty}</div>
+                                                <div class="fw-bold text-end">IDR. {App.Utils.formatCurrency(item.price * item.qty)}</div>
+                                            </div>
+                                        </li>
+                                    ))
+                                }
+                            </ul>
+                        </div>
+                        <div class="card-footer p-2">
+                            Total Order
+                            <span class="float-end">IDR. {App.Utils.formatCurrency(total)}</span>
+                        </div>
+                    </div>
+                );
+            }
+            else {
+                return <div></div>;
+            }
+        }
+    }
+}
+
 class OrderDetailList extends React.Component {
     constructor(props) {
         super(props);
@@ -143,10 +258,12 @@ class OrderDetailList extends React.Component {
         let isLoading = orderDetails.isLoading,
             error = orderDetails.error,
             items = orderDetails.items,
-            cardClassName = "card-body p-2 collapse";
+            cardClassName = "card-body p-2 collapse",
+            ariaExpanded = false;
 
-        if (!order.stockOutId) {
+        if (!order.stockOutId && order.stockOutId != undefined) {
             cardClassName = "card-body p-2 collapse show";
+            ariaExpanded = true;
         }
 
         if (isLoading) {
@@ -160,7 +277,7 @@ class OrderDetailList extends React.Component {
                 return (
                     <div class="card border-secondary mb-3 mx-2 mt-2" >
                         <div class="card-header p-2">
-                            <a data-bs-toggle="collapse" href="#collapseOriginal" role="button" aria-expanded="true" aria-controls="collapseOriginal">
+                            <a data-bs-toggle="collapse" href="#collapseOriginal" role="button" aria-expanded={ariaExpanded} aria-controls="collapseOriginal">
                                 Original Order Items
                             </a>
                         </div>
@@ -491,6 +608,7 @@ class OrderDetailPage extends React.Component {
                 }
                 <OrderHeader order={order} />
                 <OrderProcessedList order={order} stockOutDetails={stockOutDetails} />
+                <OrderUnprocessedList order={order} stockOutDetails={stockOutDetails} orderDetails={orderDetails} />
                 <OrderDetailList order={order} orderDetails={orderDetails} />
                 {
                     (isAdmin) ? (<div></div>) : (

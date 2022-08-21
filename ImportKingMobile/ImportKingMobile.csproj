@@ -5,6 +5,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\js\app\app.core.js" />
+    <None Include="wwwroot\js\app\page.cart.js" />
+    <None Include="wwwroot\js\app\page.catalog.js" />
+    <None Include="wwwroot\js\app\page.order-detail.js" />
+    <None Include="wwwroot\js\app\page.order.js" />
+    <None Include="wwwroot\js\app\page.product.js" />
+    <None Include="wwwroot\js\app\page.profile.js" />
+    <None Include="wwwroot\js\app\page.react.address.js" />
+    <None Include="wwwroot\js\app\page.react.cart.js" />
+    <None Include="wwwroot\js\app\page.react.pending.cart-detail.js" />
+    <None Include="wwwroot\js\app\page.react.pending.cart.js" />
+    <None Include="wwwroot\js\app\page.react.product.js" />
+    <None Include="wwwroot\js\app\page.register.js" />
+    <None Include="wwwroot\js\app\page.stock-out.js" />
+    <None Include="wwwroot\js\app\page.stock-viewer.js" />
+    <None Include="wwwroot\js\app\plugin.modal.js" />
+    <None Include="wwwroot\js\app\react.address.components.js" />
+    <None Include="wwwroot\js\app\react.core.components.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
