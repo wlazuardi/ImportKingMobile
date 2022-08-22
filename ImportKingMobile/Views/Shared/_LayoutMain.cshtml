@@ -26,6 +26,10 @@
 
     <link href="~/css/app.css" rel="stylesheet" type="text/css" />
 
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
+
 </head>
 <body>
 
@@ -77,7 +81,7 @@
         }
         else
         {
-            <a id="linkStockViewer" href="~/Product" class="nav-link">                
+            <a id="linkStockViewer" href="~/Product" class="nav-link">
                 <i class="icon fa-solid fa-tag"></i><span class="text">Products</span>
             </a>
             <a id="linkCart" href="~/Cart" class="nav-link">
@@ -150,16 +154,16 @@
                     <a id="linkLogout"> <i class="icon fa-solid fa-right-from-bracket"></i> Logout </a>
                 }
                 @*<a href="index.html"> <i class="material-icons md-apps"></i> All pages </a>
-                    <a href="#"> <i class="material-icons md-local_offer"></i> New offers</a>
-                    <a href="#"> <i class="material-icons md-store"></i> Wholsesalers </a>
-                    <hr>
-                    <a href="#"> <i class="material-icons md-info"></i> About us</a>
-                    <a href="#"> <i class="material-icons md-chat"></i> Help &amp; support </a>
-                    <a href="#"> <i class="material-icons md-local_police"></i> Services </a>
-                    <hr>
-                    <a href="#"> <i class="material-icons md-account_circle"></i> Profile </a>
-                    <a href="#"> <i class="material-icons md-settings"></i> Settings</a>
-                    <a href="#"> <i class="material-icons md-local_shipping"></i> My orders</a>*@
+                <a href="#"> <i class="material-icons md-local_offer"></i> New offers</a>
+                <a href="#"> <i class="material-icons md-store"></i> Wholsesalers </a>
+                <hr>
+                <a href="#"> <i class="material-icons md-info"></i> About us</a>
+                <a href="#"> <i class="material-icons md-chat"></i> Help &amp; support </a>
+                <a href="#"> <i class="material-icons md-local_police"></i> Services </a>
+                <hr>
+                <a href="#"> <i class="material-icons md-account_circle"></i> Profile </a>
+                <a href="#"> <i class="material-icons md-settings"></i> Settings</a>
+                <a href="#"> <i class="material-icons md-local_shipping"></i> My orders</a>*@
             </nav>
         </article> <!-- offcanvas-body .// -->
     </aside> <!-- offcanvas.// -->
@@ -207,6 +211,18 @@
                 window.location.reload();
             }
         });
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            console.log("Will the service worker register?");
+            navigator.serviceWorker.register('service-worker.js')
+                .then(function(reg) {
+                    console.log("Yes, it did.");
+                }).catch(function(err) {
+                    console.log("No it didn't. This happened:", err)
+                });
+        }
     </script>
 </body>
 </html>

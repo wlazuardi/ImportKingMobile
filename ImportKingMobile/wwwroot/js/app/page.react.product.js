@@ -46,7 +46,9 @@
                         text: 'Others'
                     });
 
-                    //results = (results) ? results.filter(e => e.text && e.text.toLowerCase().includes('testing') == false) : [];
+                    if (userEmail != 'haris.tester@gmail.com' && userEmail != 'sandbox.willy.lazuardi@gmail.com') { 
+                        results = (results) ? results.filter(e => e.text && e.text.toLowerCase().includes('testing') == false) : [];
+                    }
 
                     this.setState({
                         categories: results
@@ -103,7 +105,9 @@
                         text: '- Show All -'
                     });
 
-                    //results = (results) ? results.filter(e => e.text && e.text.toLowerCase().includes('testing') == false) : [];
+                    if (userEmail != 'haris.tester@gmail.com' && userEmail != 'sandbox.willy.lazuardi@gmail.com') {
+                        results = (results) ? results.filter(e => e.text && e.text.toLowerCase().includes('testing') == false) : [];
+                    }
 
                     this.setState({
                         types: results
