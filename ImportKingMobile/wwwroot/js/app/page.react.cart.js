@@ -247,7 +247,7 @@
                                     <li class="row mb-3">
                                         <div class="col-7">
                                             <div class="title">
-                                                {(cart.productId > -1) ? cart.categoryName : 'Other'}
+                                                {(cart.productId == -1 && cart.categoryName == '') ? 'Other' : cart.categoryName}
                                                 {(cart.isChecked) ? (<i class="ms-2 fa-solid fa-square-check text-primary"/>) : (<i />)}
                                             </div>
                                             <div>{(cart.productId > -1) ? (cart.brand + ' ' + cart.typeName) : cart.customProductType}</div>

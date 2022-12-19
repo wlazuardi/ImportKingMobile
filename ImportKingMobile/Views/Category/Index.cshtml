@@ -2,24 +2,12 @@
     ViewData["Title"] = "Category";
 }
 
-<section class="px-3 pt-0 pb-2 fixed-top bg-white" style="top: 55px;">
-    <input type="text" placeholder="Search" class="bg-secondary-light border-0 form-control">
-</section>
+<div id="root">
 
-<section>
-    <ul class="px-3 list-menu pt-0" style="margin-top: 60px;" id="productList">
-    </ul>
-</section>
-
-<p class="text-center mx-3" id="spinner">
-    <span class="spinner-grow spinner-grow-sm" role="status"></span>
-    <span class="spinner-grow spinner-grow-sm" role="status"></span>
-    <span class="spinner-grow spinner-grow-sm" role="status"></span>
-</p>
-
-<br>
+</div>
 
 @section Scripts
 {
-    <script src="~/js/app/page.catalog.js" asp-append-version="true" type="text/javascript"></script>
+    <script src="~/js/app/react.core.components.js" asp-append-version="true" type="text/babel"></script>
+    <script src="~/js/app/page.react.category.js" asp-append-version="true" type="text/babel"></script>
 } 

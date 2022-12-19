@@ -32,18 +32,21 @@
                     var results = $.map(data, function (item) {
                         return {
                             id: item.categoryId,
-                            text: item.name
+                            text: item.name,
+                            price: item.price
                         };
                     });
 
                     results.unshift({
                         id: 0,
-                        text: '- Show All -'
+                        text: '- Show All -',
+                        price: 0
                     });
 
                     results.push({
                         id: -1,
-                        text: 'Others'
+                        text: 'Others',
+                        price: 0
                     });
 
                     if (userEmail != 'haris.tester@gmail.com' && userEmail != 'sandbox.willy.lazuardi@gmail.com') { 
@@ -105,6 +108,11 @@
                         text: '- Show All -'
                     });
 
+                    results.push({
+                        id: -1,
+                        text: 'Others'
+                    });
+
                     if (userEmail != 'haris.tester@gmail.com' && userEmail != 'sandbox.willy.lazuardi@gmail.com') {
                         results = (results) ? results.filter(e => e.text && e.text.toLowerCase().includes('testing') == false) : [];
                     }
@@ -123,14 +131,15 @@
     }
 
     constructColorDataSource() {
-        if (this.state.categoryId == -1 && this.state.typeId == -1) {
+        if (this.state.categoryId == -1 || this.state.typeId == -1) {
             var results = [{
                 id: -1,
                 text: 'Others'
             }];
 
             this.setState({
-                colors: results
+                colors: results,
+                colorId: -1
             });
 
             return;
@@ -160,6 +169,11 @@
                     results.unshift({
                         id: 0,
                         text: '- Show All -'
+                    });
+
+                    results.push({
+                        id: -1,
+                        text: 'Others'
                     });
 
                     //results = (results) ? results.filter(e => e.text.toLowerCase().includes('testing') == false) : [];
@@ -259,16 +273,25 @@
     }
 
     handleAddCustomProduct(e) {
+        var { categories, categoryId } = this.state;
+
+        var categories = categories.filter(x => x.id == categoryId);
+        var category;
+
+        if (categories.length > 0) {
+            category = categories[0];
+        }
+
         e.preventDefault();
         if (this.props.onAddCustomProduct)
-            this.props.onAddCustomProduct();
+            this.props.onAddCustomProduct(category);
     }
 
     render() {
         const { categories, types, colors, isLoadingProduct } = this.state;
 
         var isSearchMode = true;
-        if (this.state.categoryId == -1 && this.state.typeId == -1 && this.state.colorId == -1)
+        if (this.state.categoryId == -1 || this.state.typeId == -1 || this.state.colorId == -1)
             isSearchMode = false;
 
         return (
@@ -510,6 +533,7 @@ class ProductPage extends React.Component {
         var data = {
             email: userEmail,
             productId: selectedProduct.productId,
+            categoryId: selectedProduct.categoryId,
             price: selectedProduct.price,
             qty: selectedProduct.qty,
             isOutOfStock: selectedProduct.stock <= 0
@@ -548,10 +572,18 @@ class ProductPage extends React.Component {
         });
     }
 
-    handleAddCustomProduct() {
+    handleAddCustomProduct(category) {
+        var categoryId = 0, price = 0;
+
+        if (category) {
+            categoryId = category.id;
+            price = category.price;
+        }
+
         var product = {
             productId: -1,
-            price: 0,
+            categoryId: categoryId,
+            price: price,
             qty: 1,
             customProductType: '',
             selectedProduct: ''
@@ -578,9 +610,10 @@ class ProductPage extends React.Component {
         var data = {
             email: userEmail,
             productId: -1,
+            categoryId: selectedProduct.categoryId,
             customProductType: selectedProduct.customProductType,
             customProductColor: selectedProduct.customProductColor,
-            price: 0,
+            price: selectedProduct.price,
             qty: selectedProduct.qty,
             isOutOfStock: 0
         }
@@ -687,32 +720,64 @@ class ProductPage extends React.Component {
                                     (this.state.selectedProduct) ? (
                                         <FormValidate ref={this.myRef} novalidate="novalidate" rules={this.state.rules} submitHandler={this.handleSubmitProduct.bind(this)} >
                                             <div class="row mb-3">
-                                                <div>
-                                                    <label class="form-label">Product Name</label>
-                                                    <input class="form-control form-control-sm" type="text" name="customProductType" placeholder="Clear View Case Iphone 6, etc" value={this.state.selectedProduct.customProductType} onChange={this.handleValueChange.bind(this)} />
-                                                </div>
+                                                {
+                                                    (this.state.categoryId == -1) ?
+                                                        (
+                                                            <div>
+                                                                <label class="form-label">Product Name</label>
+                                                                <input class="form-control form-control-sm"
+                                                                    type="text" name="customProductType"
+                                                                    placeholder="Clear View Case Iphone 6, etc"
+                                                                    value={this.state.selectedProduct.customProductType}
+                                                                    onChange={this.handleValueChange.bind(this)} />
+                                                            </div>
+                                                        ) : 
+                                                        (
+                                                            <div>
+                                                                <label class="form-label">Type</label>
+                                                                <input class="form-control form-control-sm"
+                                                                    type="text" name="customProductType"
+                                                                    placeholder="Iphone 6, Samsung S22, etc"
+                                                                    value={this.state.selectedProduct.customProductType}
+                                                                    onChange={this.handleValueChange.bind(this)} />
+                                                            </div>
+                                                        )
+                                                }                               
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-7">
                                                     <label class="form-label">Product Color</label>
-                                                    <input class="form-control form-control-sm" type="text" name="customProductColor" placeholder="Black, Blue, etc." value={this.state.selectedProduct.customProductColor} onChange={this.handleValueChange.bind(this)} />
+                                                    <input class="form-control form-control-sm" type="text" name="customProductColor" placeholder="Black, Blue, etc."
+                                                        value={this.state.selectedProduct.customProductColor}
+                                                        onChange={this.handleValueChange.bind(this)} />
                                                 </div>
                                                 <div class="col-5">
                                                     <div class="form-label">Qty</div>
                                                     <button class="btn btn-primary px-1 btn-sm" onClick={this.deductAmount.bind(this)}>
                                                         <i class="material-icons md-remove"></i>
                                                     </button>
-                                                    <input name="qty" type="number" class="form-control d-inline form-control-sm mx-1 input-Qty" value={this.state.selectedProduct.qty} onChange={this.handleValueChange.bind(this)} />
+                                                    <input name="qty" type="number" class="form-control d-inline form-control-sm mx-1 input-Qty"
+                                                        value={this.state.selectedProduct.qty}
+                                                        onChange={this.handleValueChange.bind(this)} />
                                                     <button class="btn btn-primary px-1 btn-sm" onClick={this.addAmount.bind(this)}>
                                                         <i class="material-icons md-add"></i>
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div class="row">
-                                                <div class="alert alert-info">
-                                                    For the custom product, price will be calculated after order by the admin
-                                                </div>
-                                            </div>
+                                            {
+                                                (this.state.selectedProduct.price) ? (
+                                                    <div class="row mx-1">
+                                                        Price: @IDR. {App.Utils.formatCurrency(this.state.selectedProduct.price)}
+                                                    </div>
+                                                ) :
+                                                    (
+                                                    <div class="row">
+                                                        <div class="alert alert-info">
+                                                            For the custom product, price will be calculated after order by the admin
+                                                        </div>
+                                                    </div>
+                                                )
+                                            }
                                         </FormValidate>
                                     ) : (
                                         <div></div>

@@ -1501,7 +1501,7 @@ a.box, a.card {
     }
 
 .item-category-grid {
-    height: 96px;
+    height: 112px;
     text-align: center;
     background-color: #e9f3e7;
     color: initial;
@@ -1509,18 +1509,30 @@ a.box, a.card {
     margin-top: 0.25rem;
     margin-bottom: 0.25rem;
     display: block;
-    border-radius: 0.6rem
+    border-radius: 0.6rem;
+    text-transform: capitalize;
+    position: relative;
 }
 
     .item-category-grid .icon, .item-category-grid img {
-        width: 32px;
-        height: 32px
+        width: -webkit-fill-available;        
+    }
+
+    .item-category-grid img {
+        position: absolute;
+        width: 50px;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        overflow: hidden;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
     }
 
     .item-category-grid .icon-wrap {
         margin-top: 15px;
         margin-bottom: 7px;
-        display: block
+        display: block;
     }
 
     .item-category-grid i {
@@ -1532,7 +1544,8 @@ a.box, a.card {
     .item-category-grid .text {
         color: #212529;
         display: block;
-        line-height: 1.2
+        line-height: 1.2;
+        text-transform: capitalize;
     }
 
     .item-category-grid:focus {
