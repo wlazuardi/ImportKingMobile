@@ -1509,13 +1509,14 @@ a.box, a.card {
     margin-top: 0.25rem;
     margin-bottom: 0.25rem;
     display: block;
-    border-radius: 0.6rem;
     text-transform: capitalize;
     position: relative;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
 }
 
     .item-category-grid .icon, .item-category-grid img {
-        width: -webkit-fill-available;        
+        width: -webkit-fill-available;
     }
 
     .item-category-grid img {
@@ -1530,13 +1531,13 @@ a.box, a.card {
     }
 
     .item-category-grid .icon-wrap {
-        margin-top: 15px;
         margin-bottom: 7px;
         display: block;
+        font-size: 62px;
     }
 
     .item-category-grid i {
-        font-size: 28px;
+        font-size: 32px !important;
         line-height: 32px;
         color: #519120
     }

@@ -1,4 +1,4 @@
-﻿.modal-dialog-bottom {
+.modal-dialog-bottom {
     margin: 0.5rem;
     pointer-events: none;
     display: block;
@@ -101,4 +101,18 @@ span.select2-selection__arrow {
 
 .modal {
     overflow-y: auto;
+}
+
+.custom-card-text {
+    line-height: 1;
+    margin: 0px;
+    padding: 0px 10px;
+    text-transform: capitalize;
+}
+
+.custom-card {
+    box-shadow: 0px 0px 10px 2px #cccccc;
+    border-radius: 5px;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
 }

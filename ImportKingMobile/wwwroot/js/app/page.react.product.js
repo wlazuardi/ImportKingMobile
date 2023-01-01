@@ -43,11 +43,11 @@
                         price: 0
                     });
 
-                    results.push({
-                        id: -1,
-                        text: 'Others',
-                        price: 0
-                    });
+                    //results.push({
+                    //    id: -1,
+                    //    text: 'Others',
+                    //    price: 0
+                    //});
 
                     if (userEmail != 'haris.tester@gmail.com' && userEmail != 'sandbox.willy.lazuardi@gmail.com') { 
                         results = (results) ? results.filter(e => e.text && e.text.toLowerCase().includes('testing') == false) : [];

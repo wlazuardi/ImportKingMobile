@@ -55,20 +55,31 @@
         var url = 'url("https://importking.mooo.com/Uploads/' + fileName + '")';
         if (fileName) return (
             <li class="col-4">
-                <a href={'/StockViewer?categoryId=' + category.categoryId} class="item-category-grid"
-                    style={{ background: url, backgroundSize: 'cover' }}>
-                    <small class="text text-bolder text-white" style={{ marginTop: '50px', background: '#00000054' }}>{category.name}</small>
-                </a>
-            </li >
+                <div class="custom-card">
+                    <a href={'/StockViewer?categoryId=' + category.categoryId} class="item-category-grid"
+                        style={{ background: url, backgroundSize: 'cover' }}></a>
+                    <div class="custom-card-text small">
+                        {category.name}
+                    </div>
+                    <div class="custom-card-text small fw-bold">IDR {App.Utils.formatCurrency(category.price)}</div>
+                    <div class="custom-card-text small">Terjual: {category.soldCount}</div>
+                </div>
+            </li>
         );
         else return (
             <li class="col-4">
-                <a href={'/StockViewer?categoryId=' + category.categoryId} class="item-category-grid">
-                    <span class="icon-wrap">
-                        <i class="icon material-icons md-stay_primary_portrait"></i>
-                    </span>
-                    <small class="text">{category.name}</small>
-                </a>
+                <div class="custom-card">
+                    <a href={'/StockViewer?categoryId=' + category.categoryId} class="item-category-grid">
+                        <span class="icon-wrap">
+                            <i class="icon material-icons md-stay_primary_portrait"></i>
+                        </span>
+                    </a>
+                    <div class="custom-card-text small">
+                        {category.name}
+                    </div>
+                    <div class="custom-card-text small fw-bold">IDR {App.Utils.formatCurrency(category.price)}</div>
+                    <div class="custom-card-text small">Terjual: {category.soldCount}</div>
+                </div>
             </li>
         );
     }
