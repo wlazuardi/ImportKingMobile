@@ -14,6 +14,12 @@ function StatusBadge(props) {
         case "New":
             className += "bg-info";
             break;
+        case "Waiting Payment":
+            className += "bg-danger";
+            break;
+        case "Payment Completed":
+            className += "bg-success";
+            break;
         case "In Process":
             className += "bg-warning";
             break;
@@ -41,7 +47,7 @@ class OrderPage extends React.Component {
             isLoaded: false,
             items: [],
             filteredItems: [],
-            statuses: ['All', 'New', 'In Process', 'In Delivery', 'Completed', 'Cancelled'],
+            statuses: ['All', 'New', 'Waiting Payment', 'Payment Completed', 'In Process', 'In Delivery', 'Completed', 'Cancelled'],
             filteredStatus: 'All',            
             filteredInvoice: ''
         };

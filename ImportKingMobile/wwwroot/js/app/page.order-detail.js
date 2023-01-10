@@ -15,6 +15,12 @@ function StatusBadge(props) {
         case "New":
             className += "bg-info";
             break;
+        case "Waiting Payment":
+            className += "bg-danger";
+            break;
+        case "Payment Completed":
+            className += "bg-success";
+            break;
         case "In Process":
             className += "bg-warning";
             break;
@@ -587,6 +593,54 @@ class OrderDetailPage extends React.Component {
         });
     };
 
+    handlePayment() {
+        var { order } = this.state;
+        var that = this;
+        window.snap.pay(order.data.paymentToken, {
+            onSuccess: function (result) {
+                /* You may add your own implementation here */
+                that.setState({
+                    alert: {
+                        isShown: true,
+                        mode: 'success',
+                        title: 'Success',
+                        message: 'Payment succeed. Refreshing the page in 3 seconds.'
+                    }
+                });
+
+                setTimeout(function () {
+                    window.location.reload();
+                }, 3000);
+            },
+            onError: function (result) {
+                /* You may add your own implementation here */
+                that.setState({
+                    alert: {
+                        isShown: true,
+                        mode: 'danger',
+                        title: 'Payment Failed',
+                        message: 'Payment failed, please try again.'
+                    }
+                });
+
+                setTimeout(function () {
+                    window.location.reload();
+                }, 3000);
+            },
+            onClose: function () {
+                /* You may add your own implementation here */
+                that.setState({
+                    alert: {
+                        isShown: true,
+                        mode: 'warning',
+                        title: 'Warning',
+                        message: 'Please complete the payment to proceed the request'
+                    }
+                });
+            }
+        });
+    }
+
     render() {
         const { order, orderDetails, stockOutDetails } = this.state;
         let isAdmin = userType == 3;
@@ -612,8 +666,19 @@ class OrderDetailPage extends React.Component {
                 <OrderDetailList order={order} orderDetails={orderDetails} />
                 {
                     (isAdmin) ? (<div></div>) : (
-                        <div class="d-grid gap-2 px-2 mb-2">
-                            <button class="btn btn-primary" type="button" onClick={this.handleReorder.bind(this)}>Reorder Product</button>
+                        <div>
+                            {
+                                (userType == 0 && order && order.data && order.data.status == 'Waiting Payment') ?
+                                (
+                                    <div class="d-grid gap-2 px-2 mb-2">
+                                        <div class="alert alert-info">Please complete payment to process the order</div>
+                                        <button class="btn btn-primary" type="button" onClick={this.handlePayment.bind(this)}>Complete Payment</button>
+                                    </div>
+                                ) : (<div></div>)
+                            }
+                            <div class="d-grid gap-2 px-2 mb-2">
+                                <button class="btn btn-outline-primary" type="button" onClick={this.handleReorder.bind(this)}>Reorder Product</button>
+                            </div>
                         </div>
                     )
                 }
