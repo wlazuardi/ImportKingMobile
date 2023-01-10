@@ -248,7 +248,7 @@
                                         <div class="col-7">
                                             <div class="title">
                                                 {(cart.productId == -1 && cart.categoryName == '') ? 'Other' : cart.categoryName}
-                                                {(cart.isChecked) ? (<i class="ms-2 fa-solid fa-square-check text-primary"/>) : (<i />)}
+                                                {(cart.isChecked) ? (<i class="ms-2 fa-solid fa-square-check text-primary" />) : (<i />)}
                                             </div>
                                             <div>{(cart.productId > -1) ? (cart.brand + ' ' + cart.typeName) : cart.customProductType}</div>
                                             {
@@ -257,7 +257,7 @@
                                                 ) : (
                                                     <span class={cart.colorCodeClass} style={{ backgroundColor: '#000' }}>{cart.customProductColor}</span>
                                                 )
-                                            }                                            
+                                            }
                                             <span>IDR. {App.Utils.formatCurrency(cart.price)}</span>
                                             <div class="small fw-bold input-subTotal">IDR. {App.Utils.formatCurrency(cart.subTotal)}</div>
                                         </div>
@@ -351,7 +351,8 @@ class CartPage extends React.Component {
                 }
             },
             orderData: {
-            }
+            },
+            isLoadingSubmit: false
         };
 
         this.myRef = React.createRef();
@@ -467,6 +468,10 @@ class CartPage extends React.Component {
             comments: orderData.comments
         }
 
+        this.setState({
+            isShownProgress: true
+        });
+
         fetch('https://importking.mooo.com/api/Orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -483,17 +488,101 @@ class CartPage extends React.Component {
                 }
             })
             .then(result => {
-                this.setState({
-                    alert: {
-                        isShown: true,
-                        mode: 'success',
-                        title: 'Success',
-                        message: 'Order submitted successfully'
-                    },
-                    isShownOrderForm: false
-                });
 
-                this.cartListRef.current.loadCart();
+                if (userType == 0) {
+                    fetch('https://importking.mooo.com/api/Payments/' + result + '/Token', {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
+                    })
+                    .then(resToken => {
+                        if (resToken.status == 200) {
+                            return resToken.json();
+                        }
+                        else {
+                            throw {
+                                message: resToken.statusText
+                            }
+                        }
+                    })
+                        .then(resToken => {
+                        this.setState({
+                            alert: {
+                                isShown: true,
+                                mode: 'success',
+                                title: 'Success',
+                                message: 'Order submitted, please complete the payment'
+                            },
+                            isShownOrderForm: false,
+                            isShownProgress: false
+                        });
+
+                        this.cartListRef.current.loadCart();
+                        var that = this;
+                        setTimeout(function () {
+                            window.snap.pay(resToken.paymentToken, {
+                                onSuccess: function (res) {
+                                    /* You may add your own implementation here */
+                                    that.setState({
+                                        alert: {
+                                            isShown: true,
+                                            mode: 'success',
+                                            title: 'Success',
+                                            message: 'Payment succeed. Refreshing the page in 3 seconds.'
+                                        }
+                                    });
+
+                                    setTimeout(function () {
+                                        window.location.href = '/Order/' + result + '/Detail';
+                                    }, 3000);
+                                },
+                                onError: function (res) {
+                                    /* You may add your own implementation here */
+                                    that.setState({
+                                        alert: {
+                                            isShown: true,
+                                            mode: 'danger',
+                                            title: 'Payment Failed',
+                                            message: 'Payment failed, please try again.'
+                                        }
+                                    });
+
+                                    setTimeout(function () {
+                                        window.location.href = '/Order/' + result + '/Detail';
+                                    }, 3000);
+                                },
+                                onClose: function () {
+                                    /* You may add your own implementation here */
+                                    that.setState({
+                                        alert: {
+                                            isShown: true,
+                                            mode: 'warning',
+                                            title: 'Warning',
+                                            message: 'Please complete the payment to proceed the request'
+                                        }
+                                    });
+
+                                    setTimeout(function () {
+                                        window.location.href = '/Order/' + result + '/Detail';
+                                    }, 3000);
+                                }
+                            });
+                        }, 1000);
+                    });
+                }
+                else {
+                    this.setState({
+                        alert: {
+                            isShown: true,
+                            mode: 'success',
+                            title: 'Success',
+                            message: 'Order submitted successfully'
+                        },
+                        isShownOrderForm: false,
+                        isShownProgress: false
+                    });
+
+                    this.cartListRef.current.loadCart();
+                }
             }, error => {
                 this.setState({
                     alert: {
@@ -501,7 +590,8 @@ class CartPage extends React.Component {
                         mode: 'danger',
                         title: 'Error',
                         message: error.message
-                    }
+                    },
+                    isShownProgress: false
                 });
             });
     }
