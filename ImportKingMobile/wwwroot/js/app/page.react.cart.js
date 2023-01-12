@@ -527,13 +527,13 @@ class CartPage extends React.Component {
                                             isShown: true,
                                             mode: 'success',
                                             title: 'Success',
-                                            message: 'Payment succeed. Refreshing the page in 3 seconds.'
+                                            message: 'Payment succeed. Refreshing the page in 2 seconds.'
                                         }
                                     });
 
                                     setTimeout(function () {
                                         window.location.href = '/Order/' + result + '/Detail';
-                                    }, 3000);
+                                    }, 2000);
                                 },
                                 onError: function (res) {
                                     /* You may add your own implementation here */
@@ -542,13 +542,28 @@ class CartPage extends React.Component {
                                             isShown: true,
                                             mode: 'danger',
                                             title: 'Payment Failed',
-                                            message: 'Payment failed, please try again.'
+                                            message: 'Please try again.'
                                         }
                                     });
 
                                     setTimeout(function () {
                                         window.location.href = '/Order/' + result + '/Detail';
-                                    }, 3000);
+                                    }, 2000);
+                                },
+                                onPending: function (result) {
+                                    /* You may add your own implementation here */
+                                    that.setState({
+                                        alert: {
+                                            isShown: true,
+                                            mode: 'info',
+                                            title: 'Payment Pending',
+                                            message: 'Please complete payment to process order.'
+                                        }
+                                    });
+
+                                    setTimeout(function () {
+                                        window.location.href = '/Order/' + result + '/Detail';
+                                    }, 2000);
                                 },
                                 onClose: function () {
                                     /* You may add your own implementation here */
@@ -557,13 +572,13 @@ class CartPage extends React.Component {
                                             isShown: true,
                                             mode: 'warning',
                                             title: 'Warning',
-                                            message: 'Please complete the payment to proceed the request'
+                                            message: 'Please complete the payment to proceed the request.'
                                         }
                                     });
 
                                     setTimeout(function () {
                                         window.location.href = '/Order/' + result + '/Detail';
-                                    }, 3000);
+                                    }, 2000);
                                 }
                             });
                         }, 1000);

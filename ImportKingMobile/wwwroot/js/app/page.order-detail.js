@@ -603,14 +603,14 @@ class OrderDetailPage extends React.Component {
                     alert: {
                         isShown: true,
                         mode: 'success',
-                        title: 'Success',
-                        message: 'Payment succeed. Refreshing the page in 3 seconds.'
+                        title: 'Payment Succeed',
+                        message: 'Refreshing the page in 2 seconds.'
                     }
                 });
 
                 setTimeout(function () {
                     window.location.reload();
-                }, 3000);
+                }, 2000);
             },
             onError: function (result) {
                 /* You may add your own implementation here */
@@ -619,13 +619,24 @@ class OrderDetailPage extends React.Component {
                         isShown: true,
                         mode: 'danger',
                         title: 'Payment Failed',
-                        message: 'Payment failed, please try again.'
+                        message: 'Please try again.'
                     }
                 });
 
                 setTimeout(function () {
                     window.location.reload();
-                }, 3000);
+                }, 2000);
+            },
+            onPending: function (result) {
+                /* You may add your own implementation here */
+                that.setState({
+                    alert: {
+                        isShown: true,
+                        mode: 'info',
+                        title: 'Payment Pending',
+                        message: 'Please complete payment to process order.'
+                    }
+                });
             },
             onClose: function () {
                 /* You may add your own implementation here */
@@ -634,7 +645,7 @@ class OrderDetailPage extends React.Component {
                         isShown: true,
                         mode: 'warning',
                         title: 'Warning',
-                        message: 'Please complete the payment to proceed the request'
+                        message: 'Please complete the payment to proceed the request.'
                     }
                 });
             }
