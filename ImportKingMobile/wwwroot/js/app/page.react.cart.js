@@ -520,6 +520,7 @@ class CartPage extends React.Component {
                         var that = this;
                         setTimeout(function () {
                             window.snap.pay(resToken.paymentToken, {
+                                gopayMode: 'deeplink',
                                 onSuccess: function (res) {
                                     /* You may add your own implementation here */
                                     that.setState({

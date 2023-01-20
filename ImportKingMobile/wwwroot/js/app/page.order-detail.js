@@ -597,6 +597,7 @@ class OrderDetailPage extends React.Component {
         var { order } = this.state;
         var that = this;
         window.snap.pay(order.data.paymentToken, {
+            gopayMode: 'deeplink',
             onSuccess: function (result) {
                 /* You may add your own implementation here */
                 that.setState({
