@@ -1,4 +1,5 @@
-﻿class CartList extends React.Component {
+﻿// Sample comments
+class CartList extends React.Component {
     constructor(props) {
         super(props);
 
