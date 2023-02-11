@@ -31,5 +31,12 @@ namespace ImportKingMobile.Controllers
                 return RedirectToAction("ComingSoon", "Generic");
             }
         }
+
+        [Route("Product/{categoryId}/Detail")]
+        public IActionResult Detail(int categoryId)
+        {
+            ViewBag.CategoryId = categoryId;
+            return View();
+        }
     }
 }
