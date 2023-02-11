@@ -56,7 +56,7 @@
         if (fileName) return (
             <li class="col-4">
                 <div class="custom-card">
-                    <a href={'/StockViewer?categoryId=' + category.categoryId} class="item-category-grid"
+                    <a href={'/Product/' + category.categoryId + '/Detail'} class="item-category-grid"
                         style={{ background: url, backgroundSize: 'cover' }}></a>
                     <div class="custom-card-text small">
                         {category.name}
@@ -69,7 +69,7 @@
         else return (
             <li class="col-4">
                 <div class="custom-card">
-                    <a href={'/StockViewer?categoryId=' + category.categoryId} class="item-category-grid">
+                    <a href={'/Product/' + category.categoryId + '/Detail'} class="item-category-grid">
                         <span class="icon-wrap">
                             <i class="icon material-icons md-stay_primary_portrait"></i>
                         </span>
