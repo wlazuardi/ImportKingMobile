@@ -596,61 +596,80 @@ class OrderDetailPage extends React.Component {
     handlePayment() {
         var { order } = this.state;
         var that = this;
-        window.snap.pay(order.data.paymentToken, {
-            gopayMode: 'deeplink',
-            onSuccess: function (result) {
-                /* You may add your own implementation here */
-                that.setState({
-                    alert: {
-                        isShown: true,
-                        mode: 'success',
-                        title: 'Payment Succeed',
-                        message: 'Refreshing the page in 2 seconds.'
-                    }
-                });
 
-                setTimeout(function () {
-                    window.location.reload();
-                }, 2000);
-            },
-            onError: function (result) {
-                /* You may add your own implementation here */
-                that.setState({
-                    alert: {
-                        isShown: true,
-                        mode: 'danger',
-                        title: 'Payment Failed',
-                        message: 'Please try again.'
+        if (userType == 0) {
+            fetch('https://importking.mooo.com/api/Payments/' + order.data.orderId + '/Token', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            })
+                .then(resToken => {
+                    if (resToken.status == 200) {
+                        return resToken.json();
                     }
-                });
+                    else {
+                        throw {
+                            message: resToken.statusText
+                        }
+                    }
+                })
+                .then(resToken => {
+                    window.snap.pay(resToken.paymentToken, {
+                        gopayMode: 'deeplink',
+                        onSuccess: function (result) {
+                            /* You may add your own implementation here */
+                            that.setState({
+                                alert: {
+                                    isShown: true,
+                                    mode: 'success',
+                                    title: 'Payment Succeed',
+                                    message: 'Refreshing the page in 2 seconds.'
+                                }
+                            });
 
-                setTimeout(function () {
-                    window.location.reload();
-                }, 2000);
-            },
-            onPending: function (result) {
-                /* You may add your own implementation here */
-                that.setState({
-                    alert: {
-                        isShown: true,
-                        mode: 'info',
-                        title: 'Payment Pending',
-                        message: 'Please complete payment to process order.'
-                    }
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 2000);
+                        },
+                        onError: function (result) {
+                            /* You may add your own implementation here */
+                            that.setState({
+                                alert: {
+                                    isShown: true,
+                                    mode: 'danger',
+                                    title: 'Payment Failed',
+                                    message: 'Please try again.'
+                                }
+                            });
+
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 2000);
+                        },
+                        onPending: function (result) {
+                            /* You may add your own implementation here */
+                            that.setState({
+                                alert: {
+                                    isShown: true,
+                                    mode: 'info',
+                                    title: 'Payment Pending',
+                                    message: 'Please complete payment to process order.'
+                                }
+                            });
+                        },
+                        onClose: function () {
+                            /* You may add your own implementation here */
+                            that.setState({
+                                alert: {
+                                    isShown: true,
+                                    mode: 'warning',
+                                    title: 'Warning',
+                                    message: 'Please complete the payment to proceed the request.'
+                                }
+                            });
+                        }
+                    });
                 });
-            },
-            onClose: function () {
-                /* You may add your own implementation here */
-                that.setState({
-                    alert: {
-                        isShown: true,
-                        mode: 'warning',
-                        title: 'Warning',
-                        message: 'Please complete the payment to proceed the request.'
-                    }
-                });
-            }
-        });
+        }
     }
 
     render() {
@@ -681,12 +700,12 @@ class OrderDetailPage extends React.Component {
                         <div>
                             {
                                 (userType == 0 && order && order.data && order.data.status == 'Waiting Payment') ?
-                                (
-                                    <div class="d-grid gap-2 px-2 mb-2">
-                                        <div class="alert alert-info">Please complete payment to process the order</div>
-                                        <button class="btn btn-primary" type="button" onClick={this.handlePayment.bind(this)}>Complete Payment</button>
-                                    </div>
-                                ) : (<div></div>)
+                                    (
+                                        <div class="d-grid gap-2 px-2 mb-2">
+                                            <div class="alert alert-info">Please complete payment to process the order</div>
+                                            <button class="btn btn-primary" type="button" onClick={this.handlePayment.bind(this)}>Complete Payment</button>
+                                        </div>
+                                    ) : (<div></div>)
                             }
                             <div class="d-grid gap-2 px-2 mb-2">
                                 <button class="btn btn-outline-primary" type="button" onClick={this.handleReorder.bind(this)}>Reorder Product</button>
