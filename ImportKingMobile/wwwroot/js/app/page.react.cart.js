@@ -338,6 +338,7 @@ class CartPage extends React.Component {
 
         this.state = {
             alert: null,
+            user: null,
             cartList: [],
             isShownOrderForm: false,
             selectedAddress: null,
@@ -353,7 +354,11 @@ class CartPage extends React.Component {
             },
             orderData: {
             },
-            isLoadingSubmit: false
+            isLoadingSubmit: false,
+            isDropshipping: false,
+            dropshipType: 'manual',
+            deliveryType: 'regular',
+            deliveryLabelFile: null
         };
 
         this.myRef = React.createRef();
@@ -362,6 +367,80 @@ class CartPage extends React.Component {
         this.addressModalRef = React.createRef();
         this.addressListRef = React.createRef();
         this.modalAddressFormRef = React.createRef();
+        this.loadUser();
+    }
+
+    loadUser() {
+        fetch('https://importking.mooo.com/api/Users/GetByEmail/' + userMail)
+            .then(res => {
+                if (res.status == 200) {
+                    return res.json();
+                }
+                else {
+                    throw {
+                        message: res.statusText
+                    }
+                }
+            })
+            .then((result) => {
+                var isDropshipping = false;
+                if (result.userType == 1) {
+                    isDropshipping = true;
+                }
+                this.setState({
+                    isDropshipping: isDropshipping,
+                    user: result
+                });
+            });
+    }
+
+    handleDropshipper(e) {
+        this.setState({
+            isDropshipping: e.target.checked
+        });
+    }
+
+    handleDropshipType(e) {
+        this.setState({
+            dropshipType: e.target.value
+        });
+    }
+
+    handleDeliveryType(e) {
+        this.setState({
+            deliveryType: e.target.value
+        });
+    }
+
+    handleUpload() {
+        var fileUpload = document.getElementsByName('deliveryLabel')[0];
+        fileUpload.files = null;
+        fileUpload.click();
+    }
+
+    handleUploadChange(e) {
+        console.log(e.target.files);
+        var files = e.target.files;
+
+        if (files.length > 0) {
+            var data = new FormData();
+            data.append('files', files[0]);
+
+            fetch('https://importking.mooo.com/api/Attachments', {
+                method: 'POST',
+                body: data
+            }).then(
+                response => response.json() // if the response is a JSON object
+            ).then(success => {
+                if (success && success.length > 0) {
+                    this.setState({
+                        deliveryLabelFile: success[0].fileName
+                    });
+                }
+            }).catch(
+                error => console.log(error) // Handle the error response object
+            );
+        }
     }
 
     handleCartUpdated(alert) {
@@ -490,101 +569,101 @@ class CartPage extends React.Component {
             })
             .then(result => {
 
-                if (userType == 0) {
+                if (this.state.user.userType == 0) {
                     fetch('https://importking.mooo.com/api/Payments/' + result + '/Token', {
                         method: 'GET',
                         headers: { 'Content-Type': 'application/json' }
                     })
-                    .then(resToken => {
-                        if (resToken.status == 200) {
-                            return resToken.json();
-                        }
-                        else {
-                            throw {
-                                message: resToken.statusText
-                            }
-                        }
-                    })
                         .then(resToken => {
-                        this.setState({
-                            alert: {
-                                isShown: true,
-                                mode: 'success',
-                                title: 'Success',
-                                message: 'Order submitted, please complete the payment'
-                            },
-                            isShownOrderForm: false,
-                            isShownProgress: false
-                        });
-
-                        this.cartListRef.current.loadCart();
-                        var that = this;
-                        setTimeout(function () {
-                            window.snap.pay(resToken.paymentToken, {
-                                gopayMode: 'deeplink',
-                                onSuccess: function (res) {
-                                    /* You may add your own implementation here */
-                                    that.setState({
-                                        alert: {
-                                            isShown: true,
-                                            mode: 'success',
-                                            title: 'Success',
-                                            message: 'Payment succeed. Refreshing the page in 2 seconds.'
-                                        }
-                                    });
-
-                                    setTimeout(function () {
-                                        window.location.href = '/Order/' + result + '/Detail';
-                                    }, 2000);
-                                },
-                                onError: function (res) {
-                                    /* You may add your own implementation here */
-                                    that.setState({
-                                        alert: {
-                                            isShown: true,
-                                            mode: 'danger',
-                                            title: 'Payment Failed',
-                                            message: 'Please try again.'
-                                        }
-                                    });
-
-                                    setTimeout(function () {
-                                        window.location.href = '/Order/' + result + '/Detail';
-                                    }, 2000);
-                                },
-                                onPending: function (result) {
-                                    /* You may add your own implementation here */
-                                    that.setState({
-                                        alert: {
-                                            isShown: true,
-                                            mode: 'info',
-                                            title: 'Payment Pending',
-                                            message: 'Please complete payment to process order.'
-                                        }
-                                    });
-
-                                    setTimeout(function () {
-                                        window.location.href = '/Order/' + result + '/Detail';
-                                    }, 2000);
-                                },
-                                onClose: function () {
-                                    /* You may add your own implementation here */
-                                    that.setState({
-                                        alert: {
-                                            isShown: true,
-                                            mode: 'warning',
-                                            title: 'Warning',
-                                            message: 'Please complete the payment to proceed the request.'
-                                        }
-                                    });
-
-                                    setTimeout(function () {
-                                        window.location.href = '/Order/' + result + '/Detail';
-                                    }, 2000);
+                            if (resToken.status == 200) {
+                                return resToken.json();
+                            }
+                            else {
+                                throw {
+                                    message: resToken.statusText
                                 }
+                            }
+                        })
+                        .then(resToken => {
+                            this.setState({
+                                alert: {
+                                    isShown: true,
+                                    mode: 'success',
+                                    title: 'Success',
+                                    message: 'Order submitted, please complete the payment'
+                                },
+                                isShownOrderForm: false,
+                                isShownProgress: false
                             });
-                        }, 1000);
-                    });
+
+                            this.cartListRef.current.loadCart();
+                            var that = this;
+                            setTimeout(function () {
+                                window.snap.pay(resToken.paymentToken, {
+                                    gopayMode: 'deeplink',
+                                    onSuccess: function (res) {
+                                        /* You may add your own implementation here */
+                                        that.setState({
+                                            alert: {
+                                                isShown: true,
+                                                mode: 'success',
+                                                title: 'Success',
+                                                message: 'Payment succeed. Refreshing the page in 2 seconds.'
+                                            }
+                                        });
+
+                                        setTimeout(function () {
+                                            window.location.href = '/Order/' + result + '/Detail';
+                                        }, 2000);
+                                    },
+                                    onError: function (res) {
+                                        /* You may add your own implementation here */
+                                        that.setState({
+                                            alert: {
+                                                isShown: true,
+                                                mode: 'danger',
+                                                title: 'Payment Failed',
+                                                message: 'Please try again.'
+                                            }
+                                        });
+
+                                        setTimeout(function () {
+                                            window.location.href = '/Order/' + result + '/Detail';
+                                        }, 2000);
+                                    },
+                                    onPending: function (result) {
+                                        /* You may add your own implementation here */
+                                        that.setState({
+                                            alert: {
+                                                isShown: true,
+                                                mode: 'info',
+                                                title: 'Payment Pending',
+                                                message: 'Please complete payment to process order.'
+                                            }
+                                        });
+
+                                        setTimeout(function () {
+                                            window.location.href = '/Order/' + result + '/Detail';
+                                        }, 2000);
+                                    },
+                                    onClose: function () {
+                                        /* You may add your own implementation here */
+                                        that.setState({
+                                            alert: {
+                                                isShown: true,
+                                                mode: 'warning',
+                                                title: 'Warning',
+                                                message: 'Please complete the payment to proceed the request.'
+                                            }
+                                        });
+
+                                        setTimeout(function () {
+                                            window.location.href = '/Order/' + result + '/Detail';
+                                        }, 2000);
+                                    }
+                                });
+                            }, 1000);
+                        });
                 }
                 else {
                     this.setState({
@@ -706,6 +785,10 @@ class CartPage extends React.Component {
         });
     }
 
+    isPdf(fileName) {
+        return fileName && fileName.endsWith('.pdf');
+    }
+
     render() {
         var courier = [
             { id: 'Shop Courier', text: 'Shop Courier' },
@@ -713,7 +796,7 @@ class CartPage extends React.Component {
             { id: 'Others', text: 'Others' }
         ]
 
-        var { selectedAddress } = this.state;
+        var { user, selectedAddress } = this.state;
 
         var anyOutOfStockProduct = false;
 
@@ -752,38 +835,133 @@ class CartPage extends React.Component {
                             <div class="modal-body">
                                 <FormValidate ref={this.myRef} novalidate="novalidate" rules={this.state.orderFormRules} submitHandler={this.handleSubmitOrderFormCallback.bind(this)}>
                                     <div class="alert alert-info">This is the last step. Make sure your order and shipping information is already correct.</div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Shipping Address</label>
-                                        <div class="w-100">
-                                            <div class="card border-primary">
-                                                {
-                                                    (selectedAddress) ? (
-                                                        <div>
-                                                            <div class="card-header p-2 bg-primary text-white">
-                                                                {selectedAddress.alias}
-                                                            </div>
-                                                            <div class="card-body p-2" onClick={this.handleChangeAddress.bind(this)}>
-                                                                <div>{selectedAddress.name} ({selectedAddress.phone})</div>
-                                                                <div>{selectedAddress.fullAddress}, {selectedAddress.city}, {selectedAddress.province}, {selectedAddress.zipCode}</div>
-                                                            </div>
-                                                            <input type="text" name="addressId" value={this.state.orderData.addressId} class="form-control form-control-card d-none" />
-                                                        </div>
-                                                    ) : (
-                                                        <div class="card-body p-2">
-                                                            <div class="text-center mb-2">
-                                                                You have no shipping address, please add new shipping address
-                                                            </div>
-                                                            <button class="btn btn-primary w-100" onClick={this.handleAddNewAddress.bind(this)}>
-                                                                <i class="fa-solid fa-plus me-2" />
-                                                                Add Shipping Address
-                                                            </button>
-                                                            <input type="text" name="addressId" value="" class="form-control form-control-card d-none" />
-                                                        </div>
-                                                    )
-                                                }
+                                    {
+                                        (user != null && user.userType == 1) ? (
+                                            <div class="mb-3">
+                                                <div>
+                                                    <div class="form-switch">
+                                                        <input class="form-check-input me-2" type="checkbox" name="isDropship" id="isDropship" role="switch"
+                                                            checked={this.state.isDropshipping}
+                                                            onChange={this.handleDropshipper.bind(this)}
+                                                        />
+                                                        <label class="form-check-label" for="dropshipper">Send as Dropshipper</label>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
+                                        ) : (
+                                            <div></div>
+                                        )
+                                    }
+                                    {
+                                        (user != null && user.userType == 1 && this.state.isDropshipping == true) ? (
+                                            <div class="mb-3">
+                                                <label class="form-label">Dropship Type</label>
+                                                <div>
+                                                    <div class="form-check form-check-inline ps-0">
+                                                        <input class="form-radio-input me-2" type="radio" name="dropshipType" id="manualDropship" value="manual"
+                                                            checked={this.state.dropshipType == 'manual'}
+                                                            onChange={this.handleDropshipType.bind(this)} />
+                                                        <label class="form-radio-label" for="manualDropship">Manual</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-radio-input me-2" type="radio" name="dropshipType" id="marketplaceDropship" value="marketplace"
+                                                            checked={this.state.dropshipType == 'marketplace'}
+                                                            onChange={this.handleDropshipType.bind(this)} />
+                                                        <label class="form-radio-label" for="marketplaceDropship">From Marketplace</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div></div>
+                                        )
+                                    }
+                                    {
+                                        (this.state.isDropshipping == false || this.state.dropshipType == 'manual') ? (
+                                            <div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Shipping Address</label>
+                                                    <div class="w-100">
+                                                        <div class="card border-primary">
+                                                            {
+                                                                (selectedAddress) ? (
+                                                                    <div>
+                                                                        <div class="card-header p-2 bg-primary text-white">
+                                                                            {selectedAddress.alias}
+                                                                        </div>
+                                                                        <div class="card-body p-2" onClick={this.handleChangeAddress.bind(this)}>
+                                                                            <div>{selectedAddress.name} ({selectedAddress.phone})</div>
+                                                                            <div>{selectedAddress.fullAddress}, {selectedAddress.city}, {selectedAddress.province}, {selectedAddress.zipCode}</div>
+                                                                        </div>
+                                                                        <input type="text" name="addressId" value={this.state.orderData.addressId} class="form-control form-control-card d-none" />
+                                                                    </div>
+                                                                ) : (
+                                                                    <div class="card-body p-2">
+                                                                        <div class="text-center mb-2">
+                                                                            You have no shipping address, please add new shipping address
+                                                                        </div>
+                                                                        <button class="btn btn-primary w-100" onClick={this.handleAddNewAddress.bind(this)}>
+                                                                            <i class="fa-solid fa-plus me-2" />
+                                                                            Add Shipping Addresss
+                                                                        </button>
+                                                                        <input type="text" name="addressId" value="" class="form-control form-control-card d-none" />
+                                                                    </div>
+                                                                )
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Delivery Type</label>
+                                                    <div>
+                                                        <div class="form-check form-check-inline ps-0">
+                                                            <input class="form-radio-input me-2" type="radio" name="deliveryType" id="regularDelivery" value="regular"
+                                                                checked={this.state.deliveryType == 'regular'}
+                                                                onChange={this.handleDeliveryType.bind(this)} />
+                                                            <label class="form-radio-label" for="regularDelivery">Regular</label>
+                                                        </div>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-radio-input me-2" type="radio" name="deliveryType" id="codDelivery" value="cod"
+                                                                checked={this.state.deliveryType == 'cod'}
+                                                                onChange={this.handleDeliveryType.bind(this)} />
+                                                            <label class="form-radio-label" for="codDelivery">COD (Cash on Delivery)</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div class="mb-3">
+                                                <label class="form-label">Upload Delivery Label</label>
+                                                <div class="w-100">
+                                                    <div class="card border-primary">
+                                                        <div class="card-body">
+                                                            <button class="btn btn-primary w-100" type="button" onClick={this.handleUpload.bind(this)}>
+                                                                <i class="fa fa-upload me-2" />
+                                                                Upload Label from Marketplace
+                                                            </button>
+                                                            {
+                                                                (this.state.deliveryLabelFile) ? (
+                                                                    (this.isPdf(this.state.deliveryLabelFile)) ? (
+                                                                        <div>
+                                                                            <embed class="w-100 mt-2" height="400px" src={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div>
+                                                                            <img class="w-100 mt-2" src={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />
+                                                                        </div>
+                                                                    )
+                                                                ) : (
+                                                                    <div></div>
+                                                                )
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <input type="file" name="deliveryLabel" class="d-none" accept="application/pdf,image/*"
+                                                    onChange={this.handleUploadChange.bind(this)}
+                                                />
+                                            </div>
+                                        )
+                                    }
                                     <div class="mb-3">
                                         <label class="form-label">Courier</label>
                                         <div>

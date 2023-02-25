@@ -51,34 +51,44 @@
     }
 
     renderImage(category) {
-        var fileName = (category.images != null && category.images.length > 0) ? category.images[0].fileName : '';
+        var fileName = 'no-image.jpg'
+        if (category.images != null && category.images.length > 0) {
+            try {
+                fileName = category.images[0].fileName;
+                //var parts = fileName.split('.');
+                //fileName = parts[0] + '-small.' + parts[1];
+            } catch (e) {
+
+            }
+        }
+
         var url = 'url("https://importking.mooo.com/Uploads/' + fileName + '")';
         if (fileName) return (
-            <li class="col-4">
+            <li class="col-4 product-item">
                 <div class="custom-card">
                     <a href={'/Product/' + category.categoryId + '/Detail'} class="item-category-grid"
                         style={{ background: url, backgroundSize: 'cover' }}></a>
-                    <div class="custom-card-text small">
+                    <div class="custom-card-text card-text-title small">
                         {category.name}
                     </div>
-                    <div class="custom-card-text small fw-bold">IDR {App.Utils.formatCurrency(category.price)}</div>
-                    <div class="custom-card-text small">Terjual: {category.soldCount}</div>
+                    <div class="custom-card-text card-text-subtitle small fw-bold">IDR {App.Utils.formatCurrency(category.price)}</div>
+                    <div class="custom-card-text card-text-attribute small">Terjual: {category.soldCount}</div>
                 </div>
             </li>
         );
         else return (
-            <li class="col-4">
+            <li class="col-4 product-item">
                 <div class="custom-card">
                     <a href={'/Product/' + category.categoryId + '/Detail'} class="item-category-grid">
                         <span class="icon-wrap">
                             <i class="icon material-icons md-stay_primary_portrait"></i>
                         </span>
                     </a>
-                    <div class="custom-card-text small">
+                    <div class="custom-card-text card-text-title small">
                         {category.name}
                     </div>
-                    <div class="custom-card-text small fw-bold">IDR {category.price ? App.Utils.formatCurrency(category.price) : ''}</div>
-                    <div class="custom-card-text small">Terjual: {category.soldCount}</div>
+                    <div class="custom-card-text card-text-subtitle small fw-bold">IDR {category.price ? App.Utils.formatCurrency(category.price) : ''}</div>
+                    <div class="custom-card-text card-text-attribute small">Terjual: {category.soldCount}</div>
                 </div>
             </li>
         );
@@ -97,7 +107,7 @@
         var { isLoading, categories } = this.state;
         return (
             <div>
-                <section class="px-3 pt-2 pb-2 fixed-top bg-white" style={{ top: '55px' }}>
+                <section class="px-3 py-1 mt-2 mb-1 fixed-top bg-white" style={{ top: '55px' }}>
                     <input type="text" placeholder="Search" class="bg-secondary-light border-0 form-control"
                         onChange={this.handleSearch.bind(this)}
                     />
@@ -106,7 +116,7 @@
                     (isLoading) ? (
                         <LoadSpinner />
                     ) : (
-                        <ul class="row pt-5 px-2">
+                        <ul class="row mt-5 pt-2 px-2">
                             {
                                 categories.map(category => {
                                     return (
@@ -124,3 +134,5 @@
 }
 
 ReactDOM.render(<CategoryPage />, document.getElementById('root'));
+
+$('.nav-bottom .nav-link[href="/Product"]').addClass('active');
