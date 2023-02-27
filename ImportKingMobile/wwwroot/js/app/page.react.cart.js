@@ -407,8 +407,18 @@ class CartPage extends React.Component {
     }
 
     handleDeliveryType(e) {
+        var { orderData } = this.state;
+        
+        if (e.target.value == 'cod') {
+            orderData.courier = 'JNE';            
+        }
+        else {
+            orderData.courier = '';
+        }
+
         this.setState({
-            deliveryType: e.target.value
+            deliveryType: e.target.value,
+            orderData: orderData
         });
     }
 
@@ -965,8 +975,11 @@ class CartPage extends React.Component {
                                     <div class="mb-3">
                                         <label class="form-label">Courier</label>
                                         <div>
-                                            <select class="form-control" name="courier" value={this.state.orderData.courier} onChange={this.handleCourierChange.bind(this)}>
+                                            <select class="form-control" name="courier" value={this.state.orderData.courier}
+                                                onChange={this.handleCourierChange.bind(this)}
+                                                disabled={this.state.deliveryType == 'cod'}>
                                                 <option value=""></option>
+                                                <option value="JNE">JNE</option>
                                                 <option value="Shop Courier">Shop Courier</option>
                                                 <option value="Lalamove">Lalamove</option>
                                                 <option value="Others">Others</option>

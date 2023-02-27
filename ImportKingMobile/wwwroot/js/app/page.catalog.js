@@ -4,10 +4,6 @@
         crossDomain: true,
         dataType: 'json',
         success: function (data) {
-            if (data.length > 0) {
-
-            }
-
             var products = '';
 
             if (data.products) {

@@ -26,7 +26,7 @@
                 }
             }
         }).then(result => {
-            result = result.filter(x => x.isShowOnHome == true);
+            result = result.filter(x => x.isShowOnHome == true && x.isInactive != true);
 
             $.map(result, function (item) {
                 item.name = item.name.toLowerCase();

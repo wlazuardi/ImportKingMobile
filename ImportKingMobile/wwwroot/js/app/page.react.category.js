@@ -27,6 +27,8 @@
                 }
             }
         }).then(result => {
+            result = result.filter(x => x.isInactive == false);
+
             $.map(result, function (item) {
                 item.name = item.name.toLowerCase();
                 return item;
@@ -54,9 +56,7 @@
         var fileName = 'no-image.jpg'
         if (category.images != null && category.images.length > 0) {
             try {
-                fileName = category.images[0].fileName;
-                //var parts = fileName.split('.');
-                //fileName = parts[0] + '-small.' + parts[1];
+                fileName = category.images[0].fileName;                
             } catch (e) {
 
             }

@@ -11,13 +11,25 @@
             isLoaded: false,
             error: null,
             isModalAddShown: false,
+            isModalCustomAddShown: false,
             qty: 1,
             typeName: '',
             stock: 0,
             isLoadingProduct: false,
             alert: {},
-            catalogImages: []
+            catalogImages: [],
+            customProductType: '',
+            customProductColor: '',
+            rules: {
+                customProductType: {
+                    required: true
+                },
+                customProductColor: {
+                    required: true
+                }
+            }
         };
+        this.myRef = React.createRef();
         this.getCategory();
         this.constructTyeDataSource();
     }
@@ -205,26 +217,37 @@
     handleAddToCart() {
         var { typeId, colorId } = this.state;
 
-        if (!typeId) {
+        this.setState({
+            typeError: '',
+            colorError: ''
+        });
+
+        if (typeId == 0 || typeId == '') {
             this.setState({
                 typeError: 'Pilih Tipe HP'
             });
             return;
         }
 
-        if (!colorId) {
+        if (!colorId && typeId != -1) {
             this.setState({
                 colorError: 'Pilih Warna'
             });
             return;
         }
 
-        this.setState({
-            typeError: '',
-            colorError: '',
-            qty: 1,
-            isModalAddShown: true
-        });
+        if (typeId == -1) {
+            this.setState({
+                qty: 1,
+                isModalCustomAddShown: true
+            }); 
+        }
+        else {
+            this.setState({
+                qty: 1,
+                isModalAddShown: true
+            });
+        }
     }
 
     directBuy() {
@@ -233,6 +256,12 @@
     handleModalHidden() {
         this.setState({
             isModalAddShown: false
+        });
+    }
+
+    handleModalCustomHidden() {
+        this.setState({
+            isModalCustomAddShown: false
         });
     }
 
@@ -257,10 +286,12 @@
     }
 
     handleValueChange(e) {
-        var qty = e.target.value;
-        this.setState({
-            qty: qty
-        });
+        var value = e.target.value;
+        var name = e.target.name;
+        var obj = {};
+        obj[name] = value;
+
+        this.setState(obj);
     }
 
     addToCart(e) {
@@ -282,6 +313,32 @@
         });
 
         this.postCart(data);
+    }
+
+    handleSubmitProduct() {
+        var { category, qty, customProductType, customProductColor } = this.state;
+
+        var data = {
+            email: userEmail,
+            productId: -1,
+            categoryId: categoryId,
+            customProductType: customProductType,
+            customProductColor: customProductColor,
+            price: category.price,
+            qty: qty,
+            isOutOfStock: 0
+        };
+
+        this.setState({
+            isSubmittingCart: true
+        });
+
+        this.postCart(data);
+    }
+
+    addToCartCustom(e) {
+        e.preventDefault();
+        this.myRef.current.handleSubmit();
     }
 
     postCart(data) {
@@ -557,6 +614,63 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                                 <button type="button" class="btn btn-primary" disabled={this.state.isLoadingProduct} onClick={this.addToCart.bind(this)}>Tambahkan</button>
+                            </div>
+                        </Progress>
+                    </div>
+                </ModalPopUp>
+                <ModalPopUp isShown={this.state.isModalCustomAddShown} onHidden={this.handleModalCustomHidden.bind(this)}>
+                    <div class="modal-dialog" role="document">
+                        <Progress class="modal-content" isShown={this.state.isSubmittingCart}>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Product</h5>
+                                <button type="button" class="close btn btn-secondary btn-sm" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                {
+                                    <FormValidate ref={this.myRef} novalidate="novalidate" rules={this.state.rules} submitHandler={this.handleSubmitProduct.bind(this)} >
+                                        <div class="row mb-3">
+                                            <div>
+                                                <label class="form-label">Type</label>
+                                                <input class="form-control form-control-sm"
+                                                    type="text" name="customProductType"
+                                                    placeholder="Iphone 6, Samsung S22, etc"
+                                                    value={this.state.customProductType}
+                                                    onChange={this.handleValueChange.bind(this)} />
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-7">
+                                                <label class="form-label">Product Color</label>
+                                                <input class="form-control form-control-sm" type="text" name="customProductColor" placeholder="Black, Blue, etc."
+                                                    value={this.state.customProductColor}
+                                                    onChange={this.handleValueChange.bind(this)} />
+                                            </div>
+                                            <div class="col-5">
+                                                <div class="form-label">Qty</div>
+                                                <button class="btn btn-primary px-1 btn-sm" onClick={this.deductAmount.bind(this)}>
+                                                    <i class="material-icons md-remove"></i>
+                                                </button>
+                                                <input name="qty" type="number" class="form-control d-inline form-control-sm mx-1 input-Qty"
+                                                    value={qty}
+                                                    onChange={this.handleValueChange.bind(this)} />
+                                                <button class="btn btn-primary px-1 btn-sm" onClick={this.addAmount.bind(this)}>
+                                                    <i class="material-icons md-add"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        {
+                                            <div class="row mx-1">
+                                                Price: @IDR. {category ? App.Utils.formatCurrency(category.price) : 0}
+                                            </div>
+                                        }
+                                    </FormValidate>
+                                }
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onClick={this.addToCartCustom.bind(this)}>Add to Cart</button>
                             </div>
                         </Progress>
                     </div>
