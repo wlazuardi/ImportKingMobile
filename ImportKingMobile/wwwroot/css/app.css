@@ -142,3 +142,50 @@ span.select2-selection__arrow {
 li.col-4.product-item {
     margin-bottom: 10px;
 }
+
+.item-category-grid {
+    background-size: cover;
+}
+
+.form-step div.step {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #519120;
+    margin: 0px 20px;
+    border-radius: 25px;
+    padding: 13px;
+    background: #ffffff;
+    color: #519120;
+    position: relative;
+}
+
+.form-step div.step.active {
+    background: #519120;
+    color: white;
+}
+
+.form-step div.step i {
+    margin-bottom: 12px;
+}
+
+.form-step div.step div {
+    color: #519120;
+    margin-left: -18px;
+    width: 60px;
+    text-align: center;
+    margin-top: 7px;
+    font-size: 14px;
+    line-height: 17px;
+}
+
+.form-step div.step:not(:last-child)::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: #519120;
+    display: inline-block;
+    position: absolute;
+    left: 49px;
+    top: 25px;
+}

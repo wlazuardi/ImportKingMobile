@@ -67,7 +67,7 @@
             <li class="col-4 product-item">
                 <div class="custom-card">
                     <a href={'/Product/' + category.categoryId + '/Detail'} class="item-category-grid"
-                        style={{ background: url, backgroundSize: 'cover' }}></a>
+                        style={{ backgroundImage: url }}></a>
                     <div class="custom-card-text card-text-title small">
                         {category.name}
                     </div>

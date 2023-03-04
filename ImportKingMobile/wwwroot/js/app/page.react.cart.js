@@ -339,6 +339,14 @@ class CartPage extends React.Component {
         this.state = {
             alert: null,
             user: null,
+            orderValue: 0,
+            deliveryFee: 1000,
+            adminFee: 1000,
+            subTotal: 0,
+            codPercentage: 0.02,
+            codFee: 0,
+            totalPayment: 0,
+            codProfitMargin: 0,
             cartList: [],
             isShownOrderForm: false,
             selectedAddress: null,
@@ -350,15 +358,28 @@ class CartPage extends React.Component {
                 },
                 courier: {
                     required: true
+                },
+                dropshipperName: {
+                    required: false
+                },
+                codBillAmount: {
+                    required: false
                 }
             },
             orderData: {
+                dropshipperName: '',
+                bookingCode: '',
+                recipientName: '',
+                recipientPhoneNo: '',
+                codBillAmount: '',
+                comments: ''
             },
             isLoadingSubmit: false,
             isDropshipping: false,
             dropshipType: 'manual',
             deliveryType: 'regular',
-            deliveryLabelFile: null
+            deliveryLabelFile: null,
+            step: 1
         };
 
         this.myRef = React.createRef();
@@ -408,9 +429,9 @@ class CartPage extends React.Component {
 
     handleDeliveryType(e) {
         var { orderData } = this.state;
-        
+
         if (e.target.value == 'cod') {
-            orderData.courier = 'JNE';            
+            orderData.courier = 'JNE';
         }
         else {
             orderData.courier = '';
@@ -534,7 +555,7 @@ class CartPage extends React.Component {
     }
 
     handleSubmitOrderFormCallback(e) {
-        let { cartList, orderData, selectedAddress } = this.state;
+        let { cartList, orderData, selectedAddress, isDropshipping, dropshipType, deliveryType, deliveryLabelFile } = this.state;
         let totalPrice = 0;
 
         if (cartList && cartList.length) {
@@ -555,7 +576,11 @@ class CartPage extends React.Component {
             shippingProvince: selectedAddress.province,
             shippingZipCode: selectedAddress.zipCode,
             shippingCourier: orderData.courier,
-            comments: orderData.comments
+            comments: orderData.comments,
+            isDropshipping: isDropshipping,
+            isFromMarketplace: dropshipType == 'marketplace',
+            isCOD: deliveryType == 'cod',
+            deliveryLabelFile: deliveryLabelFile
         }
 
         this.setState({
@@ -799,13 +824,146 @@ class CartPage extends React.Component {
         return fileName && fileName.endsWith('.pdf');
     }
 
-    render() {
-        var courier = [
-            { id: 'Shop Courier', text: 'Shop Courier' },
-            { id: 'Lalamove', text: 'Lalamove' },
-            { id: 'Others', text: 'Others' }
-        ]
+    handleBillAmountChange(value) {
+        var { orderData } = this.state;
+        value = value.replace(/[.]|\D/gi, '');
+        orderData.codBillAmount = App.Utils.formatCurrency(value);
+        this.setState({
+            orderData: orderData
+        });
+    }
 
+    handlePrevForm() {
+        var { step } = this.state;
+
+        if (step > 1) {
+            step--;
+            this.setState({
+                step
+            });
+        }
+        else {
+            this.setState({
+                isShownOrderForm: false
+            });
+        }
+    }
+
+    handleNextFormValidated() {
+        var {
+            step,
+            cartList,
+            isDropshipping,
+            deliveryType,
+            dropshipType,
+            deliveryFee,
+            adminFee,
+            subTotal,
+            codPercentage,
+            codFee,
+            totalPayment,
+            orderData,
+            codProfitMargin
+        } = this.state;
+
+        var isValid = this.myRef.current.isValid();
+        if (!isValid) return;
+
+        var orderValue = 0;
+
+        if (cartList && cartList.length) {
+            cartList.forEach(cart => {
+                orderValue += cart.subTotal;
+            });
+        }
+
+        if (step < 3) {
+            step++;
+        }
+
+        subTotal = orderValue + deliveryFee + adminFee;
+
+        if (deliveryType == 'cod') {
+            var codBillAmount = orderData.codBillAmount.replace(/[.]/gi, '');
+            codFee = Math.ceil(codPercentage * subTotal);
+            totalPayment = subTotal + codFee;
+
+            if (isDropshipping) {
+                codProfitMargin = parseInt(codBillAmount) - totalPayment;
+            }
+            else {
+                codProfitMargin = 0;
+            }
+        }
+        else {
+            totalPayment = subTotal;
+        }
+
+        this.setState({
+            step,
+            orderValue,
+            subTotal,
+            codFee,
+            totalPayment,
+            codProfitMargin
+        });
+    }
+
+    handleNextForm() {
+        var {
+            isDropshipping,
+            deliveryType,
+            dropshipType,
+        } = this.state;
+
+        var orderFormRules = {
+            addressId: {
+                required: true
+            },
+            courier: {
+                required: true
+            },
+            dropshipperName: {
+                required: (isDropshipping == true)
+            },
+            deliveryLabelFile: {
+                required: (isDropshipping == true && dropshipType == 'marketplace')
+            },
+            bookingCode: {
+                required: (isDropshipping == true && dropshipType == 'marketplace')
+            },
+            recipientName: {
+                required: (isDropshipping == true && dropshipType == 'marketplace')
+            },
+            recipientPhoneNo: {
+                required: (isDropshipping == true && dropshipType == 'marketplace')
+            },
+            comments: {
+                required: (isDropshipping == true && dropshipType == 'marketplace')
+            },
+            codBillAmount: {
+                required: false
+            }
+        };
+
+        this.setState({
+            orderFormRules
+        });
+
+        this.myRef.current.updateRules(orderFormRules);
+        this.handleNextFormValidated();
+    }
+
+    handleOrderDataChange(e) {
+        var { orderData } = this.state;
+        var name = e.target.name;
+        orderData[name] = e.target.value;
+        this.setState({
+            orderData
+        });
+    }
+
+    render() {
         var { user, selectedAddress } = this.state;
 
         var anyOutOfStockProduct = false;
@@ -843,170 +1001,354 @@ class CartPage extends React.Component {
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <FormValidate ref={this.myRef} novalidate="novalidate" rules={this.state.orderFormRules} submitHandler={this.handleSubmitOrderFormCallback.bind(this)}>
-                                    <div class="alert alert-info">This is the last step. Make sure your order and shipping information is already correct.</div>
-                                    {
-                                        (user != null && user.userType == 1) ? (
-                                            <div class="mb-3">
-                                                <div>
-                                                    <div class="form-switch">
-                                                        <input class="form-check-input me-2" type="checkbox" name="isDropship" id="isDropship" role="switch"
-                                                            checked={this.state.isDropshipping}
-                                                            onChange={this.handleDropshipper.bind(this)}
-                                                        />
-                                                        <label class="form-check-label" for="dropshipper">Send as Dropshipper</label>
+                                <div class="text-center mb-5 form-step" style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <div class={this.state.step >= 1 ? 'step active' : 'step'}>
+                                        <i class="fa fa-truck"></i>
+                                        <div>Shipping Info</div>
+                                    </div>
+                                    <div class={this.state.step >= 2 ? 'step active' : 'step'}>
+                                        <i class="fa fa-dollar-sign"></i>
+                                        <div>Payment</div>
+                                    </div>
+                                    <div class={this.state.step >= 3 ? 'step active' : 'step'}>
+                                        <i class="fa fa-check"></i>
+                                        <div>Done</div>
+                                    </div>
+                                </div>
+                                {
+                                    (this.state.step == 1) ? (
+                                        <FormValidate ref={this.myRef} novalidate="novalidate" rules={this.state.orderFormRules} submitHandler={this.handleSubmitOrderFormCallback.bind(this)}>
+                                            <div class="alert alert-info">Please fill and review your shipping information</div>
+                                            {
+                                                (user != null && user.userType == 1) ? (
+                                                    <div class="mb-3 mx-1">
+                                                        <div>
+                                                            <div class="form-switch">
+                                                                <input class="form-check-input me-2" type="checkbox" name="isDropship" id="isDropship" role="switch"
+                                                                    checked={this.state.isDropshipping}
+                                                                    onChange={this.handleDropshipper.bind(this)}
+                                                                />
+                                                                <label class="form-check-label" for="dropshipper">Send as Dropshipper</label>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div></div>
-                                        )
-                                    }
-                                    {
-                                        (user != null && user.userType == 1 && this.state.isDropshipping == true) ? (
-                                            <div class="mb-3">
-                                                <label class="form-label">Dropship Type</label>
+                                                ) : (
+                                                    <div></div>
+                                                )
+                                            }
+                                            {
+                                                (user != null && user.userType == 1 && this.state.isDropshipping == true) ? (
+                                                    <div>
+                                                        <div class="mb-3 mx-1">
+                                                            <label class="form-label">Dropship Type</label>
+                                                            <div>
+                                                                <div class="form-check form-check-inline ps-0">
+                                                                    <input class="form-radio-input me-2" type="radio" name="dropshipType" id="manualDropship" value="manual"
+                                                                        checked={this.state.dropshipType == 'manual'}
+                                                                        onChange={this.handleDropshipType.bind(this)} />
+                                                                    <label class="form-radio-label" for="manualDropship">Manual</label>
+                                                                </div>
+                                                                <div class="form-check form-check-inline">
+                                                                    <input class="form-radio-input me-2" type="radio" name="dropshipType" id="marketplaceDropship" value="marketplace"
+                                                                        checked={this.state.dropshipType == 'marketplace'}
+                                                                        onChange={this.handleDropshipType.bind(this)} />
+                                                                    <label class="form-radio-label" for="marketplaceDropship">From Marketplace</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mb-3 mx-1">
+                                                            <label class="form-label">Dropshipper Name</label>
+                                                            <div>
+                                                                <input type="text" name="dropshipperName" class="form-control" placeholder="Custom Gadget Shop"
+                                                                    value={this.state.orderData.dropshipperName}
+                                                                    onChange={this.handleOrderDataChange.bind(this)}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div></div>
+                                                )
+                                            }
+                                            {
+                                                (this.state.isDropshipping == false || this.state.dropshipType == 'manual') ? (
+                                                    <div>
+                                                        <div class="mb-3 mx-1">
+                                                            <label class="form-label">Shipping Address</label>
+                                                            <div class="w-100">
+                                                                <div class="card border-primary">
+                                                                    {
+                                                                        (selectedAddress) ? (
+                                                                            <div>
+                                                                                <div class="card-header p-2 bg-primary text-white">
+                                                                                    {selectedAddress.alias}
+                                                                                </div>
+                                                                                <div class="card-body p-2" onClick={this.handleChangeAddress.bind(this)}>
+                                                                                    <div>{selectedAddress.name} ({selectedAddress.phone})</div>
+                                                                                    <div>{selectedAddress.fullAddress}, {selectedAddress.city}, {selectedAddress.province}, {selectedAddress.zipCode}</div>
+                                                                                </div>
+                                                                                <input type="text" name="addressId" value={this.state.orderData.addressId} class="form-control form-control-card d-none" />
+                                                                            </div>
+                                                                        ) : (
+                                                                            <div class="card-body p-2">
+                                                                                <div class="text-center mb-2">
+                                                                                    You have no shipping address, please add new shipping address
+                                                                                </div>
+                                                                                <button class="btn btn-primary w-100" onClick={this.handleAddNewAddress.bind(this)}>
+                                                                                    <i class="fa-solid fa-plus me-2" />
+                                                                                    Add Shipping Addresss
+                                                                                </button>
+                                                                                <input type="text" name="addressId" value="" class="form-control form-control-card d-none" />
+                                                                            </div>
+                                                                        )
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        <div class="mb-3 mx-1">
+                                                            <label class="form-label">Upload Delivery Label</label>
+                                                            <div class="w-100">
+                                                                <div class="card border-primary">
+                                                                    <div class="card-body">
+                                                                        <button class="btn btn-primary w-100" type="button" onClick={this.handleUpload.bind(this)}>
+                                                                            <i class="fa fa-upload me-2" />
+                                                                            Upload Label from Marketplace
+                                                                        </button>
+                                                                        {
+                                                                            (this.state.deliveryLabelFile) ? (
+                                                                                (this.isPdf(this.state.deliveryLabelFile)) ? (
+                                                                                    <div>
+                                                                                        <embed class="w-100 mt-2" height="400px" src={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <div>
+                                                                                        <img class="w-100 mt-2" src={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />
+                                                                                    </div>
+                                                                                )
+                                                                            ) : (
+                                                                                <div></div>
+                                                                            )
+                                                                        }
+                                                                        <input type="hidden" name="deliveryLabelFile" value={this.state.deliveryLabelFile} />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <input type="file" name="deliveryLabel" class="d-none" accept="application/pdf,image/*"
+                                                                onChange={this.handleUploadChange.bind(this)}
+                                                            />
+                                                        </div>
+                                                        <div class="mb-3 mx-1">
+                                                            <label class="form-label">Delivery Booking Code</label>
+                                                            <div>
+                                                                <input type="text" name="bookingCode" class="form-control" placeholder="Booking Code from Delivery Service"
+                                                                    value={this.state.orderData.bookingCode}
+                                                                    onChange={this.handleOrderDataChange.bind(this)} />
+                                                            </div>
+                                                        </div>
+                                                        <div class="mb-3 mx-1">
+                                                            <label class="form-label">Recipient Name</label>
+                                                            <div>
+                                                                <input type="text" name="recipientName" class="form-control" placeholder="Budi Anto"
+                                                                    value={this.state.orderData.recipientName}
+                                                                    onChange={this.handleOrderDataChange.bind(this)} />
+                                                            </div>
+                                                        </div>
+                                                        <div class="mb-3 mx-1">
+                                                            <label class="form-label">Recipient Phone No.</label>
+                                                            <div>
+                                                                <input type="text" name="recipientPhoneNo" class="form-control" placeholder="08123456789"
+                                                                    value={this.state.orderData.recipientPhoneNo}
+                                                                    onChange={this.handleOrderDataChange.bind(this)} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            }
+                                            <div class="mb-3 mx-1">
+                                                <label class="form-label">Delivery Type</label>
                                                 <div>
                                                     <div class="form-check form-check-inline ps-0">
-                                                        <input class="form-radio-input me-2" type="radio" name="dropshipType" id="manualDropship" value="manual"
-                                                            checked={this.state.dropshipType == 'manual'}
-                                                            onChange={this.handleDropshipType.bind(this)} />
-                                                        <label class="form-radio-label" for="manualDropship">Manual</label>
+                                                        <input class="form-radio-input me-2" type="radio" name="deliveryType" id="regularDelivery" value="regular"
+                                                            checked={this.state.deliveryType == 'regular'}
+                                                            onChange={this.handleDeliveryType.bind(this)} />
+                                                        <label class="form-radio-label" for="regularDelivery">Regular</label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-radio-input me-2" type="radio" name="dropshipType" id="marketplaceDropship" value="marketplace"
-                                                            checked={this.state.dropshipType == 'marketplace'}
-                                                            onChange={this.handleDropshipType.bind(this)} />
-                                                        <label class="form-radio-label" for="marketplaceDropship">From Marketplace</label>
+                                                        <input class="form-radio-input me-2" type="radio" name="deliveryType" id="codDelivery" value="cod"
+                                                            checked={this.state.deliveryType == 'cod'}
+                                                            onChange={this.handleDeliveryType.bind(this)} />
+                                                        <label class="form-radio-label" for="codDelivery">COD (Cash on Delivery)</label>
                                                     </div>
                                                 </div>
                                             </div>
-                                        ) : (
-                                            <div></div>
-                                        )
-                                    }
-                                    {
-                                        (this.state.isDropshipping == false || this.state.dropshipType == 'manual') ? (
-                                            <div>
-                                                <div class="mb-3">
-                                                    <label class="form-label">Shipping Address</label>
-                                                    <div class="w-100">
-                                                        <div class="card border-primary">
-                                                            {
-                                                                (selectedAddress) ? (
-                                                                    <div>
-                                                                        <div class="card-header p-2 bg-primary text-white">
-                                                                            {selectedAddress.alias}
-                                                                        </div>
-                                                                        <div class="card-body p-2" onClick={this.handleChangeAddress.bind(this)}>
-                                                                            <div>{selectedAddress.name} ({selectedAddress.phone})</div>
-                                                                            <div>{selectedAddress.fullAddress}, {selectedAddress.city}, {selectedAddress.province}, {selectedAddress.zipCode}</div>
-                                                                        </div>
-                                                                        <input type="text" name="addressId" value={this.state.orderData.addressId} class="form-control form-control-card d-none" />
-                                                                    </div>
-                                                                ) : (
-                                                                    <div class="card-body p-2">
-                                                                        <div class="text-center mb-2">
-                                                                            You have no shipping address, please add new shipping address
-                                                                        </div>
-                                                                        <button class="btn btn-primary w-100" onClick={this.handleAddNewAddress.bind(this)}>
-                                                                            <i class="fa-solid fa-plus me-2" />
-                                                                            Add Shipping Addresss
-                                                                        </button>
-                                                                        <input type="text" name="addressId" value="" class="form-control form-control-card d-none" />
-                                                                    </div>
-                                                                )
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label">Delivery Type</label>
+                                            {
+                                                (this.state.isDropshipping == true && this.state.deliveryType == 'cod') ? (
                                                     <div>
-                                                        <div class="form-check form-check-inline ps-0">
-                                                            <input class="form-radio-input me-2" type="radio" name="deliveryType" id="regularDelivery" value="regular"
-                                                                checked={this.state.deliveryType == 'regular'}
-                                                                onChange={this.handleDeliveryType.bind(this)} />
-                                                            <label class="form-radio-label" for="regularDelivery">Regular</label>
-                                                        </div>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-radio-input me-2" type="radio" name="deliveryType" id="codDelivery" value="cod"
-                                                                checked={this.state.deliveryType == 'cod'}
-                                                                onChange={this.handleDeliveryType.bind(this)} />
-                                                            <label class="form-radio-label" for="codDelivery">COD (Cash on Delivery)</label>
+                                                        <div class="mb-3 mx-1">
+                                                            <label class="form-label">COD Billing Amount</label>
+                                                            <div>
+                                                                <input type="text" name="codBillAmount" class="form-control"
+                                                                    placeholder="100.000"
+                                                                    value={this.state.orderData.codBillAmount}
+                                                                    onChange={e => this.handleBillAmountChange(e.target.value)} />
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                ) : (
+                                                    <div></div>
+                                                )
+                                            }
+                                            <div class="mb-3 mx-1">
+                                                <label class="form-label">Courier</label>
+                                                <div>
+                                                    <select class="form-control" name="courier" value={this.state.orderData.courier}
+                                                        onChange={this.handleCourierChange.bind(this)}
+                                                        disabled={this.state.deliveryType == 'cod'}>
+                                                        <option value=""></option>
+                                                        <option value="JNE">JNE</option>
+                                                        <option value="JNT">JNT</option>
+                                                        <option value="POS">Pos Indonesia</option>
+                                                        <option value="SiCepat">SiCepat</option>
+                                                        <option value="AnterAja">AnterAja</option>
+                                                        <option value="Others">Others</option>
+                                                    </select>
                                                 </div>
                                             </div>
-                                        ) : (
-                                            <div class="mb-3">
-                                                <label class="form-label">Upload Delivery Label</label>
-                                                <div class="w-100">
-                                                    <div class="card border-primary">
-                                                        <div class="card-body">
-                                                            <button class="btn btn-primary w-100" type="button" onClick={this.handleUpload.bind(this)}>
-                                                                <i class="fa fa-upload me-2" />
-                                                                Upload Label from Marketplace
-                                                            </button>
-                                                            {
-                                                                (this.state.deliveryLabelFile) ? (
-                                                                    (this.isPdf(this.state.deliveryLabelFile)) ? (
-                                                                        <div>
-                                                                            <embed class="w-100 mt-2" height="400px" src={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />
-                                                                        </div>
-                                                                    ) : (
-                                                                        <div>
-                                                                            <img class="w-100 mt-2" src={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />
-                                                                        </div>
-                                                                    )
-                                                                ) : (
-                                                                    <div></div>
-                                                                )
-                                                            }
+                                            <div class="mb-3 mx-1">
+                                                <label class="form-label">Comments</label>
+                                                <div>
+                                                    <input type="text" name="comments" class="form-control"
+                                                        value={this.state.orderData.comments}
+                                                        onChange={this.handleOrderDataChange.bind(this)} />
+                                                </div>
+                                            </div>
+                                        </FormValidate>
+                                    ) : (
+                                        <div>
+                                            <div class="alert alert-info">Please review your payment information</div>
+                                            <div class="row mb-2 mx-1">
+                                                <div class="col-6 fw-bold">
+                                                    Total Product
+                                                </div>
+                                                <div class="col text-end fw-bold">
+                                                    IDR. {App.Utils.formatCurrency(this.state.orderValue)}
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2 mx-1">
+                                                <div class="col-6 fw-bold">
+                                                    Delivery Fee
+                                                </div>
+                                                <div class="col text-end fw-bold">
+                                                    IDR. {App.Utils.formatCurrency(this.state.deliveryFee)}
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2 mx-1">
+                                                <div class="col-6">
+                                                    Admin Fee
+                                                </div>
+                                                <div class="col text-end">
+                                                    IDR. {App.Utils.formatCurrency(this.state.adminFee)}
+                                                </div>
+                                            </div>
+                                            {
+                                                (this.state.deliveryType == 'cod') ? (
+                                                    <div>
+                                                        <div class="row mb-2 mx-1 fw-bold border-top pt-2">
+                                                            <div class="col-6">
+                                                                SubTotal
+                                                            </div>
+                                                            <div class="col text-end fw-bold">
+                                                                IDR. {App.Utils.formatCurrency(this.state.subTotal)}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mb-2 mx-1">
+                                                            <div class="col-6">
+                                                                COD Fee ({this.state.codPercentage * 100}% from SubTotal)
+                                                            </div>
+                                                            <div class="col text-end">
+                                                                IDR. {App.Utils.formatCurrency(this.state.codFee)}
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                ) : (
+                                                    <div></div>
+                                                )
+                                            }
+                                            <div class="row mb-2 mx-1 fw-bold border-top pt-2">
+                                                <div class="col-6">
+                                                    Total Payment
                                                 </div>
-                                                <input type="file" name="deliveryLabel" class="d-none" accept="application/pdf,image/*"
-                                                    onChange={this.handleUploadChange.bind(this)}
-                                                />
+                                                <div class="col text-end fw-bold">
+                                                    IDR. {App.Utils.formatCurrency(this.state.totalPayment)}
+                                                </div>
                                             </div>
-                                        )
-                                    }
-                                    <div class="mb-3">
-                                        <label class="form-label">Courier</label>
-                                        <div>
-                                            <select class="form-control" name="courier" value={this.state.orderData.courier}
-                                                onChange={this.handleCourierChange.bind(this)}
-                                                disabled={this.state.deliveryType == 'cod'}>
-                                                <option value=""></option>
-                                                <option value="JNE">JNE</option>
-                                                <option value="Shop Courier">Shop Courier</option>
-                                                <option value="Lalamove">Lalamove</option>
-                                                <option value="Others">Others</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Comments</label>
-                                        <div>
-                                            <input type="text" name="comments" class="form-control" />
-                                        </div>
-                                    </div>
-                                    {
-                                        anyOutOfStockProduct ? (
-                                            <div class="alert alert-warning">Some of your products maybe run out of stock. Are you still want to submit order?</div>
-                                        ) : (<div></div>)
+                                            {
+                                                (this.state.isDropshipping == true && this.state.deliveryType == 'cod') ? (
+                                                    <div>
+                                                        <div class="row mt-5 mb-2 mx-1 fw-bold">
+                                                            <div class="col-6">
+                                                                COD Bill Amount
+                                                            </div>
+                                                            <div class="col text-end fw-bold">
+                                                                IDR. {App.Utils.formatCurrency(this.state.orderData.codBillAmount)}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mb-2 mx-1">
+                                                            <div class="col-6">
+                                                                Total Payment
+                                                            </div>
+                                                            <div class="col text-end">
+                                                                - IDR. {App.Utils.formatCurrency(this.state.totalPayment)}
+                                                            </div>
+                                                        </div>
 
-                                    }
-                                </FormValidate>
+                                                        {
+                                                            (this.state.codProfitMargin > 0) ? (
+                                                                <div class="row mb-2 mx-1 fw-bold border-top pt-2 text-success">
+                                                                    <div class="col-6">
+                                                                        Profit Margin
+                                                                    </div>
+                                                                    <div class="col text-end fw-bold">
+                                                                        IDR. {App.Utils.formatCurrency(this.state.codProfitMargin)}
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div class="row mb-2 mx-1 fw-bold border-top pt-2 text-danger">
+                                                                    <div class="col-6">
+                                                                        Profit Margin
+                                                                    </div>
+                                                                    <div class="col text-end fw-bold">
+                                                                        IDR. {App.Utils.formatCurrency(this.state.codProfitMargin)}
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        }
+                                                    </div>
+                                                ) : (
+                                                    <div></div>
+                                                )
+                                            }
+                                        </div>
+                                    )
+                                }
+                                {
+                                    anyOutOfStockProduct ? (
+                                        <div class="alert alert-warning">Some of your products maybe run out of stock</div>
+                                    ) : (<div></div>)
+
+                                }
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-primary" onClick={this.handleSubmitOrderForm.bind(this)}>Submit</button>
+                                <button type="button" class="btn btn-secondary" onClick={this.handlePrevForm.bind(this)}>Back</button>
+                                <button type="button" class="btn btn-primary" onClick={this.handleNextForm.bind(this)}>Next</button>
+                                {/*<button type="button" class="btn btn-primary" onClick={this.handleSubmitOrderForm.bind(this)}>Submit</button>*/}
                             </div>
                         </Progress>
                     </div>
-                </ModalPopUp>
+                </ModalPopUp >
 
                 <ModalPopUp ref={this.addressModalRef} id="addressModal" isShown={this.state.isShownAddressModal} class="modal" onHidden={this.handleAddressPopUpHidden.bind(this)}>
                     <div class="modal-dialog" role="document">
@@ -1029,7 +1371,7 @@ class CartPage extends React.Component {
                 </ModalPopUp>
 
                 <ModalAddressForm ref={this.modalAddressFormRef} handleSubmit={this.handleSubmit.bind(this)} />
-            </div>
+            </div >
         );
     }
 }

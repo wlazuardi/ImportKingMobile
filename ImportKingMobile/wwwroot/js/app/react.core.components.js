@@ -331,8 +331,40 @@ class FormValidate extends React.Component {
     componentDidMount() {
         this.$el = $(this.el);
         var self = this;
-        this.$el.validate({
+
+        this.validator = this.$el.validate({
             rules: this.props.rules,
+            ignore: [],
+            messages: this.props.messages ? this.props.messages : [],
+            errorPlacement: this.props.errorPlacement ? this.props.errorPlacement : this.errorPlacement,
+            submitHandler: function () {
+                if (self.props.submitHandler)
+                    self.props.submitHandler(this);
+            }
+        });
+    }
+
+    errorPlacement(error, element) {
+        var name = $(element).attr('name');
+        for (var cnt = 0; cnt < this.findByName(name).length; cnt++) {
+            var elem = this.findByName(name)[cnt];
+            $(elem).parent().append(error);
+        }
+    }
+
+    updateRules(rules) {
+        this.validator.destroy();
+
+        if (!rules) {
+            rules = this.props.rules;
+        }
+
+        this.$el = $(this.el);
+        var self = this;
+        this.$el.validate({
+            rules: rules,
+            messages: this.props.messages ? this.props.messages : [],
+            errorPlacement: this.props.errorPlacement ? this.props.errorPlacement : this.errorPlacement,
             ignore: [],
             submitHandler: function () {
                 if (self.props.submitHandler)
@@ -343,6 +375,10 @@ class FormValidate extends React.Component {
 
     handleSubmit() {
         this.$el.submit();
+    }
+
+    isValid() {
+        return this.$el.valid();
     }
 
     render() {
