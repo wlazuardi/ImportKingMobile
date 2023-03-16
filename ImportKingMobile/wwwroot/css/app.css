@@ -106,8 +106,7 @@ span.select2-selection__arrow {
 .custom-card-text {
     line-height: 1;
     margin: 0px;
-    padding: 0px 7px;
-    text-transform: capitalize;
+    padding: 0px 7px;    
     text-overflow: ellipsis;
 }
 
@@ -188,4 +187,12 @@ li.col-4.product-item {
     position: absolute;
     left: 49px;
     top: 25px;
+}
+
+#orderModal .modal-fullscreen-sm-down .modal-footer {
+    position: fixed;
+    bottom: 55px;
+    width: 100%;
+    background: #ffffff;
+    padding: 10px;
 }

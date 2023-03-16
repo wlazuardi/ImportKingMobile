@@ -29,10 +29,10 @@
         }).then(result => {
             result = result.filter(x => x.isInactive == false);
 
-            $.map(result, function (item) {
-                item.name = item.name.toLowerCase();
-                return item;
-            });
+            //$.map(result, function (item) {
+            //    item.name = item.name.toLowerCase();
+            //    return item;
+            //});
 
             result.sort((a, b) => {
                 if (a.name < b.name) {
@@ -107,7 +107,7 @@
         var { isLoading, categories } = this.state;
         return (
             <div>
-                <section class="px-3 py-1 mt-2 mb-1 fixed-top bg-white" style={{ top: '55px' }}>
+                <section class="px-3 py-1 mb-1 fixed-top bg-white" style={{ top: '55px' }}>
                     <input type="text" placeholder="Search" class="bg-secondary-light border-0 form-control"
                         onChange={this.handleSearch.bind(this)}
                     />

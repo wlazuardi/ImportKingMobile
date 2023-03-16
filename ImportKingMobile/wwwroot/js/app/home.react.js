@@ -28,10 +28,10 @@
         }).then(result => {
             result = result.filter(x => x.isShowOnHome == true && x.isInactive != true);
 
-            $.map(result, function (item) {
-                item.name = item.name.toLowerCase();
-                return item;
-            });
+            //$.map(result, function (item) {
+            //    item.name = item.name.toLowerCase();
+            //    return item;
+            //});
 
             result.sort((a, b) => {
                 if (a.name < b.name) {

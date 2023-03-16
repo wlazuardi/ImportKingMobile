@@ -431,6 +431,9 @@ class OrderDetailPage extends React.Component {
             },
             isShownReorder: false,
             isShownProgress: false,
+            isShownDeliveryTracking: false,
+            isLoadingDeliveryTracking: false,
+            deliveryTracking: null,
             alert: null
         };
         this.reorderModalRef = React.createRef();
@@ -540,6 +543,12 @@ class OrderDetailPage extends React.Component {
     handleReorderPopUpHidden() {
         this.setState({
             isShownReorder: false
+        });
+    };
+
+    handleDeliveryTrackingHidden() {
+        this.setState({
+            isShownDeliveryTracking: false
         });
     };
 
@@ -672,8 +681,51 @@ class OrderDetailPage extends React.Component {
         }
     }
 
+    handleTrackShipping() {
+        var { order } = this.state;
+        var waybill = order.data.noResi;
+        var courier = order.data.shippingCourier;
+
+        this.setState({
+            isLoadingDeliveryTracking: true,
+            isShownDeliveryTracking: true
+        });
+
+        fetch("https://importking.mooo.com/api/waybills/" + courier + "/" + waybill)
+            .then((res) => {
+                if (res.status == 200)
+                    return res.json();
+
+                throw {
+                    message: res.statusText
+                };
+            })
+            .then((result) => {
+                var tracking = (result && result.rajaOngkir && result.rajaOngkir.result) ? result.rajaOngkir.result : null;
+                this.setState({
+                    deliveryTracking: tracking,
+                    isLoadingDeliveryTracking: false
+                });
+
+            }, (error) => {
+                this.setState({
+                    isLoadingDeliveryTracking: false
+                });
+            });
+    }
+
+    renderManifest(item) {
+        return (
+            <div class="row mb-3">
+                <div class="fw-bold">{item.manifestDescription}</div>
+                <div>{item.manifestDate} {item.manifestTime}</div>
+                <div>{item.cityName}</div>
+            </div>
+        );
+    }
+
     render() {
-        const { order, orderDetails, stockOutDetails } = this.state;
+        const { order, orderDetails, stockOutDetails, deliveryTracking } = this.state;
         let isAdmin = userType == 3;
         return (
             <Progress isShown={this.state.isShownProgress}>
@@ -699,7 +751,7 @@ class OrderDetailPage extends React.Component {
                     (isAdmin) ? (<div></div>) : (
                         <div>
                             {
-                                (userType == 0 && order && order.data && order.data.status == 'Waiting Payment') ?
+                                (order && order.data && order.data.status == 'Waiting Payment') ?
                                     (
                                         <div class="d-grid gap-2 px-2 mb-2">
                                             <div class="alert alert-info">Please complete payment to process the order</div>
@@ -710,6 +762,13 @@ class OrderDetailPage extends React.Component {
                             <div class="d-grid gap-2 px-2 mb-2">
                                 <button class="btn btn-outline-primary" type="button" onClick={this.handleReorder.bind(this)}>Reorder Product</button>
                             </div>
+                            {
+                                (order && order.data && order.data.noResi) ? (
+                                    <div class="d-grid gap-2 px-2 mb-2">
+                                        <button class="btn btn-outline-primary" type="button" onClick={this.handleTrackShipping.bind(this)}>Track Shipping</button>
+                                    </div>
+                                ) : (<div></div>)
+                            }
                         </div>
                     )
                 }
@@ -728,6 +787,73 @@ class OrderDetailPage extends React.Component {
                             <div class="modal-footer px-2">
                                 <button class="btn btn-primary" onClick={this.handleReorderConfirm.bind(this)}>Yes</button>
                                 <button class="btn btn-danger" data-bs-dismiss="modal">No</button>
+                            </div>
+                        </div>
+                    </div>
+                </ModalPopUp>
+
+                <ModalPopUp id="deliveryTrackingModal" ref={this.deliveryTrackingModalRef} isShown={this.state.isShownDeliveryTracking} class="modal" onHidden={this.handleDeliveryTrackingHidden.bind(this)}>
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Delivery Tracking</h5>
+                                <button type="button" class="close btn btn-secondary btn-sm" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body px-2">
+                                {
+                                    (deliveryTracking != null) ?
+                                        (
+                                            <div>
+                                                <div class="row">
+                                                    <div class="col text-right">
+                                                        <label class="fw-bold form-label">Courier Code:</label>
+                                                    </div>
+                                                    <div class="col text-left">{deliveryTracking.summary.courierCode}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col text-right">
+                                                        <label class="fw-bold form-label">Courier Name:</label>
+                                                    </div>
+                                                    <div class="col text-left">{deliveryTracking.summary.courierName}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col text-right">
+                                                        <label class="fw-bold form-label">Waybill No:</label>
+                                                    </div>
+                                                    <div class="col text-left">{deliveryTracking.summary.waybillNumber}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col text-right">
+                                                        <label class="fw-bold form-label">Waybill Date:</label>
+                                                    </div>
+                                                    <div class="col text-left">{deliveryTracking.summary.waybillDate}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col text-right">
+                                                        <label class="fw-bold form-label">Status:</label>
+                                                    </div>
+                                                    <div class="col text-left">{deliveryTracking.summary.status}</div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col text-right">
+                                                        <label class="fw-bold form-label">Manifests:</label>
+                                                    </div>
+                                                </div>
+                                                {
+                                                    deliveryTracking.manifest.map(item => {
+                                                        return this.renderManifest(item)
+                                                    })
+                                                }
+                                            </div>
+                                        ) : (
+                                            <div class="my-3">No Data Found</div>
+                                        )
+                                }
+                            </div>
+                            <div class="modal-footer px-2">
+                                <button class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
