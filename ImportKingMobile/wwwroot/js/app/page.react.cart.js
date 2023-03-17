@@ -905,7 +905,7 @@ class CartPage extends React.Component {
 
         if (deliveryType == 'cod') {
             var codBillAmount = orderData.codBillAmount.replace(/[.]/gi, '');
-            codFee = Math.ceil(codPercentage * subTotal);
+            codFee = Math.ceil(codPercentage * parseInt(codBillAmount));
             totalPayment = subTotal + codFee;
 
             if (isDropshipping) {
@@ -1172,15 +1172,15 @@ class CartPage extends React.Component {
                                                                                 (this.state.deliveryLabelFile) ? (
                                                                                     (this.isPdf(this.state.deliveryLabelFile)) ? (
                                                                                         <div>
-                                                                                                {/*<embed type="application/pdf" class="w-100 mt-2" height="400px" src={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />*/}
-                                                                                                <iframe
-                                                                                                    class="mt-2"
-                                                                                                    src={'https://drive.google.com/viewerng/viewer?embedded=true&url=https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile + '#toolbar=0&scrollbar=0'}
-                                                                                                    frameBorder="0"
-                                                                                                    scrolling="auto"
-                                                                                                    height="400px"
-                                                                                                    width="100%"
-                                                                                                ></iframe>
+                                                                                            {/*<embed type="application/pdf" class="w-100 mt-2" height="400px" src={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />*/}
+                                                                                            <iframe
+                                                                                                class="mt-2"
+                                                                                                src={'https://drive.google.com/viewerng/viewer?embedded=true&url=https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile + '#toolbar=0&scrollbar=0'}
+                                                                                                frameBorder="0"
+                                                                                                scrolling="auto"
+                                                                                                height="400px"
+                                                                                                width="100%"
+                                                                                            ></iframe>
                                                                                         </div>
                                                                                     ) : (
                                                                                         <div>
@@ -1276,6 +1276,22 @@ class CartPage extends React.Component {
                                         ) : (
                                             <div class="mb-5">
                                                 <div class="alert alert-info">Please review your payment information</div>
+                                                {
+                                                    (this.state.isDropshipping == true && this.state.deliveryType == 'cod') ? (
+                                                        <div>
+                                                            <div class="row mt-5 mb-2 fw-bold">
+                                                                <div class="col-6">
+                                                                    COD Bill Amount
+                                                                </div>
+                                                                <div class="col text-end fw-bold">
+                                                                    IDR. {App.Utils.formatCurrency(this.state.orderData.codBillAmount)}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div></div>
+                                                    )
+                                                }
                                                 <div class="row mb-2">
                                                     <div class="col-6 fw-bold">
                                                         Total Product
@@ -1303,17 +1319,17 @@ class CartPage extends React.Component {
                                                 {
                                                     (this.state.deliveryType == 'cod') ? (
                                                         <div>
-                                                            <div class="row mb-2 fw-bold border-top pt-2">
-                                                                <div class="col-6">
-                                                                    SubTotal
-                                                                </div>
-                                                                <div class="col text-end fw-bold">
-                                                                    IDR. {App.Utils.formatCurrency(this.state.subTotal)}
-                                                                </div>
-                                                            </div>
+                                                            {/*<div class="row mb-2 fw-bold border-top pt-2">*/}
+                                                            {/*    <div class="col-6">*/}
+                                                            {/*        SubTotal*/}
+                                                            {/*    </div>*/}
+                                                            {/*    <div class="col text-end fw-bold">*/}
+                                                            {/*        IDR. {App.Utils.formatCurrency(this.state.subTotal)}*/}
+                                                            {/*    </div>*/}
+                                                            {/*</div>*/}
                                                             <div class="row mb-2">
                                                                 <div class="col-6">
-                                                                    COD Fee ({this.state.codPercentage * 100}% from SubTotal)
+                                                                    COD Fee<br />({this.state.codPercentage * 100}% from COD Bill Amount)
                                                                 </div>
                                                                 <div class="col text-end">
                                                                     IDR. {App.Utils.formatCurrency(this.state.codFee)}
@@ -1335,23 +1351,6 @@ class CartPage extends React.Component {
                                                 {
                                                     (this.state.isDropshipping == true && this.state.deliveryType == 'cod') ? (
                                                         <div>
-                                                            <div class="row mt-5 mb-2 fw-bold">
-                                                                <div class="col-6">
-                                                                    COD Bill Amount
-                                                                </div>
-                                                                <div class="col text-end fw-bold">
-                                                                    IDR. {App.Utils.formatCurrency(this.state.orderData.codBillAmount)}
-                                                                </div>
-                                                            </div>
-                                                            <div class="row mb-2">
-                                                                <div class="col-6">
-                                                                    Total Payment
-                                                                </div>
-                                                                <div class="col text-end">
-                                                                    - IDR. {App.Utils.formatCurrency(this.state.totalPayment)}
-                                                                </div>
-                                                            </div>
-
                                                             {
                                                                 (this.state.codProfitMargin > 0) ? (
                                                                     <div class="row mb-2 fw-bold border-top pt-2 text-success">
@@ -1389,12 +1388,12 @@ class CartPage extends React.Component {
                                 }
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-sm btn-secondary" onClick={this.handlePrevForm.bind(this)}>Back</button>
+                                <button type="button" class="btn btn-sm btn-secondary w-25" onClick={this.handlePrevForm.bind(this)}>Back</button>
                                 {
                                     (this.state.step == '2') ? (
-                                        <button type="button" class="btn btn-sm btn-primary" onClick={this.handleSubmitOrderForm.bind(this)}>Submit</button>
+                                        <button type="button" class="btn btn-sm btn-primary w-25" onClick={this.handleSubmitOrderForm.bind(this)}>Submit</button>
                                     ) : (
-                                        <button type="button" class="btn btn-sm btn-primary" onClick={this.handleNextForm.bind(this)}>Next</button>
+                                        <button type="button" class="btn btn-sm btn-primary w-25" onClick={this.handleNextForm.bind(this)}>Next</button>
                                     )
                                 }
                             </div>

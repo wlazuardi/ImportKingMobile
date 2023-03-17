@@ -401,6 +401,19 @@ class OrderHeader extends React.Component {
 
                             <p class="card-text m-0 small pt-1 fw-bolder">Shipping Address: </p>
                             <p class="card-text m-0 small">{data.shippingAddress}, {data.shippingCity}, Shipping Province: {data.shippingProvince}, {data.shippingZipCode}</p>
+
+                            <div class="row pt-1 card-text small">
+                                <div class="col-6 m-0 fw-bolder">Total Product: </div>
+                                <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.orderValue)}</div>
+                            </div>
+                            <div class="row pt-1 card-text small">
+                                <div class="col-6 m-0 fw-bolder">Total Payment: </div>
+                                <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.paymentAmount)}</div>
+                            </div>
+                            <div class="row pt-1 card-text small">
+                                <div class="col-6 m-0 fw-bolder">Total Payment: </div>
+                                <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.paymentAmount)}</div>
+                            </div>
                         </div>
                     </div>
                 );
