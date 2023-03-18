@@ -372,6 +372,28 @@ class OrderHeader extends React.Component {
         });
     };
 
+    renderDeliveryType(data) {
+        if (data.isDropshipping) {
+            if (data.isFromMarketplace) {
+                return (<span class="badge badge-sm text-white bg-success"><i class="fa fa-shopping-bag"></i> DROPSHIP MARKETPLACE</span>);
+            }
+            else {
+                return (<span class="badge badge-sm text-white bg-success"><i class="fa fa-truck"></i> DROPSHIP</span>);
+            }
+        }
+        else if (data.isReseller) {
+            return (<span class="badge badge-sm text-white bg-danger"><i class="fa fa-tag"></i> RESELLER</span>);
+        }
+        return (<span class="badge badge-sm text-dark bg-white"><i class="fa fa-tag"></i> REGULAR</span>);
+    }
+
+    renderIsCOD(data) {
+        if (data.isCOD) {
+            return (<span class="badge badge-sm text-white bg-success ms-2">COD</span>);
+        }
+        return (<span></span>);
+    }
+
     render() {
         const { order } = this.state;
         var isLoading = order.isLoading,
@@ -387,32 +409,112 @@ class OrderHeader extends React.Component {
             }
             else {
                 return (
-                    <div class="card border-secondary mb-3 mx-2 mt-2" >
-                        <div class="card-header p-2">
-                            {data.orderNo}
-                            <StatusBadge status={data.status} />
+                    <div>
+                        <div class="card border-secondary mb-3 mx-2 mt-2" >
+                            <div class="card-header p-2">
+                                {data.orderNo}
+                                <StatusBadge status={data.status} />
+                            </div>
+                            <div class="card-body text-secondary p-2">
+                                <p class="card-text m-0 small fw-bolder">No Resi: <span class="float-end">{moment(data.createdDate).format('lll')}</span></p>
+                                <p class="card-text m-0 small">{data.noResi ? data.noResi : 'N/A'} ({data.shippingCourier})</p>
+
+                                <p class="card-text m-0 small pt-1 fw-bolder">Shipped To: </p>
+                                <p class="card-text m-0 small">{data.shippingName} ({data.shippingPhone})</p>
+
+                                <div class="row pt-1 card-text small">
+                                    <div class="col-6 m-0 fw-bolder">Shipping Address:</div>
+                                    <div class="col-6 m-0 text-end">
+                                        {this.renderDeliveryType(data)}
+                                        {this.renderIsCOD(data)}
+                                    </div>
+                                </div>
+                                <p class="card-text m-0 small">
+                                    {data.shippingAddress}, {data.shippingCity}, {data.shippingProvince}, {data.shippingZipCode}
+                                </p>
+
+                                {
+                                    (data.isDropshipping) ? (
+                                        <div>
+                                            <p class="card-text m-0 small pt-1 fw-bolder">Dropshipper Name: </p>
+                                            <p class="card-text m-0 small">{data.dropshipperName} ({data.dropshipperPhone})</p>
+                                        </div>
+                                    ) : (<div />)
+                                }
+
+                                {
+                                    (data.comments) ? (
+                                        <div>
+                                            <p class="card-text m-0 small pt-1 fw-bolder">Comments: </p>
+                                            <p class="card-text m-0 small">{data.comments}</p>
+                                        </div>
+                                    ) : (<div />)
+                                }
+                            </div>
                         </div>
-                        <div class="card-body text-secondary p-2">
-                            <p class="card-text m-0 small fw-bolder">No Resi: <span class="float-end">{moment(data.createdDate).format('lll')}</span></p>
-                            <p class="card-text m-0 small">{data.noResi ? data.noResi : 'N/A'} ({data.shippingCourier})</p>
 
-                            <p class="card-text m-0 small pt-1 fw-bolder">Shipped To: </p>
-                            <p class="card-text m-0 small">{data.shippingName} ({data.shippingPhone})</p>
-
-                            <p class="card-text m-0 small pt-1 fw-bolder">Shipping Address: </p>
-                            <p class="card-text m-0 small">{data.shippingAddress}, {data.shippingCity}, Shipping Province: {data.shippingProvince}, {data.shippingZipCode}</p>
-
-                            <div class="row pt-1 card-text small">
-                                <div class="col-6 m-0 fw-bolder">Total Product: </div>
-                                <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.orderValue)}</div>
+                        <div class="card border-secondary mb-3 mx-2 mt-2" >
+                            <div class="card-header p-2">
+                                Payment Information
                             </div>
-                            <div class="row pt-1 card-text small">
-                                <div class="col-6 m-0 fw-bolder">Total Payment: </div>
-                                <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.paymentAmount)}</div>
-                            </div>
-                            <div class="row pt-1 card-text small">
-                                <div class="col-6 m-0 fw-bolder">Total Payment: </div>
-                                <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.paymentAmount)}</div>
+                            <div class="card-body text-secondary p-2">
+                                {
+                                    (data.codBillAmount) ? (
+                                        <div class="row pt-1 card-text small fw-bolder">
+                                            <div class="col-6 m-0">COD Bill Amount: </div>
+                                            <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.codBillAmount)}</div>
+                                        </div>
+                                    ) : (<div />)
+                                }
+
+                                <div class="row pt-1 card-text small fw-bolder">
+                                    <div class="col-6 m-0">Total Product: </div>
+                                    <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.orderValue)}</div>
+                                </div>
+                                <div class="row pt-1 card-text small">
+                                    <div class="col-6 m-0">Delivery Fee: </div>
+                                    <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.deliveryFee)}</div>
+                                </div>
+                                <div class="row pt-1 card-text small">
+                                    <div class="col-6 m-0">Admin Fee: </div>
+                                    <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.adminFee)}</div>
+                                </div>
+
+                                {
+                                    (data.codFee) ? (
+                                        <div class="row pt-1 card-text small">
+                                            <div class="col-6 m-0">COD Fee: </div>
+                                            <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.codFee)}</div>
+                                        </div>
+                                    ) : (<div />)
+                                }
+
+                                <div class="row pt-1 card-text small fw-bolder">
+                                    <div class="col-6 m-0">Payment Amount: </div>
+                                    <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.paymentAmount)}</div>
+                                </div>
+
+                                {
+                                    (data.isCOD) ? (
+                                        <div>
+                                            {
+                                                (data.codBillAmount - data.paymentAmount > 0) ? (
+                                                    <div class="row pt-1 card-text small text-success fw-bolder">
+                                                        <div class="col-6 m-0">Payment Amount: </div>
+                                                        <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.codBillAmount - data.paymentAmount)}</div>
+                                                    </div>
+                                                ) : (
+                                                    <div class="row pt-1 card-text small text-error fw-bolder">
+                                                        <div class="col-6 m-0">Payment Amount: </div>
+                                                        <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.codBillAmount - data.paymentAmount)}</div>
+                                                    </div>
+                                                )
+                                            }
+                                        </div>
+                                    ) : (
+                                        <div></div>
+                                    )
+                                }
                             </div>
                         </div>
                     </div>
@@ -877,3 +979,5 @@ class OrderDetailPage extends React.Component {
 };
 
 ReactDOM.render(<OrderDetailPage />, document.getElementById('root'));
+
+$('.nav-bottom .nav-link[href="/Order"]').addClass('active');

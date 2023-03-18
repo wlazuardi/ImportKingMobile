@@ -341,6 +341,8 @@ class CartPage extends React.Component {
             user: null,
             orderValue: 0,
             deliveryFee: 0,
+            deliveryFeeDiscountPercentage: 0,
+            deliveryFeeDiscount: 0,
             adminFee: 0,
             subTotal: 0,
             codPercentage: 0.02,
@@ -393,6 +395,7 @@ class CartPage extends React.Component {
         this.addressListRef = React.createRef();
         this.modalAddressFormRef = React.createRef();
         this.loadUser();
+        this.loadLookup();
     }
 
     loadUser() {
@@ -412,9 +415,48 @@ class CartPage extends React.Component {
                 if (result.userType == 1) {
                     isDropshipping = true;
                 }
+
+                var deliveryFeeDiscountPercentage = parseFloat(result.deliveryFeeDiscount);
+                if (isNaN(deliveryFeeDiscountPercentage)) {
+                    deliveryFeeDiscountPercentage = 0;
+                }
+
                 this.setState({
                     isDropshipping: isDropshipping,
-                    user: result
+                    user: result,
+                    deliveryFeeDiscountPercentage: deliveryFeeDiscountPercentage
+                });
+            });
+    }
+
+    loadLookup() {
+        fetch('https://importking.mooo.com/api/Lookups')
+            .then(res => {
+                if (res.status == 200) {
+                    return res.json();
+                }
+                else {
+                    throw {
+                        message: res.statusText
+                    }
+                }
+            })
+            .then((result) => {
+                var adminFee = 0, codPercentage = 0;
+
+                var temp = result.filter(x => x.category == 'ADMIN_FEE');
+                if (temp && temp.length > 0) {
+                    adminFee = parseInt(temp[0].value);
+                }
+
+                var temp = result.filter(x => x.category == 'COD_FEE');
+                if (temp && temp.length > 0) {
+                    codPercentage = parseFloat(temp[0].value);
+                }
+
+                this.setState({
+                    adminFee: adminFee,
+                    codPercentage: codPercentage
                 });
             });
     }
@@ -568,6 +610,11 @@ class CartPage extends React.Component {
         //    });
         //}
 
+        var codBillAmount = 0;
+        if (orderData.codBillAmount) {
+            codBillAmount = parseInt(orderData.codBillAmount.replace(/[.]|\D/gi, ''));
+        }
+
         var formData = {
             email: userMail,
             orderValue: this.state.orderValue,
@@ -587,7 +634,7 @@ class CartPage extends React.Component {
             deliveryLabelFile: deliveryLabelFile,
             dropshipperName: orderData.dropshipperName,
             dropshipperPhone: orderData.dropshipperPhone,
-            codBillAmount: (isDropshipping && deliveryType == 'cod') ? orderData.codBillAmount : 0,
+            codBillAmount: (isDropshipping && deliveryType == 'cod') ? codBillAmount : 0,
             bookingCode: orderData.bookingCode,
             deliveryFee: this.state.deliveryFee,
             adminFee: this.state.adminFee,
@@ -619,7 +666,7 @@ class CartPage extends React.Component {
             })
             .then(result => {
 
-                if (this.state.user.userType == 0) {
+                if ((this.state.user.userType == 0 || this.state.user.userType == 1) && deliveryType != 'cod') {
                     fetch('https://importking.mooo.com/api/Payments/' + result + '/Token', {
                         method: 'GET',
                         headers: { 'Content-Type': 'application/json' }
@@ -874,9 +921,11 @@ class CartPage extends React.Component {
             step,
             cartList,
             isDropshipping,
-            deliveryType,
+            deliveryType,            
             dropshipType,
             deliveryFee,
+            deliveryFeeDiscount,
+            deliveryFeeDiscountPercentage,
             adminFee,
             subTotal,
             codPercentage,
@@ -901,6 +950,8 @@ class CartPage extends React.Component {
             step++;
         }
 
+        deliveryFeeDiscount = parseInt(deliveryFee * deliveryFeeDiscountPercentage);
+        deliveryFee = parseInt(deliveryFee - deliveryFeeDiscount);
         subTotal = orderValue + deliveryFee + adminFee;
 
         if (deliveryType == 'cod') {
@@ -925,7 +976,8 @@ class CartPage extends React.Component {
             subTotal,
             codFee,
             totalPayment,
-            codProfitMargin
+            codProfitMargin,
+            deliveryFeeDiscount
         });
     }
 
@@ -1308,6 +1360,20 @@ class CartPage extends React.Component {
                                                         IDR. {App.Utils.formatCurrency(this.state.deliveryFee)}
                                                     </div>
                                                 </div>
+                                                {
+                                                    (this.state.deliveryFeeDiscountPercentage) ? (
+                                                        <div class="row mb-2">
+                                                            <div class="col-6 fw-bold">
+                                                                Delivery Fee Discount
+                                                            </div>
+                                                            <div class="col text-end fw-bold">
+                                                                - IDR. {App.Utils.formatCurrency(this.state.deliveryFee * this.state.deliveryFeeDiscountPercentage)}
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div />
+                                                    )
+                                                }
                                                 <div class="row mb-2">
                                                     <div class="col-6">
                                                         Admin Fee
