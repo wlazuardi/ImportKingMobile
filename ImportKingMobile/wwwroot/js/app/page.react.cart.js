@@ -372,6 +372,7 @@ class CartPage extends React.Component {
                 }
             },
             orderData: {
+                courier: 'jne',
                 dropshipperName: '',
                 dropshipperPhone: '',
                 bookingCode: '',
@@ -470,6 +471,19 @@ class CartPage extends React.Component {
     handleDropshipType(e) {
         this.setState({
             dropshipType: e.target.value
+        });
+
+        var { orderData } = this.state;
+
+        if (e.target.value == 'manual') {
+            orderData.courier = 'jne';
+        }
+        else {
+            orderData.courier = '';
+        }
+
+        this.setState({
+            orderData: orderData
         });
     }
 
@@ -811,15 +825,12 @@ class CartPage extends React.Component {
     }
 
     handleCourierChange(e) {
-        var { orderData, dropshipType } = this.state;
+        var { orderData } = this.state;
 
         orderData.courier = e.target.value;
-        if (orderData.courier == 'jne') {
-            dropshipType = 'manual';
-        }
+        
         this.setState({
-            orderData: orderData,
-            dropshipType: dropshipType
+            orderData: orderData
         });
     }
 
@@ -1117,7 +1128,7 @@ class CartPage extends React.Component {
                                                     <div>
                                                         <select class="form-control" name="courier" value={this.state.orderData.courier}
                                                             onChange={this.handleCourierChange.bind(this)}
-                                                            disabled={this.state.deliveryType == 'cod'}>
+                                                            disabled={this.state.deliveryType == 'cod' || this.state.dropshipType == 'manual'}>
                                                             <option value=""></option>
                                                             <option value="jne">JNE</option>
                                                             <option value="jnt">JNT</option>
@@ -1137,15 +1148,13 @@ class CartPage extends React.Component {
                                                                     <div class="form-check form-check-inline ps-0">
                                                                         <input class="form-radio-input me-2" type="radio" name="dropshipType" id="manualDropship" value="manual"
                                                                             checked={this.state.dropshipType == 'manual'}
-                                                                            onChange={this.handleDropshipType.bind(this)}
-                                                                            disabled={this.state.orderData.courier == 'jne'} />
+                                                                            onChange={this.handleDropshipType.bind(this)} />
                                                                         <label class="form-radio-label" for="manualDropship">Manual</label>
                                                                     </div>
                                                                     <div class="form-check form-check-inline">
                                                                         <input class="form-radio-input me-2" type="radio" name="dropshipType" id="marketplaceDropship" value="marketplace"
                                                                             checked={this.state.dropshipType == 'marketplace'}
-                                                                            onChange={this.handleDropshipType.bind(this)}
-                                                                            disabled={this.state.orderData.courier == 'jne'} />
+                                                                            onChange={this.handleDropshipType.bind(this)} />
                                                                         <label class="form-radio-label" for="marketplaceDropship">From Marketplace</label>
                                                                     </div>
                                                                 </div>
@@ -1213,6 +1222,7 @@ class CartPage extends React.Component {
                                                         <div>
                                                             <div class="mb-3">
                                                                 <label class="form-label">Upload Delivery Label</label>
+                                                                <div class="alert alert-info"><i class="fa fa-info-circle"/> Mandatory for Shopee Express & Lazada Express</div>
                                                                 <div class="w-100">
                                                                     <div class="card border-primary">
                                                                         <div class="card-body">
@@ -1285,7 +1295,6 @@ class CartPage extends React.Component {
                                                             <input class="form-radio-input me-2" type="radio" name="deliveryType" id="regularDelivery" value="regular"
                                                                 checked={this.state.deliveryType == 'regular'}
                                                                 onChange={this.handleDeliveryType.bind(this)}
-                                                                disabled={this.state.dropshipType == 'marketplace'}
                                                             />
                                                             <label class="form-radio-label" for="regularDelivery">Regular</label>
                                                         </div>
@@ -1293,7 +1302,6 @@ class CartPage extends React.Component {
                                                             <input class="form-radio-input me-2" type="radio" name="deliveryType" id="codDelivery" value="cod"
                                                                 checked={this.state.deliveryType == 'cod'}
                                                                 onChange={this.handleDeliveryType.bind(this)}
-                                                                disabled={this.state.dropshipType == 'marketplace'}
                                                             />
                                                             <label class="form-radio-label" for="codDelivery">COD (Cash on Delivery)</label>
                                                         </div>
@@ -1319,7 +1327,7 @@ class CartPage extends React.Component {
                                                 <div class="mb-3">
                                                     <label class="form-label">Comments</label>
                                                     <div>
-                                                        <input type="text" name="comments" class="form-control"
+                                                        <textarea name="comments" class="form-control"
                                                             value={this.state.orderData.comments}
                                                             onChange={this.handleOrderDataChange.bind(this)} />
                                                     </div>
