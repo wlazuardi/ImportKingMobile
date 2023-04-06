@@ -11,7 +11,10 @@
             types: [],
             colors: [],
             productList: [],
-            isLoadingProduct: false
+            isLoadingProduct: false,
+            isLoadingCategory: true,
+            isLoadingType: true,
+            isLoadingColor: true
         };
     }
 
@@ -32,29 +35,41 @@
                     var results = $.map(data, function (item) {
                         return {
                             id: item.categoryId,
-                            text: item.name,
+                            text: item.name.toUpperCase().trim(),
                             price: item.price
                         };
                     });
 
+                    results = results.sort(function (a, b) {
+                        if (a.text < b.text) {
+                            return -1;
+                        }
+                        if (a.text > b.text) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+
                     results.unshift({
                         id: 0,
-                        text: '- Show All -',
+                        text: 'Show All',
                         price: 0
                     });
 
-                    if (userEmail != 'haris.tester@gmail.com' && userEmail != 'sandbox.willy.lazuardi@gmail.com') { 
+                    if (userEmail != 'haris.tester@gmail.com' && userEmail != 'sandbox.willy.lazuardi@gmail.com') {
                         results = (results) ? results.filter(e => e.text && e.text.toLowerCase().includes('testing') == false) : [];
                     }
 
                     this.setState({
-                        categories: results
+                        categories: results,
+                        isLoadingCategory: false
                     });
                 },
                 (error) => {
                     this.setState({
                         isLoaded: true,
-                        error
+                        error,
+                        isLoadingCategory: false
                     });
                 }
             )
@@ -93,13 +108,23 @@
                     var results = $.map(data, function (item) {
                         return {
                             id: item.typeId,
-                            text: item.brand.initCap() + ' ' + item.name
+                            text: item.brand.toUpperCase() + ' ' + item.name.toUpperCase()
                         };
+                    });
+
+                    results = results.sort(function (a, b) {
+                        if (a.text < b.text) {
+                            return -1;
+                        }
+                        if (a.text > b.text) {
+                            return 1;
+                        }
+                        return 0;
                     });
 
                     results.unshift({
                         id: 0,
-                        text: '- Show All -'
+                        text: 'Show All'
                     });
 
                     results.push({
@@ -112,13 +137,15 @@
                     }
 
                     this.setState({
-                        types: results
+                        types: results,
+                        isLoadingType: false
                     });
                 },
                 (error) => {
                     this.setState({
                         isLoaded: true,
-                        error
+                        error,
+                        isLoadingType: false
                     });
                 }
             )
@@ -160,9 +187,19 @@
                         };
                     });
 
+                    results = results.sort(function (a, b) {
+                        if (a.text < b.text) {
+                            return -1;
+                        }
+                        if (a.text > b.text) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+
                     results.unshift({
                         id: 0,
-                        text: '- Show All -'
+                        text: 'Show All'
                     });
 
                     results.push({
@@ -171,13 +208,15 @@
                     });
 
                     this.setState({
-                        colors: results
+                        colors: results,
+                        isLoadingColor: false
                     });
                 },
                 (error) => {
                     this.setState({
                         isLoaded: true,
-                        error
+                        error,
+                        isLoadingColor: false
                     });
                 }
             )
@@ -211,7 +250,7 @@
 
     formatColor(data) {
         if (data.colorCode)
-            return $("<span class='color-code d-inline-block me-1 float-left' style='background:" + data.colorCode + "'></span> <span class='align-middle'>" + data.text + "</span>");
+            return $("<span class='color-code d-inline-block me-1 float-left mt-1 shadow-sm' style='background:" + data.colorCode + "'></span> <span class='align-middle'>" + data.text + "</span>");
 
         return $("<span class='align-middle'>" + data.text + "</span>");
     }
@@ -279,8 +318,96 @@
             this.props.onAddCustomProduct(category);
     }
 
+    handleSearchImage() {
+        var { categoryId } = this.state;
+
+        this.setState({
+            isModalImageShown: true
+        });
+
+        var that = this;
+        setTimeout(function () {
+            that.setState({
+                isLoadingImage: true
+            });
+
+            if (categoryId != 0) {
+                fetch("https://importking.mooo.com/api/Categories/" + categoryId)
+                    .then((res) => {
+                        if (res.status == 200) {
+                            return res.json();
+                        }
+                        else {
+                            throw {
+                                message: res.statusText
+                            };
+                        }
+                    })
+                    .then(
+                        (data) => {
+                            var images = null;
+
+                            if (data && data.length > 0) {
+                                images = data[0].images;
+                            }
+
+                            that.setState({
+                                images: images,
+                                isLoadingImage: false
+                            });
+                        },
+                        (error) => {
+                            that.setState({
+                                images: null,
+                                isLoadingImage: false
+                            });
+                        }
+                    )
+            }
+            else {
+                that.setState({
+                    images: null,
+                    isLoadingImage: false
+                });
+            }
+        }, 500);
+    }
+
+    handleModalImageHidden() {
+        this.setState({
+            isModalImageShown: false
+        });
+    }
+
+    carouselNext() {
+        $('#carouselProductIndicators').carousel('next');
+    }
+
+    carouselPrev() {
+        $('#carouselProductIndicators').carousel('prev');
+    }
+
+    renderCatalogImages(image, i) {
+        var fileName = (image != null) ? image.fileName : '';
+        var url = "https://importking.mooo.com/Uploads/" + fileName;
+
+        if (i == 0) {
+            return (
+                <div class="carousel-item active">
+                    <img src={url} class="d-block w-100" alt={'Product ' + i} />
+                </div>
+            );
+        }
+
+        return (
+            <div class="carousel-item">
+                <img src={url} class="d-block w-100" alt={'Product ' + i} />
+            </div>
+        );
+    }
+
     render() {
-        const { categories, types, colors, isLoadingProduct } = this.state;
+        const { categories, types, colors, isLoadingProduct, images } = this.state;
 
         var isSearchMode = true;
         if (this.state.categoryId == -1 || this.state.typeId == -1 || this.state.colorId == -1)
@@ -288,28 +415,51 @@
 
         return (
             <div>
-                <form id="searchForm" class="mb-3">
+                <form id="searchForm" class="mb-3 px-2">
                     <div class="mb-3">
-                        <label class="form-label">Category</label>
+                        <label class="form-label small fw-bold text-secondary">Category</label>
+                        {
+                            (this.state.isLoadingCategory) ? (
+                                <span class="skeleton-loader" style={{ height: '40px' }} />
+                            ) : (
+                                <div class="input-group">
+                                    <Select2 value={this.state.categoryId} class="form-control bg-light text-capitalize" dataSource={categories}
+                                        onChange={this.handleCategoryChange.bind(this)} />
+                                    <button class="btn btn-primary btn-sm" type="button"
+                                        onClick={this.handleSearchImage.bind(this)}>
+                                        <i class="fa fa-image me-1" />
+                                        <i class="fa fa-search" />
+                                    </button>
+                                </div>
+                            )
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Type</label>
                         <div>
-                            <Select2 value={this.state.categoryId} class="form-control bg-light text-capitalize" dataSource={categories}
-                                onChange={this.handleCategoryChange.bind(this)} />
+                            {
+                                (this.state.isLoadingType) ? (
+                                    <span class="skeleton-loader" style={{ height: '40px' }} />
+                                ) : (
+                                    <Select2 value={this.state.typeId} class="form-control bg-light text-capitalize" dataSource={types}
+                                        onChange={this.handleTypeChange.bind(this)} />
+                                )
+                            }
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Type</label>
+                        <label class="form-label small fw-bold text-secondary">Color</label>
                         <div>
-                            <Select2 value={this.state.typeId} class="form-control bg-light text-capitalize" dataSource={types}
-                                onChange={this.handleTypeChange.bind(this)} />
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Color</label>
-                        <div>
-                            <Select2 value={this.state.colorId} class="form-control bg-light" dataSource={colors}
-                                onChange={this.handleColorChange.bind(this)}
-                                templateResult={this.formatColor.bind(this)}
-                                templateSelection={this.formatColor.bind(this)} />
+                            {
+                                (this.state.isLoadingColor) ? (
+                                    <span class="skeleton-loader" style={{ height: '40px' }} />
+                                ) : (
+                                    <Select2 value={this.state.colorId} class="form-control bg-light" dataSource={colors}
+                                        onChange={this.handleColorChange.bind(this)}
+                                        templateResult={this.formatColor.bind(this)}
+                                        templateSelection={this.formatColor.bind(this)} />
+                                )
+                            }
                         </div>
                     </div>
                     {
@@ -320,6 +470,48 @@
                         )
                     }
                 </form>
+                <ModalPopUp isShown={this.state.isModalImageShown} onHidden={this.handleModalImageHidden.bind(this)}>
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Product Images</h5>
+                                <button type="button" class="close btn btn-secondary btn-sm" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <Progress class="modal-body px-0 pt-0" isShown={this.state.isLoadingImage}>
+                                {
+                                    (images && images.length > 0) ?
+                                        (
+                                            <div id="carouselProductIndicators" class="carousel slide" data-ride="carousel">
+                                                <div class="carousel-inner">
+                                                    {
+                                                        images.map((image, i) => (
+                                                            this.renderCatalogImages(image, i)
+                                                        ))
+                                                    }
+                                                </div>
+                                                <a class="carousel-control-prev"
+                                                    onClick={this.carouselPrev.bind(this)}>
+                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                    <span class="sr-only">Previous</span>
+                                                </a>
+                                                <a class="carousel-control-next"
+                                                    onClick={this.carouselNext.bind(this)}>
+                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                    <span class="sr-only">Next</span>
+                                                </a>
+                                            </div>
+                                        ) : (
+                                            <div class="text-center pt-3 pb-3">
+                                                No Product Images
+                                            </div>
+                                        )
+                                }
+                            </Progress>
+                        </div>
+                    </div>
+                </ModalPopUp>
             </div>
         );
     }
@@ -342,7 +534,7 @@ class ProductList extends React.Component {
         return (isLoading ? (<LoadSpinner />) :
             (
                 dataSource.length ? (
-                    <ul class="list-menu" id="productList">
+                    <ul class="list-menu pt-2 px-2" id="productList">
                         {
                             dataSource.map(product => (
                                 <li class="nav-item">
@@ -376,7 +568,7 @@ class ProductList extends React.Component {
                     </ul>
                 ) :
                     (
-                        <ul class="list-menu" id="productList">
+                        <ul class="list-menu pt-2" id="productList">
                             <li class="nav-item text-center">
                                 No products to display
                             </li>
@@ -399,6 +591,9 @@ class ProductPage extends React.Component {
             isModalAddShown: false,
             selectedProduct: null,
             isSubmittingCart: false,
+            isLoadingImage: false,
+            images: null,
+            isModalImageShown: false,
             rules: {
                 customProductType: {
                     required: true
@@ -635,6 +830,7 @@ class ProductPage extends React.Component {
                         )
                 }
                 <ProductSearchForm onSearch={this.handleSearch.bind(this)} onAddCustomProduct={this.handleAddCustomProduct.bind(this)} />
+                <hr class="divider" size="10" />
                 <ProductList isLoading={this.state.isLoadingProduct} dataSource={this.state.productList} onAddClick={this.handleOnAddClick.bind(this)} />
                 <ModalPopUp isShown={this.state.isModalAddShown} onHidden={this.handleModalHidden.bind(this)}>
                     <div class="modal-dialog" role="document">
@@ -723,7 +919,7 @@ class ProductPage extends React.Component {
                                                                     value={this.state.selectedProduct.customProductType}
                                                                     onChange={this.handleValueChange.bind(this)} />
                                                             </div>
-                                                        ) : 
+                                                        ) :
                                                         (
                                                             <div>
                                                                 <label class="form-label">Type</label>
@@ -734,7 +930,7 @@ class ProductPage extends React.Component {
                                                                     onChange={this.handleValueChange.bind(this)} />
                                                             </div>
                                                         )
-                                                }                               
+                                                }
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-7">
@@ -763,12 +959,12 @@ class ProductPage extends React.Component {
                                                     </div>
                                                 ) :
                                                     (
-                                                    <div class="row">
-                                                        <div class="alert alert-info">
-                                                            For the custom product, price will be calculated after order by the admin
+                                                        <div class="row">
+                                                            <div class="alert alert-info">
+                                                                For the custom product, price will be calculated after order by the admin
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                )
+                                                    )
                                             }
                                         </FormValidate>
                                     ) : (
@@ -789,3 +985,5 @@ class ProductPage extends React.Component {
 }
 
 ReactDOM.render(<ProductPage />, document.getElementById('root'));
+
+$('.nav-bottom .nav-link[href="/Category"]').addClass('active');

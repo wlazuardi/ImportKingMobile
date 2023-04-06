@@ -383,7 +383,8 @@ class CartPage extends React.Component {
             },
             isLoadingSubmit: false,
             isDropshipping: false,
-            dropshipType: 'manual',
+            /*dropshipType: 'manual',*/
+            dropshipType: 'marketplace',
             deliveryType: 'regular',
             deliveryLabelFile: null,
             step: 1
@@ -615,7 +616,7 @@ class CartPage extends React.Component {
     }
 
     handleSubmitOrderFormCallback(e) {
-        let { cartList, orderData, selectedAddress, isDropshipping, dropshipType, deliveryType, deliveryLabelFile } = this.state;
+        let { user, orderData, selectedAddress, isDropshipping, dropshipType, deliveryType, deliveryLabelFile } = this.state;
         //let totalPrice = 0;
 
         //if (cartList && cartList.length) {
@@ -634,21 +635,21 @@ class CartPage extends React.Component {
             orderValue: this.state.orderValue,
             status: 'New',
             orderNo: 'X',
-            shippingName: (isDropshipping && dropshipType == 'marketplace') ? orderData.recipientName : selectedAddress.name,
-            shippingPhone: (isDropshipping && dropshipType == 'marketplace') ? orderData.recipientPhoneNo : selectedAddress.phone,
-            shippingAddress: (isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.fullAddress,
-            shippingCity: (isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.city,
-            shippingProvince: (isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.province,
-            shippingZipCode: (isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.zipCode,
+            shippingName: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? orderData.recipientName : selectedAddress.name,
+            shippingPhone: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? orderData.recipientPhoneNo : selectedAddress.phone,
+            shippingAddress: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.fullAddress,
+            shippingCity: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.city,
+            shippingProvince: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.province,
+            shippingZipCode: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.zipCode,
             shippingCourier: orderData.courier,
             comments: orderData.comments,
-            isDropshipping: isDropshipping,
-            isFromMarketplace: dropshipType == 'marketplace',
+            isDropshipping: (user.userType == 1 && isDropshipping),
+            isFromMarketplace: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace'),
             isCOD: deliveryType == 'cod',
             deliveryLabelFile: deliveryLabelFile,
             dropshipperName: orderData.dropshipperName,
             dropshipperPhone: orderData.dropshipperPhone,
-            codBillAmount: (isDropshipping && deliveryType == 'cod') ? codBillAmount : 0,
+            codBillAmount: (user.userType == 1 && isDropshipping && deliveryType == 'cod') ? codBillAmount : 0,
             bookingCode: orderData.bookingCode,
             deliveryFee: this.state.deliveryFee,
             adminFee: this.state.adminFee,
@@ -1012,9 +1013,9 @@ class CartPage extends React.Component {
             dropshipperPhone: {
                 required: (isDropshipping == true)
             },
-            deliveryLabelFile: {
-                required: (isDropshipping == true && dropshipType == 'marketplace')
-            },
+            //deliveryLabelFile: {
+            //    required: (isDropshipping == true && dropshipType == 'marketplace')
+            //},
             bookingCode: {
                 required: (isDropshipping == true && dropshipType == 'marketplace')
             },
@@ -1135,6 +1136,8 @@ class CartPage extends React.Component {
                                                             <option value="pos">Pos Indonesia</option>
                                                             <option value="sicepat">SiCepat</option>
                                                             <option value="anteraja">AnterAja</option>
+                                                            <option value="shopee_express">Shopee Express</option>
+                                                            <option value="lazada_express">Lazada Express</option>
                                                             <option value="others">Others</option>
                                                         </select>
                                                     </div>
@@ -1142,7 +1145,7 @@ class CartPage extends React.Component {
                                                 {
                                                     (user != null && user.userType == 1 && this.state.isDropshipping == true) ? (
                                                         <div>
-                                                            <div class="mb-3">
+                                                            <div class="mb-3 d-none">
                                                                 <label class="form-label">Dropship Type</label>
                                                                 <div>
                                                                     <div class="form-check form-check-inline ps-0">

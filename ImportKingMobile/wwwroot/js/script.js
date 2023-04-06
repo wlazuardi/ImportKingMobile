@@ -17,26 +17,26 @@ if ($('.app-header.fixed-top').length > 0) { // check if element exists
 
 
 
-// Add class based on scrollup/down to detect scroll direction
-var last_scroll_top = 0;
-$(window).on('scroll', function(){
-    if( $(this).scrollTop() > 7 ){
-        scroll_top = $(this).scrollTop();
+//// Add class based on scrollup/down to detect scroll direction
+//var last_scroll_top = 0;
+//$(window).on('scroll', function(){
+//    if( $(this).scrollTop() > 7 ){
+//        scroll_top = $(this).scrollTop();
         
-        // detect scroll
-        if(scroll_top < last_scroll_top) {
-            $('body').removeClass('scrolling-down').addClass('scrolling-up');
-        }
-        else {
-            $('body').removeClass('scrolling-up').addClass('scrolling-down');
+//        // detect scroll
+//        if(scroll_top < last_scroll_top) {
+//            $('body').removeClass('scrolling-down').addClass('scrolling-up');
+//        }
+//        else {
+//            $('body').removeClass('scrolling-up').addClass('scrolling-down');
 
-        }
-        last_scroll_top = scroll_top;
+//        }
+//        last_scroll_top = scroll_top;
 
-    } else {
-        $('body').removeClass('scrolling-down scrolling-up');
-    }
-});
+//    } else {
+//        $('body').removeClass('scrolling-down scrolling-up');
+//    }
+//});
 
 
 

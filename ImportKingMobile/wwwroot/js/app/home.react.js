@@ -3,7 +3,7 @@
         super(props);
         this.fetchURL = 'https://importking.mooo.com/api/Categories';
         this.state = {
-            isLoading: false,
+            isLoading: true,
             categories: []
         };
         this.getData();
@@ -63,7 +63,7 @@
         }
         var url = 'url("https://importking.mooo.com/Uploads/' + fileName + '")';
         if (fileName) return (
-            <li class="col-4 product-item">
+            <li class="col-4 product-item product-item-sm">
                 <div class="custom-card">
                     <a href={'/Product/' + category.categoryId + '/Detail'} class="item-category-grid"
                         style={{ background: url, backgroundSize: 'cover' }}></a>
@@ -76,7 +76,7 @@
             </li>
         );
         else return (
-            <li class="col-4 product-item">
+            <li class="col-4 product-item product-item-sm">
                 <div class="custom-card">
                     <a href={'/Product/' + category.categoryId + '/Detail'} class="item-category-grid">
                         <span class="icon-wrap">
@@ -99,9 +99,106 @@
             <div>
                 {
                     (isLoading) ? (
-                        <LoadSpinner />
+                        <ul class="row">
+                            <li class="col-12 mb-2 fw-bold px-2 text-primary">
+                                <i class="fa fa-crown me-2" /> Produk Terlaris
+                            </li>
+                            <li class="col-4 product-item product-item-sm">
+                                <div class="custom-card">
+                                    <a href="#" class="item-category-grid skeleton-loader">
+                                    </a>
+                                    <div class="custom-card-text card-text-title small">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                    <div class="custom-card-text card-text-attribute small">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="col-4 product-item product-item-sm">
+                                <div class="custom-card">
+                                    <a href="#" class="item-category-grid skeleton-loader">
+                                    </a>
+                                    <div class="custom-card-text card-text-title small">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                    <div class="custom-card-text card-text-attribute small">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="col-4 product-item product-item-sm">
+                                <div class="custom-card">
+                                    <a href="#" class="item-category-grid skeleton-loader">
+                                    </a>
+                                    <div class="custom-card-text card-text-title small">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                    <div class="custom-card-text card-text-attribute small">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="col-4 product-item product-item-sm">
+                                <div class="custom-card">
+                                    <a href="#" class="item-category-grid skeleton-loader">
+                                    </a>
+                                    <div class="custom-card-text card-text-title small">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                    <div class="custom-card-text card-text-attribute small">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="col-4 product-item product-item-sm">
+                                <div class="custom-card">
+                                    <a href="#" class="item-category-grid skeleton-loader">
+                                    </a>
+                                    <div class="custom-card-text card-text-title small">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                    <div class="custom-card-text card-text-attribute small">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="col-4 product-item product-item-sm">
+                                <div class="custom-card">
+                                    <a href="#" class="item-category-grid skeleton-loader">
+                                    </a>
+                                    <div class="custom-card-text card-text-title small">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                    <div class="custom-card-text card-text-attribute small">
+                                        <span class="skeleton-loader"></span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
                     ) : (
                         <ul class="row">
+                            <li class="col-12 mb-2 fw-bold px-2 text-primary">
+                                <i class="fa fa-crown me-2" /> Produk Terlaris
+                            </li>
                             {
                                 categories.map(category => {
                                     return (
@@ -118,3 +215,5 @@
 }
 
 ReactDOM.render(<CategoryPicker />, document.getElementById('categoryPicker'));
+
+$('.nav-bottom .nav-link[href="/Home"]').addClass('active');

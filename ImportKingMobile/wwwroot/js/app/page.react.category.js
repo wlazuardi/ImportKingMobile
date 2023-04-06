@@ -3,7 +3,7 @@
         super(props);
         this.fetchURL = 'https://importking.mooo.com/api/Categories';
         this.state = {
-            isLoading: false,
+            isLoading: true,
             categoriesOri: [],
             categories: []
         };
@@ -56,7 +56,7 @@
         var fileName = 'no-image.jpg'
         if (category.images != null && category.images.length > 0) {
             try {
-                fileName = category.images[0].fileName;                
+                fileName = category.images[0].fileName;
             } catch (e) {
 
             }
@@ -64,7 +64,7 @@
 
         var url = 'url("https://importking.mooo.com/Uploads/' + fileName + '")';
         if (fileName) return (
-            <li class="col-4 product-item">
+            <li class="col-6 product-item mb-2">
                 <div class="custom-card">
                     <a href={'/Product/' + category.categoryId + '/Detail'} class="item-category-grid"
                         style={{ backgroundImage: url }}></a>
@@ -77,7 +77,7 @@
             </li>
         );
         else return (
-            <li class="col-4 product-item">
+            <li class="col-6 product-item mb-2">
                 <div class="custom-card">
                     <a href={'/Product/' + category.categoryId + '/Detail'} class="item-category-grid">
                         <span class="icon-wrap">
@@ -107,22 +107,135 @@
         var { isLoading, categories } = this.state;
         return (
             <div>
-                <section class="px-3 py-1 mb-1 fixed-top bg-white" style={{ top: '55px' }}>
-                    <input type="text" placeholder="Search" class="bg-secondary-light border-0 form-control"
-                        onChange={this.handleSearch.bind(this)}
-                    />
+                <section class="px-2 py-2 mb-1 fixed-top bg-primary catalog-search-box">
+                    <div class="input-group">
+                        <input type="text" placeholder="Search" class="bg-primary-light text-white border-0 form-control form-control-sm rounded"
+                            onChange={this.handleSearch.bind(this)} />
+                        <div class="input-group-append border-white ms-1">
+                            <a class="btn btn-sm text-white" href="../Product">
+                                <i class="fa fa-sliders"></i>
+                            </a>
+                        </div>
+                    </div>
                 </section>
                 {
                     (isLoading) ? (
-                        <LoadSpinner />
+                        <ul class="row mt-5 pt-2 px-2">
+                            <li class="col-12 mb-2">
+                                <span class="skeleton-loader rounded" style={{ height:'40px'}}>&nbsp;</span>
+                            </li>
+                            <li class="col-6 product-item mb-2">
+                                <div class="custom-card">
+                                    <a href="#" class="item-category-grid skeleton-loader">
+                                        &nbsp;
+                                    </a>
+                                    <div class="custom-card-text card-text-title small">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                    <div class="custom-card-text card-text-attribute small">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="col-6 product-item mb-2">
+                                <div class="custom-card">
+                                    <a href="#" class="item-category-grid skeleton-loader">
+                                        &nbsp;
+                                    </a>
+                                    <div class="custom-card-text card-text-title small">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                    <div class="custom-card-text card-text-attribute small">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="col-6 product-item mb-2">
+                                <div class="custom-card">
+                                    <a href="#" class="item-category-grid skeleton-loader">
+                                        &nbsp;
+                                    </a>
+                                    <div class="custom-card-text card-text-title small">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                    <div class="custom-card-text card-text-attribute small">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="col-6 product-item mb-2">
+                                <div class="custom-card">
+                                    <a href="#" class="item-category-grid skeleton-loader">
+                                        &nbsp;
+                                    </a>
+                                    <div class="custom-card-text card-text-title small">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                    <div class="custom-card-text card-text-attribute small">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="col-6 product-item mb-2">
+                                <div class="custom-card">
+                                    <a href="#" class="item-category-grid skeleton-loader">
+                                        &nbsp;
+                                    </a>
+                                    <div class="custom-card-text card-text-title small">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                    <div class="custom-card-text card-text-attribute small">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="col-6 product-item mb-2">
+                                <div class="custom-card">
+                                    <a href="#" class="item-category-grid skeleton-loader">
+                                        &nbsp;
+                                    </a>
+                                    <div class="custom-card-text card-text-title small">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                    <div class="custom-card-text card-text-attribute small">
+                                        <span class="skeleton-loader" />
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
                     ) : (
                         <ul class="row mt-5 pt-2 px-2">
+                            <li class="col-12 mb-2 fw-bold px-2 text-primary">
+                                <i class="fa fa-tag" /> All Products
+                            </li>
                             {
-                                categories.map(category => {
-                                    return (
-                                        this.renderImage(category)
-                                    )
-                                })
+                                (categories && categories.length > 0) ? (
+                                    categories.map(category => {
+                                        return (
+                                            this.renderImage(category)
+                                        )
+                                    })
+                                ) : (
+                                    <li class="text-center fw-bolder pt-3 text-secondary">There is no product to display</li>
+                                )
                             }
                         </ul>
                     )
@@ -135,4 +248,4 @@
 
 ReactDOM.render(<CategoryPage />, document.getElementById('root'));
 
-$('.nav-bottom .nav-link[href="/Product"]').addClass('active');
+$('.nav-bottom .nav-link[href="/Category"]').addClass('active');

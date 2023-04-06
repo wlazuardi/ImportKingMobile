@@ -721,7 +721,7 @@ class OrderDetailPage extends React.Component {
         var { order } = this.state;
         var that = this;
 
-        if (userType == 0) {
+        if (userType == 0 || userType == 1) {
             fetch('https://importking.mooo.com/api/Payments/' + order.data.orderId + '/Token', {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' }

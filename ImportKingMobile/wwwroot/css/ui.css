@@ -1501,12 +1501,12 @@ a.box, a.card {
     }
 
 .item-category-grid {
-    height: 112px;
+    height: 200px !important;
     text-align: center;
-    background-color: #e9f3e7;
+    background-color: #ffffff;
     color: initial;
     padding: 0.625rem 0;
-    margin-bottom: 0.25rem;
+    margin-bottom: 10px;    
     display: block;
     text-transform: capitalize;
     position: relative;
@@ -1515,43 +1515,48 @@ a.box, a.card {
     border-bottom: 1px solid #80808033;
 }
 
-    .item-category-grid .icon, .item-category-grid img {
-        width: -webkit-fill-available;
-    }
+.product-item-sm .item-category-grid {
+    height: 120px !important;
+    margin-bottom: 0.25rem;
+}
 
-    .item-category-grid img {
-        position: absolute;
-        width: 50px;
-        left: 0px;
-        top: 0px;
-        width: 100%;
-        overflow: hidden;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-    }
+.item-category-grid .icon, .item-category-grid img {
+    width: -webkit-fill-available;
+}
 
-    .item-category-grid .icon-wrap {
-        margin-bottom: 7px;
-        display: block;
-        font-size: 62px;
-    }
+.item-category-grid img {
+    position: absolute;
+    width: 50px;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    overflow: hidden;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
 
-    .item-category-grid i {
-        font-size: 32px !important;
-        line-height: 32px;
-        color: #519120
-    }
+.item-category-grid .icon-wrap {
+    margin-bottom: 7px;
+    display: block;
+    font-size: 62px;
+}
 
-    .item-category-grid .text {
-        color: #212529;
-        display: block;
-        line-height: 1.2;
-        text-transform: capitalize;
-    }
+.item-category-grid i {
+    font-size: 32px !important;
+    line-height: 32px;
+    color: #519120
+}
 
-    .item-category-grid:focus {
-        background-color: #9ec5fe
-    }
+.item-category-grid .text {
+    color: #212529;
+    display: block;
+    line-height: 1.2;
+    text-transform: capitalize;
+}
+
+.item-category-grid:focus {
+    background-color: #9ec5fe
+}
 
 .item-category-sm {
     text-align: center;

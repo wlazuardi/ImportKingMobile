@@ -302,7 +302,7 @@
         var data = {
             email: userEmail,
             productId: productId,
-            categoryId: categoryId,
+            categoryId: 0,
             price: category.price,
             qty: qty,
             isOutOfStock: stock <= 0
@@ -682,4 +682,4 @@
 
 ReactDOM.render(<ProductDetail />, document.getElementById('root'));
 
-$('.nav-bottom .nav-link[href="/Product"]').addClass('active');
+$('.nav-bottom .nav-link[href="/Category"]').addClass('active');
