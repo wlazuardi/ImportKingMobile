@@ -42,7 +42,7 @@
 
     getCategory() {
         var url = 'https://importking.mooo.com';
-        fetch(url + '/api/Categories/' + categoryId, {
+        fetch(url + '/api/Catalogs/' + userEmail + '/Categories/' + categoryId, {
             method: 'GET'
         })
             .then(result => {

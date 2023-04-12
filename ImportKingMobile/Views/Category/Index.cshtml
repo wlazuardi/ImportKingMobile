@@ -119,7 +119,11 @@
 </div>
 
 @section Scripts
-    {
+{
+    <script type="text/javascript">
+        var userMail = '@ViewBag.User.Email';
+        var userType = '@ViewBag.User.UserType';
+    </script>
     <script src="~/js/app/react.core.components.js" asp-append-version="true" type="text/babel"></script>
     <script src="~/js/app/page.react.category.js" asp-append-version="true" type="text/babel"></script>
 } 

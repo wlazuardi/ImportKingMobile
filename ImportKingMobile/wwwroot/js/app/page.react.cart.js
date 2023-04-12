@@ -510,9 +510,11 @@ class CartPage extends React.Component {
         fileUpload.click();
     }
 
-    handleUploadChange(e) {
-        console.log(e.target.files);
+    handleUploadChange(e) {        
         var files = e.target.files;
+        this.setState({
+            isShownProgress: true
+        });
 
         if (files.length > 0) {
             var data = new FormData();
@@ -526,11 +528,16 @@ class CartPage extends React.Component {
             ).then(success => {
                 if (success && success.length > 0) {
                     this.setState({
-                        deliveryLabelFile: success[0].fileName
+                        deliveryLabelFile: success[0].fileName,
+                        isShownProgress: false
                     });
                 }
             }).catch(
-                error => console.log(error) // Handle the error response object
+                error => {
+                    this.setState({                        
+                        isShownProgress: false
+                    });
+                }
             );
         }
     }
@@ -1022,9 +1029,9 @@ class CartPage extends React.Component {
             recipientName: {
                 required: (isDropshipping == true && dropshipType == 'marketplace')
             },
-            recipientPhoneNo: {
-                required: (isDropshipping == true && dropshipType == 'marketplace')
-            },
+            //recipientPhoneNo: {
+            //    required: (isDropshipping == true && dropshipType == 'marketplace')
+            //},
             comments: {
                 required: (isDropshipping == true && dropshipType == 'marketplace')
             },

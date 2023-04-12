@@ -101,7 +101,7 @@
                     (isLoading) ? (
                         <ul class="row">
                             <li class="col-12 mb-2 fw-bold px-2 text-primary">
-                                <i class="fa fa-crown me-2" /> Produk Terlaris
+                                <i class="fa fa-crown me-2" />Produk Terlaris
                             </li>
                             <li class="col-4 product-item product-item-sm">
                                 <div class="custom-card">
@@ -197,7 +197,7 @@
                     ) : (
                         <ul class="row">
                             <li class="col-12 mb-2 fw-bold px-2 text-primary">
-                                <i class="fa fa-crown me-2" /> Produk Terlaris
+                                <i class="fa fa-crown me-2" />Produk Terlaris
                             </li>
                             {
                                 categories.map(category => {

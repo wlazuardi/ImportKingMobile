@@ -1,7 +1,7 @@
 ﻿class CategoryPage extends React.Component {
     constructor(props) {
         super(props);
-        this.fetchURL = 'https://importking.mooo.com/api/Categories';
+        this.fetchURL = 'https://importking.mooo.com/api/Catalogs/' + userMail + '/Categories/0';
         this.state = {
             isLoading: true,
             categoriesOri: [],
