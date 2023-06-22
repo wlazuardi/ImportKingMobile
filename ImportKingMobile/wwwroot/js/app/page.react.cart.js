@@ -651,6 +651,7 @@ class CartPage extends React.Component {
                 fullAddress: '',
                 city: '',
                 province: '',
+                subDistrict: '',
                 zipCode: '',
                 isDefault: false
             }

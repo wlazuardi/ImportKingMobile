@@ -188,6 +188,9 @@ class ModalAddressForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            provinces: [],
+            cities: [],
+            subdistricts: [],
             rules: {
                 alias: {
                     required: true
@@ -203,12 +206,13 @@ class ModalAddressForm extends React.Component {
                     maxlength: 250
                 },
                 city: {
-                    required: true,
-                    maxlength: 50
+                    required: true
                 },
                 province: {
-                    required: true,
-                    maxlength: 50
+                    required: true
+                },
+                subDistrict: {
+                    required: true
                 },
                 zipCode: {
                     required: true,
@@ -220,6 +224,138 @@ class ModalAddressForm extends React.Component {
             }
         }
         this.myRef = React.createRef();
+        this.populateProvinces();        
+    }
+
+    populateProvinces() {
+        this.setState({
+            isLoadingAll: true
+        });
+
+        fetch('https://importking.mooo.com/api/Deliveries/Province/0')
+            .then((res) => {
+                if (res.status == 200) {
+                    return res.json();
+                }
+                else {
+                    throw {
+                        message: res.statusText
+                    };
+                }
+            })
+            .then(
+                (data) => {
+                    var results = $.map(data.rajaOngkir.results, function (item) {
+                        return {
+                            id: item.provinceId,
+                            text: item.province
+                        };
+                    });
+
+                    results.unshift({
+                        id: 0,
+                        text: ''
+                    });
+
+                    this.setState({
+                        provinces: results,
+                        isLoadingAll: false
+                    });
+                },
+                (error) => {
+                    this.setState({
+                        isLoadingAll: false
+                    });
+                }
+            )
+    }
+
+    populateCities() {
+        this.setState({
+            isLoadingAll: true
+        });
+
+        fetch('https://importking.mooo.com/api/Deliveries/Province/' + this.state.formData.province + '/City/0')
+            .then((res) => {
+                if (res.status == 200) {
+                    return res.json();
+                }
+                else {
+                    throw {
+                        message: res.statusText
+                    };
+                }
+            })
+            .then(
+                (data) => {
+                    var results = $.map(data.rajaongkir.results, function (item) {
+                        return {
+                            id: item.cityId,
+                            text: item.type + " " + item.cityName,
+                            postalCode: item.postalCode
+                        };
+                    });
+
+                    results.unshift({
+                        id: 0,
+                        text: '',
+                        postalCode: ''
+                    });
+
+                    this.setState({
+                        cities: results,
+                        isLoadingAll: false
+                    });
+                },
+                (error) => {
+                    this.setState({
+                        isLoadingAll: false
+                    });
+                }
+            )
+    }
+
+    populateDistricts() {
+        this.setState({
+            isLoadingAll: true
+        });
+
+        fetch('https://importking.mooo.com/api/Deliveries/Province/' + this.state.formData.province + '/City/' + this.state.formData.city + '/SubDistrict')
+            .then((res) => {
+                if (res.status == 200) {
+                    return res.json();
+                }
+                else {
+                    throw {
+                        message: res.statusText
+                    };
+                }
+            })
+            .then(
+                (data) => {
+                    var results = $.map(data.rajaOngkir.results, function (item) {
+                        return {
+                            id: item.subdistrictId,
+                            text: item.subdistrictName
+                        };
+                    });
+
+                    results.unshift({
+                        id: 0,
+                        text: ''
+                    });
+
+                    this.setState({
+                        subdistricts: results,
+                        isLoadingAll: false
+                    });
+                },
+                (error) => {
+                    this.setState({
+                        isLoadingAll: false
+                    });
+                }
+            )
     }
 
     handlePopUpHidden() {
@@ -319,9 +455,23 @@ class ModalAddressForm extends React.Component {
             formData[inputName] = e.target.checked;
         }
 
+        if (inputName == 'province')
+            this.populateCities();
+
+        if (inputName == 'city') {
+            var temp = this.state.cities.filter(x => x.id == this.state.formData.city);
+            if (temp && temp.length > 0) {
+                formData['zipCode'] = temp[0].postalCode;
+            }
+            this.populateDistricts();
+        }
+
         this.setState({
             formData: formData
         });
+    }
+
+    handleDropdownChange(e) {
     }
 
     render() {
@@ -368,15 +518,39 @@ class ModalAddressForm extends React.Component {
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">City</label>
-                                        <div>
-                                            <input class="form-control" name="city" placeholder="City" type="text" value={this.state.formData.city} onChange={this.handleFormInputChange.bind(this)} />
+                                        <label class="form-label">Province</label>
+                                        <div>                                            
+                                            <select class="form-control" name="province" placeholder="Province" value={this.state.formData.province} onChange={this.handleFormInputChange.bind(this)}>
+                                            {
+                                                this.state.provinces.map(x => (
+                                                    <option value={x.id}>{x.text}</option>
+                                                ))
+                                            }
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">Province</label>
+                                        <label class="form-label">City</label>
                                         <div>
-                                            <input class="form-control" name="province" placeholder="Province" type="text" value={this.state.formData.province} onChange={this.handleFormInputChange.bind(this)} />
+                                            <select class="form-control" name="city" placeholder="City" value={this.state.formData.city} onChange={this.handleFormInputChange.bind(this)}>
+                                                {
+                                                    this.state.cities.map(x => (
+                                                        <option value={x.id}>{x.text}</option>
+                                                    ))
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">District</label>
+                                        <div>                                           
+                                            <select class="form-control" name="subDistrict" placeholder="Sub District" value={this.state.formData.subDistrict} onChange={this.handleFormInputChange.bind(this)}>
+                                                {
+                                                    this.state.subdistricts.map(x => (
+                                                        <option value={x.id}>{x.text}</option>
+                                                    ))
+                                                }
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="mb-3">
