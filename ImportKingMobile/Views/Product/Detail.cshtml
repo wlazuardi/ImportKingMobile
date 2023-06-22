@@ -1,0 +1,13 @@
+﻿@{ ViewData["Title"] = "Products Detail"; }
+
+<div id="root"></div>
+
+@section Scripts
+{
+    <script>
+        var userEmail = '@ViewBag.User.Email';
+        var categoryId = '@ViewBag.CategoryId';
+    </script>
+    <script src="~/js/app/plugin.modal.js" asp-append-version="true" type="text/javascript"></script>
+    <script src="~/js/app/page.react.product.detail.js" asp-append-version="true" type="text/babel"></script>
+} 

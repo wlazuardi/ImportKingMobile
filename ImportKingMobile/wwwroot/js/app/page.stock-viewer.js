@@ -19,11 +19,13 @@
     }
 
     var merchantName = '';
+    var userType = 0;
 
     $.ajax({
         url: 'https://importking.mooo.com/api/Users/GetByEmail/' + userMail,
         success: function (data) {
             merchantName = data.merchantName;
+            userType = data.userType;
         }
     });
 
@@ -386,7 +388,13 @@
                         }
                         else {
                             if (data.products.length > 0 && data.products[0].stock > 0) {
-                                var div = '<div class="fw-bold fs-3 text-success"><div><i class="material-icons md-check_circle_outline fs-2"></i></div>Stock Available</div>';
+                                var div = '';
+                                if (userType == 3) {
+                                    div = '<div class="fw-bold fs-3 text-success"><div class="badge badge-sm bg-primary me-2">' + data.products[0].stock + '</div><div><i class="material-icons md-check_circle_outline fs-2"></i></div>Stock Available</div>';
+                                }
+                                else {
+                                    div = '<div class="fw-bold fs-3 text-success"><div><i class="material-icons md-check_circle_outline fs-2"></i></div>Stock Available</div>';
+                                }
                                 $('#result').html(div);
                             }
                             else {
@@ -417,7 +425,12 @@
                                 $.each(data.products, function (index, item) {
                                     var icon = '<i class="material-icons md-highlight_off text-danger mr-0"></i>';
                                     if (item.stock > 0) {
-                                        icon = '<i class="material-icons md-check_circle_outline text-success mr-0"></i>';
+                                        if (userType == 3) {                                            
+                                            icon = '<div class="badge badge-sm bg-primary me-2">' + item.stock + '</div><i class="material-icons md-check_circle_outline text-success mr-0"></i>';
+                                        }
+                                        else {
+                                            icon = '<i class="material-icons md-check_circle_outline text-success mr-0"></i>';
+                                        }
                                     }
                                     var textClass = App.Utils.isHexLight(item.colorCode) ? 'text-dark' : 'text-light';
 

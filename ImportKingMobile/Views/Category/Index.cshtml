@@ -1,13 +1,129 @@
-﻿@{ 
+﻿@{
     ViewData["Title"] = "Category";
 }
 
 <div id="root">
-
+    <div>
+        <section class="px-2 py-2 mb-1 fixed-top bg-primary catalog-search-box">
+            <div class="input-group">
+                <input type="text" placeholder="Search" class="bg-primary-light text-white border-0 form-control form-control-sm rounded" />
+                <div class="input-group-append border-white ms-1">
+                    <a class="btn btn-sm text-white" href="../Product">
+                        <i class="fa fa-sliders"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+        <ul class="row mt-5 pt-2 px-2">
+            <li class="col-12 mb-2">
+                <span class="skeleton-loader rounded" style="height:40px;">&nbsp;</span>
+            </li>
+            <li class="col-6 product-item mb-2">
+                <div class="custom-card">
+                    <a href="#" class="item-category-grid skeleton-loader">
+                        &nbsp;
+                    </a>
+                    <div class="custom-card-text card-text-title small">
+                        <span class="skeleton-loader" />
+                    </div>
+                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                        <span class="skeleton-loader" />
+                    </div>
+                    <div class="custom-card-text card-text-attribute small">
+                        <span class="skeleton-loader" />
+                    </div>
+                </div>
+            </li>
+            <li class="col-6 product-item mb-2">
+                <div class="custom-card">
+                    <a href="#" class="item-category-grid skeleton-loader">
+                        &nbsp;
+                    </a>
+                    <div class="custom-card-text card-text-title small">
+                        <span class="skeleton-loader" />
+                    </div>
+                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                        <span class="skeleton-loader" />
+                    </div>
+                    <div class="custom-card-text card-text-attribute small">
+                        <span class="skeleton-loader" />
+                    </div>
+                </div>
+            </li>
+            <li class="col-6 product-item mb-2">
+                <div class="custom-card">
+                    <a href="#" class="item-category-grid skeleton-loader">
+                        &nbsp;
+                    </a>
+                    <div class="custom-card-text card-text-title small">
+                        <span class="skeleton-loader" />
+                    </div>
+                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                        <span class="skeleton-loader" />
+                    </div>
+                    <div class="custom-card-text card-text-attribute small">
+                        <span class="skeleton-loader" />
+                    </div>
+                </div>
+            </li>
+            <li class="col-6 product-item mb-2">
+                <div class="custom-card">
+                    <a href="#" class="item-category-grid skeleton-loader">
+                        &nbsp;
+                    </a>
+                    <div class="custom-card-text card-text-title small">
+                        <span class="skeleton-loader" />
+                    </div>
+                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                        <span class="skeleton-loader" />
+                    </div>
+                    <div class="custom-card-text card-text-attribute small">
+                        <span class="skeleton-loader" />
+                    </div>
+                </div>
+            </li>
+            <li class="col-6 product-item mb-2">
+                <div class="custom-card">
+                    <a href="#" class="item-category-grid skeleton-loader">
+                        &nbsp;
+                    </a>
+                    <div class="custom-card-text card-text-title small">
+                        <span class="skeleton-loader" />
+                    </div>
+                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                        <span class="skeleton-loader" />
+                    </div>
+                    <div class="custom-card-text card-text-attribute small">
+                        <span class="skeleton-loader" />
+                    </div>
+                </div>
+            </li>
+            <li class="col-6 product-item mb-2">
+                <div class="custom-card">
+                    <a href="#" class="item-category-grid skeleton-loader">
+                        &nbsp;
+                    </a>
+                    <div class="custom-card-text card-text-title small">
+                        <span class="skeleton-loader" />
+                    </div>
+                    <div class="custom-card-text card-text-subtitle small fw-bold">
+                        <span class="skeleton-loader" />
+                    </div>
+                    <div class="custom-card-text card-text-attribute small">
+                        <span class="skeleton-loader" />
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
 </div>
 
 @section Scripts
 {
+    <script type="text/javascript">
+        var userMail = '@ViewBag.User.Email';
+        var userType = '@ViewBag.User.UserType';
+    </script>
     <script src="~/js/app/react.core.components.js" asp-append-version="true" type="text/babel"></script>
     <script src="~/js/app/page.react.category.js" asp-append-version="true" type="text/babel"></script>
 } 

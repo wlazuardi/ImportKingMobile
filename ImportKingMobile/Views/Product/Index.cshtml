@@ -1,11 +1,36 @@
-﻿@{ ViewData["Title"] = "Products"; }
+﻿@{
+    ViewData["Title"] = "Products";
+}
 
 @*<section class="px-3 pt-0 pb-2 fixed-top bg-white" style="top: 55px;">
         <input type="text" placeholder="Search" class="bg-secondary-light border-0 form-control">
     </section>*@
 
-<div id="root" class="py-3 px-4">
-
+<div id="root" class="py-3">
+    <div>
+        <form id="searchForm" class="mb-3 px-2">
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-secondary">Category</label>
+                <div class="input-group">
+                    <span class="skeleton-loader" style="height:40px"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-secondary">Type</label>
+                <div>
+                    <span class="skeleton-loader" style="height:40px"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-secondary">Color</label>
+                <div>
+                    <span class="skeleton-loader" style="height:40px"></span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100" onClick={this.handleSearch.bind(this)}> Search </button>
+        </form>
+    </div>
+    <hr class="divider" size="10" />
 </div>
 
 @*<section class="py-3 px-4">
@@ -42,7 +67,7 @@
 </section>*@
 
 @section Scripts
-{
+    {
     <script>
         var userEmail = '@ViewBag.User.Email';
     </script>

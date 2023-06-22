@@ -3,6 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+    <meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 
     <meta name="description" content="Ecommerce app template description can be written">
     <meta name="keywords" content="Ecommerce, e-auction, e-commerce, online shopping">
@@ -17,14 +19,14 @@
     <link href="~/css/bootstrap.css" rel="stylesheet" type="text/css" />
 
     <!-- custom style -->
-    <link href="~/css/ui.css" rel="stylesheet" type="text/css" />
+    <link href="~/css/ui.css" rel="stylesheet" type="text/css" asp-append-version="true" />
 
     <!-- Fonticon -->
     <link href="~/fonts/material-icon/css/round.css" rel="stylesheet" type="text/css" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
 
-    <link href="~/css/app.css" rel="stylesheet" type="text/css" />
+    <link href="~/css/app.css" rel="stylesheet" type="text/css" asp-append-version="true" />
 
     <link rel="manifest" href="/manifest.json">
 
@@ -33,11 +35,11 @@
 <body>
 
     <!-- Preloader-->
-    <div class="preloader" id="preloader">
+    @*<div class="preloader" id="preloader">
         <div class="spinner-grow" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
-    </div>
+    </div>*@
     <!-- Preloader //end -->
 
 
@@ -62,7 +64,7 @@
     </main> <!-- app-content.// -->
 
     <nav class="nav-bottom">
-        <a id="linkHome" href="~/Home/Index" class="nav-link active">
+        <a id="linkHome" href="~/Home/Index" class="nav-link">
             <i class="icon fa-solid fa-house"></i><span class="text">Home</span>
         </a>
 
@@ -152,6 +154,7 @@
                 {
                     <a id="linkLogout"> <i class="icon fa-solid fa-right-from-bracket"></i> Logout </a>
                 }
+                <a href="https://importkingidentity.mooo.com/home/privacy"> <i class="icon fa-solid fa-lock"></i>Privacy Policy </a>
                 @*<a href="index.html"> <i class="material-icons md-apps"></i> All pages </a>
                 <a href="#"> <i class="material-icons md-local_offer"></i> New offers</a>
                 <a href="#"> <i class="material-icons md-store"></i> Wholsesalers </a>
@@ -181,6 +184,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js" asp-append-version="true"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js" asp-append-version="true"></script>
+    @*<script src="~/lib/select2/select2.full.js" asp-append-version="true"></script>*@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" asp-append-version="true"></script>
 
@@ -204,12 +208,12 @@
     @RenderSection("Scripts", required: false)
 
     <script type="text/javascript">
-        const ptr = PullToRefresh.init({
-            mainElement: '#main-content',
-            onRefresh() {
-                window.location.reload();
-            }
-        });
+        //const ptr = PullToRefresh.init({
+        //    mainElement: '#main-content',
+        //    onRefresh() {
+        //        window.location.reload();
+        //    }
+        //});
     </script>
 
     <script>

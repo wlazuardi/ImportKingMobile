@@ -372,6 +372,28 @@ class OrderHeader extends React.Component {
         });
     };
 
+    renderDeliveryType(data) {
+        if (data.isDropshipping) {
+            if (data.isFromMarketplace) {
+                return (<span class="badge badge-sm text-white bg-success"><i class="fa fa-shopping-bag"></i> DROPSHIP MARKETPLACE</span>);
+            }
+            else {
+                return (<span class="badge badge-sm text-white bg-success"><i class="fa fa-truck"></i> DROPSHIP</span>);
+            }
+        }
+        else if (data.isReseller) {
+            return (<span class="badge badge-sm text-white bg-danger"><i class="fa fa-tag"></i> RESELLER</span>);
+        }
+        return (<span class="badge badge-sm text-dark bg-white"><i class="fa fa-tag"></i> REGULAR</span>);
+    }
+
+    renderIsCOD(data) {
+        if (data.isCOD) {
+            return (<span class="badge badge-sm text-white bg-success ms-2">COD</span>);
+        }
+        return (<span></span>);
+    }
+
     render() {
         const { order } = this.state;
         var isLoading = order.isLoading,
@@ -387,20 +409,113 @@ class OrderHeader extends React.Component {
             }
             else {
                 return (
-                    <div class="card border-secondary mb-3 mx-2 mt-2" >
-                        <div class="card-header p-2">
-                            {data.orderNo}
-                            <StatusBadge status={data.status} />
+                    <div>
+                        <div class="card border-secondary mb-3 mx-2 mt-2" >
+                            <div class="card-header p-2">
+                                {data.orderNo}
+                                <StatusBadge status={data.status} />
+                            </div>
+                            <div class="card-body text-secondary p-2">
+                                <p class="card-text m-0 small fw-bolder">No Resi: <span class="float-end">{moment(data.createdDate).format('lll')}</span></p>
+                                <p class="card-text m-0 small">{data.noResi ? data.noResi : 'N/A'} ({data.shippingCourier})</p>
+
+                                <p class="card-text m-0 small pt-1 fw-bolder">Shipped To: </p>
+                                <p class="card-text m-0 small">{data.shippingName} ({data.shippingPhone})</p>
+
+                                <div class="row pt-1 card-text small">
+                                    <div class="col-6 m-0 fw-bolder">Shipping Address:</div>
+                                    <div class="col-6 m-0 text-end">
+                                        {this.renderDeliveryType(data)}
+                                        {this.renderIsCOD(data)}
+                                    </div>
+                                </div>
+                                <p class="card-text m-0 small">
+                                    {data.shippingAddress}, {data.shippingCity}, {data.shippingProvince}, {data.shippingZipCode}
+                                </p>
+
+                                {
+                                    (data.isDropshipping) ? (
+                                        <div>
+                                            <p class="card-text m-0 small pt-1 fw-bolder">Dropshipper Name: </p>
+                                            <p class="card-text m-0 small">{data.dropshipperName} ({data.dropshipperPhone})</p>
+                                        </div>
+                                    ) : (<div />)
+                                }
+
+                                {
+                                    (data.comments) ? (
+                                        <div>
+                                            <p class="card-text m-0 small pt-1 fw-bolder">Comments: </p>
+                                            <p class="card-text m-0 small">{data.comments}</p>
+                                        </div>
+                                    ) : (<div />)
+                                }
+                            </div>
                         </div>
-                        <div class="card-body text-secondary p-2">
-                            <p class="card-text m-0 small fw-bolder">No Resi: <span class="float-end">{moment(data.createdDate).format('lll')}</span></p>
-                            <p class="card-text m-0 small">{data.noResi ? data.noResi : 'N/A'} ({data.shippingCourier})</p>
 
-                            <p class="card-text m-0 small pt-1 fw-bolder">Shipped To: </p>
-                            <p class="card-text m-0 small">{data.shippingName} ({data.shippingPhone})</p>
+                        <div class="card border-secondary mb-3 mx-2 mt-2" >
+                            <div class="card-header p-2">
+                                Payment Information
+                            </div>
+                            <div class="card-body text-secondary p-2">
+                                {
+                                    (data.codBillAmount) ? (
+                                        <div class="row pt-1 card-text small fw-bolder">
+                                            <div class="col-6 m-0">COD Bill Amount: </div>
+                                            <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.codBillAmount)}</div>
+                                        </div>
+                                    ) : (<div />)
+                                }
 
-                            <p class="card-text m-0 small pt-1 fw-bolder">Shipping Address: </p>
-                            <p class="card-text m-0 small">{data.shippingAddress}, {data.shippingCity}, Shipping Province: {data.shippingProvince}, {data.shippingZipCode}</p>
+                                <div class="row pt-1 card-text small fw-bolder">
+                                    <div class="col-6 m-0">Total Product: </div>
+                                    <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.orderValue)}</div>
+                                </div>
+                                <div class="row pt-1 card-text small">
+                                    <div class="col-6 m-0">Delivery Fee: </div>
+                                    <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.deliveryFee)}</div>
+                                </div>
+                                <div class="row pt-1 card-text small">
+                                    <div class="col-6 m-0">Admin Fee: </div>
+                                    <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.adminFee)}</div>
+                                </div>
+
+                                {
+                                    (data.codFee) ? (
+                                        <div class="row pt-1 card-text small">
+                                            <div class="col-6 m-0">COD Fee: </div>
+                                            <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.codFee)}</div>
+                                        </div>
+                                    ) : (<div />)
+                                }
+
+                                <div class="row pt-1 card-text small fw-bolder">
+                                    <div class="col-6 m-0">Payment Amount: </div>
+                                    <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.paymentAmount)}</div>
+                                </div>
+
+                                {
+                                    (data.isCOD) ? (
+                                        <div>
+                                            {
+                                                (data.codBillAmount - data.paymentAmount > 0) ? (
+                                                    <div class="row pt-1 card-text small text-success fw-bolder">
+                                                        <div class="col-6 m-0">Payment Amount: </div>
+                                                        <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.codBillAmount - data.paymentAmount)}</div>
+                                                    </div>
+                                                ) : (
+                                                    <div class="row pt-1 card-text small text-error fw-bolder">
+                                                        <div class="col-6 m-0">Payment Amount: </div>
+                                                        <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.codBillAmount - data.paymentAmount)}</div>
+                                                    </div>
+                                                )
+                                            }
+                                        </div>
+                                    ) : (
+                                        <div></div>
+                                    )
+                                }
+                            </div>
                         </div>
                     </div>
                 );
@@ -431,6 +546,9 @@ class OrderDetailPage extends React.Component {
             },
             isShownReorder: false,
             isShownProgress: false,
+            isShownDeliveryTracking: false,
+            isLoadingDeliveryTracking: false,
+            deliveryTracking: null,
             alert: null
         };
         this.reorderModalRef = React.createRef();
@@ -543,6 +661,12 @@ class OrderDetailPage extends React.Component {
         });
     };
 
+    handleDeliveryTrackingHidden() {
+        this.setState({
+            isShownDeliveryTracking: false
+        });
+    };
+
     handleReorderConfirm() {
         var { order } = this.state;
 
@@ -596,53 +720,127 @@ class OrderDetailPage extends React.Component {
     handlePayment() {
         var { order } = this.state;
         var that = this;
-        window.snap.pay(order.data.paymentToken, {
-            onSuccess: function (result) {
-                /* You may add your own implementation here */
-                that.setState({
-                    alert: {
-                        isShown: true,
-                        mode: 'success',
-                        title: 'Success',
-                        message: 'Payment succeed. Refreshing the page in 3 seconds.'
-                    }
-                });
 
-                setTimeout(function () {
-                    window.location.reload();
-                }, 3000);
-            },
-            onError: function (result) {
-                /* You may add your own implementation here */
-                that.setState({
-                    alert: {
-                        isShown: true,
-                        mode: 'danger',
-                        title: 'Payment Failed',
-                        message: 'Payment failed, please try again.'
+        if (userType == 0 || userType == 1) {
+            fetch('https://importking.mooo.com/api/Payments/' + order.data.orderId + '/Token', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            })
+                .then(resToken => {
+                    if (resToken.status == 200) {
+                        return resToken.json();
                     }
-                });
+                    else {
+                        throw {
+                            message: resToken.statusText
+                        }
+                    }
+                })
+                .then(resToken => {
+                    window.snap.pay(resToken.paymentToken, {
+                        gopayMode: 'deeplink',
+                        onSuccess: function (result) {
+                            /* You may add your own implementation here */
+                            that.setState({
+                                alert: {
+                                    isShown: true,
+                                    mode: 'success',
+                                    title: 'Payment Succeed',
+                                    message: 'Refreshing the page in 2 seconds.'
+                                }
+                            });
 
-                setTimeout(function () {
-                    window.location.reload();
-                }, 3000);
-            },
-            onClose: function () {
-                /* You may add your own implementation here */
-                that.setState({
-                    alert: {
-                        isShown: true,
-                        mode: 'warning',
-                        title: 'Warning',
-                        message: 'Please complete the payment to proceed the request'
-                    }
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 2000);
+                        },
+                        onError: function (result) {
+                            /* You may add your own implementation here */
+                            that.setState({
+                                alert: {
+                                    isShown: true,
+                                    mode: 'danger',
+                                    title: 'Payment Failed',
+                                    message: 'Please try again.'
+                                }
+                            });
+
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 2000);
+                        },
+                        onPending: function (result) {
+                            /* You may add your own implementation here */
+                            that.setState({
+                                alert: {
+                                    isShown: true,
+                                    mode: 'info',
+                                    title: 'Payment Pending',
+                                    message: 'Please complete payment to process order.'
+                                }
+                            });
+                        },
+                        onClose: function () {
+                            /* You may add your own implementation here */
+                            that.setState({
+                                alert: {
+                                    isShown: true,
+                                    mode: 'warning',
+                                    title: 'Warning',
+                                    message: 'Please complete the payment to proceed the request.'
+                                }
+                            });
+                        }
+                    });
                 });
-            }
+        }
+    }
+
+    handleTrackShipping() {
+        var { order } = this.state;
+        var waybill = order.data.noResi;
+        var courier = order.data.shippingCourier;
+
+        this.setState({
+            isLoadingDeliveryTracking: true,
+            isShownDeliveryTracking: true
         });
+
+        fetch("https://importking.mooo.com/api/waybills/" + courier + "/" + waybill)
+            .then((res) => {
+                if (res.status == 200)
+                    return res.json();
+
+                throw {
+                    message: res.statusText
+                };
+            })
+            .then((result) => {
+                var tracking = (result && result.rajaOngkir && result.rajaOngkir.result) ? result.rajaOngkir.result : null;
+                this.setState({
+                    deliveryTracking: tracking,
+                    isLoadingDeliveryTracking: false
+                });
+
+            }, (error) => {
+                this.setState({
+                    isLoadingDeliveryTracking: false
+                });
+            });
+    }
+
+    renderManifest(item) {
+        return (
+            <div class="row mb-3">
+                <div class="fw-bold">{item.manifestDescription}</div>
+                <div>{item.manifestDate} {item.manifestTime}</div>
+                <div>{item.cityName}</div>
+            </div>
+        );
     }
 
     render() {
-        const { order, orderDetails, stockOutDetails } = this.state;
+        const { order, orderDetails, stockOutDetails, deliveryTracking } = this.state;
         let isAdmin = userType == 3;
         return (
             <Progress isShown={this.state.isShownProgress}>
@@ -668,17 +866,24 @@ class OrderDetailPage extends React.Component {
                     (isAdmin) ? (<div></div>) : (
                         <div>
                             {
-                                (userType == 0 && order && order.data && order.data.status == 'Waiting Payment') ?
-                                (
-                                    <div class="d-grid gap-2 px-2 mb-2">
-                                        <div class="alert alert-info">Please complete payment to process the order</div>
-                                        <button class="btn btn-primary" type="button" onClick={this.handlePayment.bind(this)}>Complete Payment</button>
-                                    </div>
-                                ) : (<div></div>)
+                                (order && order.data && order.data.status == 'Waiting Payment') ?
+                                    (
+                                        <div class="d-grid gap-2 px-2 mb-2">
+                                            <div class="alert alert-info">Please complete payment to process the order</div>
+                                            <button class="btn btn-primary" type="button" onClick={this.handlePayment.bind(this)}>Complete Payment</button>
+                                        </div>
+                                    ) : (<div></div>)
                             }
                             <div class="d-grid gap-2 px-2 mb-2">
                                 <button class="btn btn-outline-primary" type="button" onClick={this.handleReorder.bind(this)}>Reorder Product</button>
                             </div>
+                            {
+                                (order && order.data && order.data.noResi) ? (
+                                    <div class="d-grid gap-2 px-2 mb-2">
+                                        <button class="btn btn-outline-primary" type="button" onClick={this.handleTrackShipping.bind(this)}>Track Shipping</button>
+                                    </div>
+                                ) : (<div></div>)
+                            }
                         </div>
                     )
                 }
@@ -701,9 +906,78 @@ class OrderDetailPage extends React.Component {
                         </div>
                     </div>
                 </ModalPopUp>
+
+                <ModalPopUp id="deliveryTrackingModal" ref={this.deliveryTrackingModalRef} isShown={this.state.isShownDeliveryTracking} class="modal" onHidden={this.handleDeliveryTrackingHidden.bind(this)}>
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Delivery Tracking</h5>
+                                <button type="button" class="close btn btn-secondary btn-sm" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body px-2">
+                                {
+                                    (deliveryTracking != null) ?
+                                        (
+                                            <div>
+                                                <div class="row">
+                                                    <div class="col text-right">
+                                                        <label class="fw-bold form-label">Courier Code:</label>
+                                                    </div>
+                                                    <div class="col text-left">{deliveryTracking.summary.courierCode}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col text-right">
+                                                        <label class="fw-bold form-label">Courier Name:</label>
+                                                    </div>
+                                                    <div class="col text-left">{deliveryTracking.summary.courierName}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col text-right">
+                                                        <label class="fw-bold form-label">Waybill No:</label>
+                                                    </div>
+                                                    <div class="col text-left">{deliveryTracking.summary.waybillNumber}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col text-right">
+                                                        <label class="fw-bold form-label">Waybill Date:</label>
+                                                    </div>
+                                                    <div class="col text-left">{deliveryTracking.summary.waybillDate}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col text-right">
+                                                        <label class="fw-bold form-label">Status:</label>
+                                                    </div>
+                                                    <div class="col text-left">{deliveryTracking.summary.status}</div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col text-right">
+                                                        <label class="fw-bold form-label">Manifests:</label>
+                                                    </div>
+                                                </div>
+                                                {
+                                                    deliveryTracking.manifest.map(item => {
+                                                        return this.renderManifest(item)
+                                                    })
+                                                }
+                                            </div>
+                                        ) : (
+                                            <div class="my-3">No Data Found</div>
+                                        )
+                                }
+                            </div>
+                            <div class="modal-footer px-2">
+                                <button class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </ModalPopUp>
             </Progress>
         );
     };
 };
 
 ReactDOM.render(<OrderDetailPage />, document.getElementById('root'));
+
+$('.nav-bottom .nav-link[href="/Order"]').addClass('active');
