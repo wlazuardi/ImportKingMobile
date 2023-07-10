@@ -14,8 +14,11 @@
                 phone: '',
                 fullAddress: '',
                 city: '',
+                cityId: 0,
                 province: '',
+                provinceId: 0,
                 subDistrict: '',
+                subDistrictId: 0,
                 zipCode: '',
                 isDefault: false
             }

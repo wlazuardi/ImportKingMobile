@@ -1,3 +1,5 @@
+//  This is additional
+
 /*!
  * Select2 4.0.13
  * https://select2.github.io
@@ -758,6 +760,7 @@
 
             // Append an array of jQuery nodes to a given element.
             Utils.appendMany = function ($element, $nodes) {
+                // if ($element.parent().find('[name=region]').length == 0) { 
                 // jQuery 1.7.x does not support $.fn.append() with an array
                 // Fall back to a jQuery object collection using $.fn.add()
                 if ($.fn.jquery.substr(0, 3) === '1.7') {
@@ -771,6 +774,7 @@
                 }
 
                 $element.append($nodes);
+                // }
             };
 
             // Cache objects in Utils.__cache instead of $.data (see #4346)
@@ -1982,7 +1986,7 @@
             Search.prototype.render = function (decorated) {
                 var $search = $(
                     '<li class="select2-search select2-search--inline">' +
-                    '<input class="select2-search__field" placeholder="Search" type="search" tabindex="-1"' +
+                    '<input class="select2-search__field" type="search" tabindex="-1"' +
                     ' autocomplete="off" autocorrect="off" autocapitalize="none"' +
                     ' spellcheck="false" role="searchbox" aria-autocomplete="list" />' +
                     '</li>'
@@ -2007,14 +2011,14 @@
 
                 container.on('open', function () {
                     self.$search.attr('aria-controls', resultsId);
-                    // self.$search.trigger('focus');
+                    self.$search.trigger('focus');
                 });
 
                 container.on('close', function () {
                     self.$search.val('');
                     self.$search.removeAttr('aria-controls');
                     self.$search.removeAttr('aria-activedescendant');
-                    // self.$search.trigger('focus');
+                    self.$search.trigger('focus');
                 });
 
                 container.on('enable', function () {
@@ -2028,7 +2032,7 @@
                 });
 
                 container.on('focus', function (evt) {
-                    /*// self.$search.trigger('focus');*/
+                    self.$search.trigger('focus');
                 });
 
                 container.on('results:focus', function (params) {
@@ -3484,6 +3488,11 @@
 
             Utils.Extend(ArrayAdapter, SelectAdapter);
 
+            ArrayAdapter.prototype.updateOptions = function (data) {
+                this.$element.find('option').remove(); // remove all options
+                this.addOptions(this.convertToOptions(data));
+            }
+
             ArrayAdapter.prototype.bind = function (container, $container) {
                 ArrayAdapter.__super__.bind.call(this, container, $container);
 
@@ -4125,10 +4134,10 @@
                     self.$search.attr('tabindex', 0);
                     self.$search.attr('aria-controls', resultsId);
 
-                    // self.$search.trigger('focus');
+                    self.$search.trigger('focus');
 
                     window.setTimeout(function () {
-                        // self.$search.trigger('focus');
+                        self.$search.trigger('focus');
                     }, 0);
                 });
 
@@ -4143,7 +4152,7 @@
 
                 container.on('focus', function () {
                     if (!container.isOpen()) {
-                        // self.$search.trigger('focus');
+                        self.$search.trigger('focus');
                     }
                 });
 
@@ -4340,7 +4349,7 @@
 
                 container.on('open', function () {
                     self._showDropdown();
-                    self._attachPositioningHandler(container);                    
+                    self._attachPositioningHandler(container);
 
                     // Must bind after the results handlers to ensure correct sizing
                     self._bindContainerResultHandlers(container);
@@ -4389,7 +4398,6 @@
             };
 
             AttachBody.prototype._hideDropdown = function (decorated) {
-                $('.select2-dropdown-overlay').remove();                
                 this.$dropdownContainer.detach();
             };
 
@@ -4573,9 +4581,8 @@
             };
 
             AttachBody.prototype._showDropdown = function (decorated) {
-                $('<div class="select2-dropdown-overlay"></div>').appendTo(this.$dropdownParent);
-                this.$dropdownContainer.appendTo(this.$dropdownParent);                
-                this.$dropdownParent;
+                this.$dropdownContainer.appendTo(this.$dropdownParent);
+
                 this._positionDropdown();
                 this._resizeDropdown();
             };
@@ -5544,14 +5551,14 @@
                 var self = this;
 
                 this.$element.on('change.select2', function () {
-                    try { 
+                    try {
                         self.dataAdapter.current(function (data) {
                             self.trigger('selection:update', {
                                 data: data
                             });
                         });
-                    } catch(e){
-                    }
+                    } catch (e) {
+                    }                    
                 });
 
                 this.$element.on('focus.select2', function (evt) {
@@ -5616,7 +5623,7 @@
                 });
 
                 this.selection.on('focus', function (params) {
-                    /*self.focus(params);*/
+                    self.focus(params);
                 });
 
                 this.selection.on('*', function (name, params) {
@@ -6745,6 +6752,13 @@
             }
 
         }));
+
+        //S2.define('jquery-mousewheel', [
+        //    'jquery'
+        //], function ($) {
+        //    // Used to shim jQuery.mousewheel for non-full builds.
+        //    return $;
+        //});
 
         S2.define('jquery.select2', [
             'jquery',

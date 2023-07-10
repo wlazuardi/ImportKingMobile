@@ -39,41 +39,6 @@ namespace ImportKingMobile
             | SecurityProtocolType.Tls12;
             IdentityModelEventSource.ShowPII = true;
 
-            /*
-            services.AddMvc();
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = "cookie";
-                options.DefaultChallengeScheme = "oidc";
-            })
-            .AddCookie("cookie")
-            .AddOpenIdConnect("oidc", options =>
-            {
-                options.Authority = "https://importkingidentity.mooo.com";
-                options.ClientId = "oidcMVCApp";
-                options.ClientSecret = "ProCodeGuide";
-                options.ResponseType = "code";
-                options.UsePkce = true;
-                options.ResponseMode = "query";
-                options.Scope.Add("userApi.profile.read");
-                options.SaveTokens = true;
-                options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
-                options.ClaimActions.MapJsonKey(ClaimTypes.Role, "role");
-                options.ClaimActions.MapJsonKey(ClaimTypes.GivenName, "givenName");
-                options.ClaimActions.MapJsonKey(ClaimTypes.Surname, "surName");                
-                options.Events.OnRemoteFailure = context =>
-                {
-                    if (context.Failure.Message.Contains("Correlation failed"))
-                        context.Response.Redirect("/Home/Index");
-
-                    return Task.FromResult(0);
-                };
-            });
-            */
-
-
-
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = "cookie";

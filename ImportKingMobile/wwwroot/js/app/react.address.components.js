@@ -205,18 +205,29 @@ class ModalAddressForm extends React.Component {
                     required: true,
                     maxlength: 250
                 },
-                city: {
-                    required: true
+                cityId: {
+                    min: 1
                 },
-                province: {
-                    required: true
+                provinceId: {
+                    min: 1
                 },
-                subDistrict: {
-                    required: true
+                subDistrictId: {
+                    min: 1
                 },
                 zipCode: {
                     required: true,
                     digits: true
+                }
+            },
+            messages: {
+                cityId: {
+                    min: 'Please select city'
+                },
+                provinceId: {
+                    min: 'Please select province'
+                },
+                subDistrictId: {
+                    min: 'Please select sub district'
                 }
             },
             formData: {
@@ -224,7 +235,21 @@ class ModalAddressForm extends React.Component {
             }
         }
         this.myRef = React.createRef();
-        this.populateProvinces();        
+        this.populateProvinces();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.formData && this.state.formData.province) {
+            if (!prevState.formData || this.state.formData.province != prevState.formData.province) {
+                this.populateCities();
+            }
+        }
+
+        if (this.state.formData && this.state.formData.city) {
+            if (!prevState.formData || this.state.formData.city != prevState.formData.city) {
+                this.populateDistricts();
+            }
+        }
     }
 
     populateProvinces() {
@@ -275,7 +300,7 @@ class ModalAddressForm extends React.Component {
             isLoadingAll: true
         });
 
-        fetch('https://importking.mooo.com/api/Deliveries/Province/' + this.state.formData.province + '/City/0')
+        fetch('https://importking.mooo.com/api/Deliveries/Province/' + this.state.formData.provinceId + '/City/0')
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -320,7 +345,7 @@ class ModalAddressForm extends React.Component {
             isLoadingAll: true
         });
 
-        fetch('https://importking.mooo.com/api/Deliveries/Province/' + this.state.formData.province + '/City/' + this.state.formData.city + '/SubDistrict')
+        fetch('https://importking.mooo.com/api/Deliveries/Province/' + this.state.formData.provinceId + '/City/' + this.state.formData.cityId + '/SubDistrict')
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -455,6 +480,38 @@ class ModalAddressForm extends React.Component {
             formData[inputName] = e.target.checked;
         }
 
+        if (inputName == 'provinceId') {
+            var temp = this.state.provinces.filter(x => x.id == this.state.formData.provinceId);
+            var province = (temp && temp.length) ? temp[0].text : '';            
+            formData['province'] = province;
+            this.populateCities();
+        }
+        else if (inputName == 'cityId') {
+            var temp = this.state.cities.filter(x => x.id == this.state.formData.cityId);
+            if (temp && temp.length > 0) {
+                formData['zipCode'] = temp[0].postalCode;
+                formData['city'] = temp[0].text;
+            }
+            this.populateDistricts();
+        }
+        else if (inputName == 'subDistrictId') {
+            var temp = this.state.subdistricts.filter(x => x.id == this.state.formData.subDistrictId);
+            if (temp && temp.length > 0) {                
+                formData['subDistrict'] = temp[0].text;
+            }
+        }
+
+        this.setState({
+            formData: formData
+        });
+    }
+
+    handleFormSelectChange(e) {
+        var { formData } = this.state;
+
+        var inputName = e.name;
+        formData[inputName] = e.value;
+
         if (inputName == 'province')
             this.populateCities();
 
@@ -469,9 +526,6 @@ class ModalAddressForm extends React.Component {
         this.setState({
             formData: formData
         });
-    }
-
-    handleDropdownChange(e) {
     }
 
     render() {
@@ -492,7 +546,7 @@ class ModalAddressForm extends React.Component {
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <FormValidate ref={this.myRef} novalidate="novalidate" rules={this.state.rules} submitHandler={this.handleSubmit.bind(this)}>
+                                <FormValidate ref={this.myRef} novalidate="novalidate" rules={this.state.rules} messages={this.state.messages} submitHandler={this.handleSubmit.bind(this)}>
                                     <div class="mb-3">
                                         <label class="form-label">Address Name</label>
                                         <div>
@@ -517,22 +571,24 @@ class ModalAddressForm extends React.Component {
                                             <textarea class="form-control" name="fullAddress" placeholder="Street Address With No." value={this.state.formData.fullAddress} onChange={this.handleFormInputChange.bind(this)}></textarea>
                                         </div>
                                     </div>
-                                    <div class="mb-3">
+                                    <div id="provinceRow" class="mb-3">
                                         <label class="form-label">Province</label>
-                                        <div>                                            
-                                            <select class="form-control" name="province" placeholder="Province" value={this.state.formData.province} onChange={this.handleFormInputChange.bind(this)}>
-                                            {
-                                                this.state.provinces.map(x => (
-                                                    <option value={x.id}>{x.text}</option>
-                                                ))
-                                            }
+                                        <div>
+                                            {/*<Select2 class="form-control w-100" name="province" value={this.state.formData.provinceId} dataSource={this.state.provinces} dropdownParent="#addNewAddressModal" width="100%" onChange={this.handleFormSelectChange.bind(this)} />*/}
+                                            <select class="form-control" name="provinceId" placeholder="Province" value={this.state.formData.provinceId} onChange={this.handleFormInputChange.bind(this)}>
+                                                {
+                                                    this.state.provinces.map(x => (
+                                                        <option value={x.id}>{x.text}</option>
+                                                    ))
+                                                }
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="mb-3">
+                                    <div id="cityRow" class="mb-3">
                                         <label class="form-label">City</label>
                                         <div>
-                                            <select class="form-control" name="city" placeholder="City" value={this.state.formData.city} onChange={this.handleFormInputChange.bind(this)}>
+                                            {/*<Select2 class="form-control w-100" name="city" value={this.state.formData.cityId} dataSource={this.state.cities} dropdownParent="#addNewAddressModal" width="100%" onChange={this.handleFormSelectChange.bind(this)} />*/}
+                                            <select class="form-control" name="cityId" placeholder="City" value={this.state.formData.cityId} onChange={this.handleFormInputChange.bind(this)}>
                                                 {
                                                     this.state.cities.map(x => (
                                                         <option value={x.id}>{x.text}</option>
@@ -541,10 +597,11 @@ class ModalAddressForm extends React.Component {
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="mb-3">
+                                    <div id="subDistrictRow" class="mb-3">
                                         <label class="form-label">District</label>
-                                        <div>                                           
-                                            <select class="form-control" name="subDistrict" placeholder="Sub District" value={this.state.formData.subDistrict} onChange={this.handleFormInputChange.bind(this)}>
+                                        <div>
+                                            {/*<Select2 class="form-control w-100" name="subDistrict" value={this.state.formData.subDistrictId} dataSource={this.state.cities} dropdownParent="#addNewAddressModal" width="100%" onChange={this.handleFormSelectChange.bind(this)} />*/}
+                                            <select class="form-control" name="subDistrictId" placeholder="Sub District" value={this.state.formData.subDistrictId} onChange={this.handleFormInputChange.bind(this)}>
                                                 {
                                                     this.state.subdistricts.map(x => (
                                                         <option value={x.id}>{x.text}</option>

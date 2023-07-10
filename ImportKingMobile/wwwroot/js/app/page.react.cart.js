@@ -371,6 +371,7 @@ class CartPage extends React.Component {
                     required: false
                 }
             },
+            deliveryServices: [],
             orderData: {
                 courier: 'jne',
                 dropshipperName: '',
@@ -379,12 +380,13 @@ class CartPage extends React.Component {
                 recipientName: '',
                 recipientPhoneNo: '',
                 codBillAmount: '',
+                deliveryService: '',
                 comments: ''
             },
             isLoadingSubmit: false,
             isDropshipping: false,
-            /*dropshipType: 'manual',*/
-            dropshipType: 'marketplace',
+            dropshipType: 'manual',
+            /*dropshipType: 'marketplace',*/
             deliveryType: 'regular',
             deliveryLabelFile: null,
             step: 1
@@ -476,12 +478,12 @@ class CartPage extends React.Component {
 
         var { orderData } = this.state;
 
-        if (e.target.value == 'manual') {
-            orderData.courier = 'jne';
-        }
-        else {
-            orderData.courier = '';
-        }
+        //if (e.target.value == 'manual') {
+        //    orderData.courier = 'jne';
+        //}
+        //else {
+        //    orderData.courier = '';
+        //}
 
         this.setState({
             orderData: orderData
@@ -510,7 +512,7 @@ class CartPage extends React.Component {
         fileUpload.click();
     }
 
-    handleUploadChange(e) {        
+    handleUploadChange(e) {
         var files = e.target.files;
         this.setState({
             isShownProgress: true
@@ -534,7 +536,7 @@ class CartPage extends React.Component {
                 }
             }).catch(
                 error => {
-                    this.setState({                        
+                    this.setState({
                         isShownProgress: false
                     });
                 }
@@ -597,6 +599,9 @@ class CartPage extends React.Component {
                         orderData.addressId = "";
                     }
 
+                    // getDeliveryFee Here
+                    self.getDeliveryFee(selectedAddress, orderData);
+
                     self.setState({
                         isShownProgress: false,
                         selectedAddress: selectedAddress,
@@ -645,10 +650,16 @@ class CartPage extends React.Component {
             shippingName: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? orderData.recipientName : selectedAddress.name,
             shippingPhone: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? orderData.recipientPhoneNo : selectedAddress.phone,
             shippingAddress: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.fullAddress,
-            shippingCity: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.city,
             shippingProvince: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.province,
+            shippingCity: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.city,
+            shippingSubDistrict: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.subDistrict,            
             shippingZipCode: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.zipCode,
+            shippingProvinceId: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.provinceId,
+            shippingCityId: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.cityId,
+            shippingSubDistrictId: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.subDistrictId,
             shippingCourier: orderData.courier,
+            deliveryService: orderData.deliveryService,
+            deliveryServiceText: orderData.deliveryServiceText,
             comments: orderData.comments,
             isDropshipping: (user.userType == 1 && isDropshipping),
             isFromMarketplace: (user.userType == 1 && isDropshipping && dropshipType == 'marketplace'),
@@ -659,6 +670,7 @@ class CartPage extends React.Component {
             codBillAmount: (user.userType == 1 && isDropshipping && deliveryType == 'cod') ? codBillAmount : 0,
             bookingCode: orderData.bookingCode,
             deliveryFee: this.state.deliveryFee,
+            deliveryFeeDiscount: this.state.deliveryFeeDiscount,
             adminFee: this.state.adminFee,
             codFee: this.state.codFee,
             subTotal: this.state.subTotal,
@@ -836,7 +848,10 @@ class CartPage extends React.Component {
         var { orderData } = this.state;
 
         orderData.courier = e.target.value;
-        
+
+        // getDeliveryFee here
+        this.getDeliveryFee(this.state.selectedAddress, orderData);
+
         this.setState({
             orderData: orderData
         });
@@ -867,8 +882,11 @@ class CartPage extends React.Component {
                 phone: '',
                 fullAddress: '',
                 city: '',
+                cityId: 0,
                 province: '',
+                provinceId: 0,
                 subDistrict: '',
+                subDistrictId: 0,
                 zipCode: '',
                 isDefault: false
             }
@@ -905,6 +923,78 @@ class CartPage extends React.Component {
             isShownOrderForm: true,
             oderData: orderData
         });
+
+        // getDeliveryFee Here
+        this.getDeliveryFee(address, orderData);
+    }
+
+    getDeliveryFee(selectedAddress, orderData) {
+        if (!selectedAddress || !selectedAddress.subDistrictId)
+            return;
+
+        this.setState({
+            isShownProgress: true
+        });
+
+        var data = {
+            origin: '2088',
+            destination: selectedAddress.subDistrictId,
+            weight: 1,
+            courier: orderData.courier
+        };
+
+        fetch('https://importking.mooo.com/api/Deliveries/Cost', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                if (res.status == 200) {
+                    return res.json();
+                }
+                else {
+                    throw {
+                        message: res.statusText
+                    }
+                }
+            })
+            .then((result) => {
+                var deliveryServices = [{ id: '', text: '', price: 0 }];
+
+                this.setState({
+                    isShownProgress: false
+                });
+
+                if (!result.rajaOngkir.results) {
+                    this.setState({
+                        deliveryServices: deliveryServices
+                    });
+                    return;
+                }
+
+                $.each(result.rajaOngkir.results[0].costs, function (i, cost) {
+                    $.each(cost.costList, function (j, costList) {
+                        var text = `${cost.service} (${costList.etd} days) - IDR ${App.Utils.formatCurrency(costList.value)}`;
+                        deliveryServices.push({
+                            id: cost.service,
+                            text: text,
+                            price: costList.value
+                        });
+                    });
+                });
+
+                var orderData = this.state.orderData;
+                orderData['deliveryService'] = '';
+
+                this.setState({
+                    orderData: orderData,
+                    deliveryServices: deliveryServices
+                });
+            }, (error) => {
+                this.setState({
+                    isShownProgress: false
+                });
+            });
     }
 
     isPdf(fileName) {
@@ -941,7 +1031,7 @@ class CartPage extends React.Component {
             step,
             cartList,
             isDropshipping,
-            deliveryType,            
+            deliveryType,
             dropshipType,
             deliveryFee,
             deliveryFeeDiscount,
@@ -1015,24 +1105,27 @@ class CartPage extends React.Component {
             courier: {
                 required: true
             },
+            deliveryService: {
+                required: true
+            },
             dropshipperName: {
                 required: (isDropshipping == true)
             },
             dropshipperPhone: {
                 required: (isDropshipping == true)
             },
-            //deliveryLabelFile: {
-            //    required: (isDropshipping == true && dropshipType == 'marketplace')
-            //},
+            deliveryLabelFile: {
+                required: (isDropshipping == true && dropshipType == 'marketplace')
+            },
             bookingCode: {
                 required: (isDropshipping == true && dropshipType == 'marketplace')
             },
             recipientName: {
                 required: (isDropshipping == true && dropshipType == 'marketplace')
             },
-            //recipientPhoneNo: {
-            //    required: (isDropshipping == true && dropshipType == 'marketplace')
-            //},
+            recipientPhoneNo: {
+                required: (isDropshipping == true && dropshipType == 'marketplace')
+            },
             comments: {
                 required: (isDropshipping == true && dropshipType == 'marketplace')
             },
@@ -1050,11 +1143,19 @@ class CartPage extends React.Component {
     }
 
     handleOrderDataChange(e) {
-        var { orderData } = this.state;
+        var { orderData, deliveryFee } = this.state;
         var name = e.target.name;
         orderData[name] = e.target.value;
+
+        if (name == 'deliveryService') {
+            var temp = this.state.deliveryServices.filter(x => x.id == e.target.value);
+            deliveryFee = (temp && temp.length > 0) ? temp[0].price : 0;
+            orderData['deliveryServiceText'] = (temp && temp.length > 0) ? temp[0].text : '';
+        }
+
         this.setState({
-            orderData
+            orderData,
+            deliveryFee
         });
     }
 
@@ -1086,8 +1187,8 @@ class CartPage extends React.Component {
                         <div></div>
                 }
 
-                <ModalPopUp id="orderModal" ref={this.orderModalRef} isShown={this.state.isShownOrderForm} class="modal" onHidden={this.handlePopUpHidden.bind(this)}>
-                    <div class="modal-dialog" role="document">
+                <ModalPopUp id="orderModal" ref={this.orderModalRef} isShown={this.state.isShownOrderForm} class="modal modal-on-top" onHidden={this.handlePopUpHidden.bind(this)}>
+                    <div class="modal-dialog modal-fullscreen" role="document" style={{ zIndex: '10002' }}>
                         <Progress isShown={this.state.isShownProgress} class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title">Submit Order</h5>
@@ -1132,28 +1233,10 @@ class CartPage extends React.Component {
                                                         <div></div>
                                                     )
                                                 }
-                                                <div class="mb-3">
-                                                    <label class="form-label">Courier</label>
-                                                    <div>
-                                                        <select class="form-control" name="courier" value={this.state.orderData.courier}
-                                                            onChange={this.handleCourierChange.bind(this)}
-                                                            disabled={this.state.deliveryType == 'cod' || this.state.dropshipType == 'manual'}>
-                                                            <option value=""></option>
-                                                            <option value="jne">JNE</option>
-                                                            <option value="jnt">JNT</option>
-                                                            <option value="pos">Pos Indonesia</option>
-                                                            <option value="sicepat">SiCepat</option>
-                                                            <option value="anteraja">AnterAja</option>
-                                                            <option value="shopee_express">Shopee Express</option>
-                                                            <option value="lazada_express">Lazada Express</option>
-                                                            <option value="others">Others</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
                                                 {
                                                     (user != null && user.userType == 1 && this.state.isDropshipping == true) ? (
                                                         <div>
-                                                            <div class="mb-3 d-none">
+                                                            <div class="mb-3">
                                                                 <label class="form-label">Dropship Type</label>
                                                                 <div>
                                                                     <div class="form-check form-check-inline ps-0">
@@ -1193,6 +1276,24 @@ class CartPage extends React.Component {
                                                         <div></div>
                                                     )
                                                 }
+                                                <div class="mb-3">
+                                                    <label class="form-label">Courier</label>
+                                                    <div>
+                                                        <select class="form-control" name="courier" value={this.state.orderData.courier}
+                                                            onChange={this.handleCourierChange.bind(this)}
+                                                            disabled={this.state.deliveryType == 'cod'}>
+                                                            <option value=""></option>
+                                                            <option value="jne">JNE</option>
+                                                            <option value="jnt">JNT</option>
+                                                            <option value="pos">Pos Indonesia</option>
+                                                            <option value="sicepat">SiCepat</option>
+                                                            <option value="anteraja">AnterAja</option>
+                                                            <option value="shopee_express">Shopee Express</option>
+                                                            <option value="lazada_express">Lazada Express</option>
+                                                            <option value="others">Others</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
                                                 {
                                                     (this.state.isDropshipping == false || this.state.dropshipType == 'manual') ? (
                                                         <div>
@@ -1233,7 +1334,7 @@ class CartPage extends React.Component {
                                                         <div>
                                                             <div class="mb-3">
                                                                 <label class="form-label">Upload Delivery Label</label>
-                                                                <div class="alert alert-info"><i class="fa fa-info-circle"/> Mandatory for Shopee Express & Lazada Express</div>
+                                                                <div class="alert alert-info"><i class="fa fa-info-circle" /> Mandatory for Shopee & Lazada Express</div>
                                                                 <div class="w-100">
                                                                     <div class="card border-primary">
                                                                         <div class="card-body">
@@ -1314,7 +1415,7 @@ class CartPage extends React.Component {
                                                                 checked={this.state.deliveryType == 'cod'}
                                                                 onChange={this.handleDeliveryType.bind(this)}
                                                             />
-                                                            <label class="form-radio-label" for="codDelivery">COD (Cash on Delivery)</label>
+                                                            <label class="form-radio-label" for="codDelivery">Cash on Delivery</label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1329,6 +1430,30 @@ class CartPage extends React.Component {
                                                                         value={this.state.orderData.codBillAmount}
                                                                         onChange={e => this.handleBillAmountChange(e.target.value)} />
                                                                 </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div></div>
+                                                    )
+                                                }
+                                                {
+                                                    (this.state.dropshipType != 'marketplace') ? (
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Delivery Service</label>
+                                                            <div>
+                                                                {
+                                                                    (this.state.deliveryServices && this.state.deliveryServices.length > 0) ? (
+                                                                        <select class="form-control" name="deliveryService" placeholder="Delivery Service" value={this.state.orderData.deliveryService} onChange={this.handleOrderDataChange.bind(this)}>
+                                                                            {
+                                                                                this.state.deliveryServices.map(x => (
+                                                                                    <option value={x.id}>{x.text}</option>
+                                                                                ))
+                                                                            }
+                                                                        </select>
+                                                                    ) : (
+                                                                        <div class="alert alert-info"><i class="fa fa-info-circle" /> Please choose courier & address first</div>
+                                                                    )
+                                                                }
                                                             </div>
                                                         </div>
                                                     ) : (
@@ -1402,7 +1527,7 @@ class CartPage extends React.Component {
                                                     </div>
                                                 </div>
                                                 {
-                                                    (this.state.deliveryType == 'cod') ? (
+                                                    (this.state.isDropshipping == true && this.state.deliveryType == 'cod') ? (
                                                         <div>
                                                             {/*<div class="row mb-2 fw-bold border-top pt-2">*/}
                                                             {/*    <div class="col-6">*/}
@@ -1414,7 +1539,7 @@ class CartPage extends React.Component {
                                                             {/*</div>*/}
                                                             <div class="row mb-2">
                                                                 <div class="col-6">
-                                                                    COD Fee<br />({this.state.codPercentage * 100}% from COD Bill Amount)
+                                                                    COD Fee<br />({this.state.codPercentage * 100}% from Bill)
                                                                 </div>
                                                                 <div class="col text-end">
                                                                     IDR. {App.Utils.formatCurrency(this.state.codFee)}

@@ -1959,3 +1959,7 @@ section {
 .app-logo-main {
     width: 200px;
 }
+
+.modal-on-top {
+    z-index: 10001;
+}

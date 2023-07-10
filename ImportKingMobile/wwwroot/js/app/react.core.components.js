@@ -223,7 +223,7 @@ class Alert extends React.Component {
         }
 
         return (
-            <div class="modal" tabindex="-1" role="dialog" ref={el => this.el = el}>
+            <div class="modal" role="dialog" ref={el => this.el = el}>
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class={className}>
@@ -340,7 +340,13 @@ class FormValidate extends React.Component {
             submitHandler: function () {
                 if (self.props.submitHandler)
                     self.props.submitHandler(this);
-            }
+            },
+            invalidHandler: function (form, validator) {
+                var errors = validator.numberOfInvalids();
+                if (errors) {
+                    validator.errorList[0].element.focus();
+                }
+            } 
         });
     }
 
@@ -369,7 +375,13 @@ class FormValidate extends React.Component {
             submitHandler: function () {
                 if (self.props.submitHandler)
                     self.props.submitHandler(this);
-            }
+            },
+            invalidHandler: function (form, validator) {
+                var errors = validator.numberOfInvalids();
+                if (errors) {
+                    validator.errorList[0].element.focus();
+                }
+            } 
         });
     }
 

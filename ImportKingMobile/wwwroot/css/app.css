@@ -106,7 +106,11 @@ span.select2-selection__arrow {
 }
 
 .modal-dialog {
-    margin-bottom: 80px;
+     margin-bottom: 80px; 
+}
+
+.modal-dialog.modal-fullscreen {
+    margin-bottom: 0px;
 }
 
 .icon {
