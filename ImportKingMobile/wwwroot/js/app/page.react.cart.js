@@ -373,7 +373,7 @@ class CartPage extends React.Component {
             },
             deliveryServices: [],
             orderData: {
-                courier: 'jne',
+                courier: '',
                 dropshipperName: '',
                 dropshipperPhone: '',
                 bookingCode: '',
@@ -415,9 +415,14 @@ class CartPage extends React.Component {
                 }
             })
             .then((result) => {
+                var { orderData } = this.state;
+
                 var isDropshipping = false;
                 if (result.userType == 1) {
                     isDropshipping = true;
+                }
+                else if (result.userType == 2) {
+                    orderData.courier = 'others';
                 }
 
                 var deliveryFeeDiscountPercentage = parseFloat(result.deliveryFeeDiscount);
@@ -932,8 +937,16 @@ class CartPage extends React.Component {
         if (!selectedAddress || !selectedAddress.subDistrictId)
             return;
 
+        if (orderData.courier == 'others') {
+            var deliveryServices = [{ id: 'other', text: 'Other', price: 0 }];
+            this.setState({
+                deliveryServices
+            });
+            return;
+        }
+
         this.setState({
-            isShownProgress: true
+            isShownProgress: true            
         });
 
         var data = {
