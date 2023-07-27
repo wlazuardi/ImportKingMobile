@@ -71,7 +71,7 @@
                         {category.name}
                     </div>
                     <div class="custom-card-text card-text-subtitle small fw-bold">IDR {App.Utils.formatCurrency(category.price)}</div>
-                    <div class="custom-card-text card-text-attribute small">Terjual: {category.soldCount}</div>
+                    {/*<div class="custom-card-text card-text-attribute small">Terjual: {category.soldCount}</div>*/}
                 </div>
             </li>
         );
@@ -87,7 +87,7 @@
                         {category.name}
                     </div>
                     <div class="custom-card-text card-text-subtitle small fw-bold">IDR {App.Utils.formatCurrency(category.price)}</div>
-                    <div class="custom-card-text card-text-attribute small">Terjual: {category.soldCount}</div>
+                    {/*<div class="custom-card-text card-text-attribute small">Terjual: {category.soldCount}</div>*/}
                 </div>
             </li>
         );

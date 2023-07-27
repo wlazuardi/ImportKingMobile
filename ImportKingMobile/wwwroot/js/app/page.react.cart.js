@@ -952,6 +952,7 @@ class CartPage extends React.Component {
         var data = {
             origin: '2088',
             destination: selectedAddress.subDistrictId,
+            destinationZipCode: selectedAddress.zipCode,
             weight: 1,
             courier: orderData.courier
         };
