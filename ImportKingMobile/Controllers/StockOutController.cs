@@ -1,11 +1,12 @@
 ﻿using ImportKingMobile.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
 
 namespace ImportKingMobile.Controllers
 {
     public class StockOutController : BaseController
     {
-        public StockOutController(IIdentityService identityService) : base(identityService)
+        public StockOutController(IIdentityService identityService, IHttpClientFactory httpClientFactory) : base(identityService, httpClientFactory)
         { 
         }
 

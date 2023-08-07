@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace ImportKingMobile.Controllers
@@ -14,7 +15,7 @@ namespace ImportKingMobile.Controllers
     {
         IIdentityService identityService;
 
-        public UserController(IIdentityService identityService) : base(identityService)
+        public UserController(IIdentityService identityService, IHttpClientFactory httpClientFactory) : base(identityService, httpClientFactory)
         {
             this.identityService = identityService;
         }

@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace ImportKingMobile.Controllers
 {
     public class StockViewerController : BaseController
     {
-        public StockViewerController(IIdentityService identityService) : base(identityService)
+        public StockViewerController(IIdentityService identityService, IHttpClientFactory httpClientFactory) : base(identityService, httpClientFactory)
         {
         }
 

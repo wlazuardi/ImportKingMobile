@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace ImportKingMobile.Controllers
@@ -14,7 +15,7 @@ namespace ImportKingMobile.Controllers
         IIdentityService identityService;
         AppSettings appSettings;
 
-        public OrderController(IIdentityService identityService, IOptions<AppSettings> appSettings) : base (identityService)
+        public OrderController(IIdentityService identityService, IOptions<AppSettings> appSettings, IHttpClientFactory httpClientFactory) : base (identityService, httpClientFactory)
         {
             this.identityService = identityService;
             this.appSettings = appSettings.Value;
