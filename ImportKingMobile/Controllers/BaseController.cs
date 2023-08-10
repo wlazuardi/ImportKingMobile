@@ -27,7 +27,7 @@ namespace ImportKingMobile.Controllers
             this.httpClientFactory = httpClientFactory;
         }
 
-        public async Task<bool> IsActiveEmployee(string emailAddress)
+        public async Task<User> GetEmployee(string emailAddress)
         {
             var url = string.Format("https://importking.mooo.com/api/Users/GetByEmail/{0}", emailAddress);
             var client = httpClientFactory.CreateClient();
@@ -38,11 +38,11 @@ namespace ImportKingMobile.Controllers
                 var user = JsonConvert.DeserializeObject<User>(await result.Content.ReadAsStringAsync());
                 if (user != null) 
                 {
-                    return true;
+                    return user;
                 }
             }
 
-            return false;
+            return null;
         }
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext filterContext, ActionExecutionDelegate next)
@@ -50,10 +50,16 @@ namespace ImportKingMobile.Controllers
             var user = identityService.GetCurrentUser();
             ViewBag.User = user;
 
-            if (user != null && !await IsActiveEmployee(user.Email))
+            User userData = (user != null) ? await GetEmployee(user.Email) : null;
+
+            if (userData == null)
             {
                 await HttpContext.SignOutAsync("cookie");
                 filterContext.Result = new RedirectResult("https://importkingidentity.mooo.com/Account/Logout");
+            }
+            else if (userData.Status == Constants.UserStatus.Inactive)
+            {
+                filterContext.Result = new RedirectToActionResult("InactiveUser", "Notification", null);
             }
 
             await base.OnActionExecutionAsync(filterContext, next);

@@ -418,11 +418,15 @@ class CartPage extends React.Component {
                 var { orderData } = this.state;
 
                 var isDropshipping = false;
-                if (result.userType == 1) {
+
+                if (result.userType == App.Utils.UserType.Dropshipper) {
                     isDropshipping = true;
                 }
-                else if (result.userType == 2) {
+                else if (result.userType == App.Utils.UserType.Reseller) {
                     orderData.courier = 'others';
+                }
+                else if (result.userType == App.Utils.UserType.BasicUser) {
+                    isDropshipping = false;
                 }
 
                 var deliveryFeeDiscountPercentage = parseFloat(result.deliveryFeeDiscount);
@@ -481,17 +485,16 @@ class CartPage extends React.Component {
             dropshipType: e.target.value
         });
 
-        var { orderData } = this.state;
+        var { orderData, deliveryType } = this.state;
 
-        //if (e.target.value == 'manual') {
-        //    orderData.courier = 'jne';
-        //}
-        //else {
-        //    orderData.courier = '';
-        //}
+        if (e.target.value == 'marketplace') {
+            orderData.courier = '';
+            deliveryType = 'regular';
+        }
 
         this.setState({
-            orderData: orderData
+            orderData: orderData,
+            deliveryType
         });
     }
 
@@ -1138,11 +1141,8 @@ class CartPage extends React.Component {
                 required: (isDropshipping == true && dropshipType == 'marketplace')
             },
             recipientPhoneNo: {
-                required: (isDropshipping == true && dropshipType == 'marketplace')
-            },
-            comments: {
-                required: (isDropshipping == true && dropshipType == 'marketplace')
-            },
+                required: (isDropshipping == true && dropshipType != 'marketplace')
+            },            
             codBillAmount: {
                 required: (deliveryType == 'cod')
             }
@@ -1231,7 +1231,7 @@ class CartPage extends React.Component {
                                             <div>
                                                 <div class="alert alert-info">Please fill and review your shipping information</div>
                                                 {
-                                                    (user != null && user.userType == 1) ? (
+                                                    (user != null && user.userType == App.Utils.UserType.Reseller && user.allowDropship == true) ? (
                                                         <div class="mb-3">
                                                             <div>
                                                                 <div class="form-switch">
@@ -1248,7 +1248,7 @@ class CartPage extends React.Component {
                                                     )
                                                 }
                                                 {
-                                                    (user != null && user.userType == 1 && this.state.isDropshipping == true) ? (
+                                                    (user != null && this.state.isDropshipping == true) ? (
                                                         <div>
                                                             <div class="mb-3">
                                                                 <label class="form-label">Dropship Type</label>
@@ -1360,15 +1360,15 @@ class CartPage extends React.Component {
                                                                                 (this.state.deliveryLabelFile) ? (
                                                                                     (this.isPdf(this.state.deliveryLabelFile)) ? (
                                                                                         <div>
-                                                                                            {/*<embed type="application/pdf" class="w-100 mt-2" height="400px" src={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />*/}
-                                                                                            <iframe
-                                                                                                class="mt-2"
-                                                                                                src={'https://drive.google.com/viewerng/viewer?embedded=true&url=https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile + '#toolbar=0&scrollbar=0'}
-                                                                                                frameBorder="0"
-                                                                                                scrolling="auto"
-                                                                                                height="400px"
-                                                                                                width="100%"
-                                                                                            ></iframe>
+                                                                                            <object type="application/pdf" class="w-100 mt-2" height="400px" data={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />
+                                                                                            {/*<iframe*/}
+                                                                                            {/*    class="mt-2"*/}
+                                                                                            {/*    src={'https://drive.google.com/viewerng/viewer?embedded=true&url=https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile + '#toolbar=0&scrollbar=0'}*/}
+                                                                                            {/*    frameBorder="0"*/}
+                                                                                            {/*    scrolling="auto"*/}
+                                                                                            {/*    height="400px"*/}
+                                                                                            {/*    width="100%"*/}
+                                                                                            {/*></iframe>*/}
                                                                                         </div>
                                                                                     ) : (
                                                                                         <div>
@@ -1414,25 +1414,31 @@ class CartPage extends React.Component {
                                                         </div>
                                                     )
                                                 }
-                                                <div class="mb-3">
-                                                    <label class="form-label">Delivery Type</label>
-                                                    <div>
-                                                        <div class="form-check form-check-inline ps-0">
-                                                            <input class="form-radio-input me-2" type="radio" name="deliveryType" id="regularDelivery" value="regular"
-                                                                checked={this.state.deliveryType == 'regular'}
-                                                                onChange={this.handleDeliveryType.bind(this)}
-                                                            />
-                                                            <label class="form-radio-label" for="regularDelivery">Regular</label>
+                                                {
+                                                    (this.state.dropshipType == 'marketplace') ? (
+                                                        <div></div>
+                                                    ): (
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Delivery Type</label>
+                                                            <div>
+                                                                <div class="form-check form-check-inline ps-0">
+                                                                    <input class="form-radio-input me-2" type="radio" name="deliveryType" id="regularDelivery" value="regular"
+                                                                        checked={this.state.deliveryType == 'regular'}
+                                                                        onChange={this.handleDeliveryType.bind(this)}
+                                                                    />
+                                                                    <label class="form-radio-label" for="regularDelivery">Regular</label>
+                                                                </div>
+                                                                <div class="form-check form-check-inline">
+                                                                    <input class="form-radio-input me-2" type="radio" name="deliveryType" id="codDelivery" value="cod"
+                                                                        checked={this.state.deliveryType == 'cod'}
+                                                                        onChange={this.handleDeliveryType.bind(this)}
+                                                                    />
+                                                                    <label class="form-radio-label" for="codDelivery">Cash on Delivery</label>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-radio-input me-2" type="radio" name="deliveryType" id="codDelivery" value="cod"
-                                                                checked={this.state.deliveryType == 'cod'}
-                                                                onChange={this.handleDeliveryType.bind(this)}
-                                                            />
-                                                            <label class="form-radio-label" for="codDelivery">Cash on Delivery</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                    )
+                                                }
                                                 {
                                                     (this.state.isDropshipping == true && this.state.deliveryType == 'cod') ? (
                                                         <div>

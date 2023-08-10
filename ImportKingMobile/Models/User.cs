@@ -16,5 +16,8 @@ namespace ImportKingMobile.Models
         public string PhoneNumber { get; set; }
         public int UserType { get; set; }
         public string MerchantName { get; set; }
+        
+        public string Status { get; set; }
+        public bool? AllowDropship { get; set; }
     }
 }

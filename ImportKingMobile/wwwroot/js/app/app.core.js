@@ -140,6 +140,13 @@
     };
 
     App.Alert = new Alert();
+
+    App.Utils.UserType = {
+        BasicUser: 0,
+        Dropshipper: 1,
+        Reseller: 2,
+        Admin: 3
+    };
 }();
 
 +function () {
