@@ -660,7 +660,7 @@ class CartPage extends React.Component {
             shippingAddress: (isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.fullAddress,
             shippingProvince: (isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.province,
             shippingCity: (isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.city,
-            shippingSubDistrict: (isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.subDistrict,            
+            shippingSubDistrict: (isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.subDistrict,
             shippingZipCode: (isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.zipCode,
             shippingProvinceId: (isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.provinceId,
             shippingCityId: (isDropshipping && dropshipType == 'marketplace') ? '' : selectedAddress.cityId,
@@ -949,7 +949,7 @@ class CartPage extends React.Component {
         }
 
         this.setState({
-            isShownProgress: true            
+            isShownProgress: true
         });
 
         var data = {
@@ -1142,7 +1142,7 @@ class CartPage extends React.Component {
             },
             recipientPhoneNo: {
                 required: (isDropshipping == true && dropshipType != 'marketplace')
-            },            
+            },
             codBillAmount: {
                 required: (deliveryType == 'cod')
             }
@@ -1360,7 +1360,7 @@ class CartPage extends React.Component {
                                                                                 (this.state.deliveryLabelFile) ? (
                                                                                     (this.isPdf(this.state.deliveryLabelFile)) ? (
                                                                                         <div>
-                                                                                            <object type="application/pdf" class="w-100 mt-2" height="400px" data={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />
+                                                                                            {/*<object type="application/pdf" class="w-100 mt-2" height="400px" data={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />*/}
                                                                                             {/*<iframe*/}
                                                                                             {/*    class="mt-2"*/}
                                                                                             {/*    src={'https://drive.google.com/viewerng/viewer?embedded=true&url=https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile + '#toolbar=0&scrollbar=0'}*/}
@@ -1369,6 +1369,7 @@ class CartPage extends React.Component {
                                                                                             {/*    height="400px"*/}
                                                                                             {/*    width="100%"*/}
                                                                                             {/*></iframe>*/}
+                                                                                                <PdfViewer id="deliveryLabelViewer" url={'https://importking.mooo.com/api/FileHandlers?fileName=' + this.state.deliveryLabelFile} style={{ border: '1px solid #000' }} class="pt-2 mt-2"></PdfViewer>
                                                                                         </div>
                                                                                     ) : (
                                                                                         <div>
@@ -1417,7 +1418,7 @@ class CartPage extends React.Component {
                                                 {
                                                     (this.state.dropshipType == 'marketplace') ? (
                                                         <div></div>
-                                                    ): (
+                                                    ) : (
                                                         <div class="mb-3">
                                                             <label class="form-label">Delivery Type</label>
                                                             <div>

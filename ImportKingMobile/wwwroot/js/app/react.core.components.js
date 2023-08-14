@@ -401,3 +401,75 @@ class FormValidate extends React.Component {
         );
     }
 }
+
+class PdfViewer extends React.Component {
+    constructor(props) {        
+        super(props);
+    }
+
+    loadPdf() {
+        // If absolute URL from the remote server is provided, configure the CORS
+        // header on that server.
+        var { url, id } = this.props;
+
+        // Loaded via <script> tag, create shortcut to access PDF.js exports.
+        var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+        // The workerSrc property shall be specified.
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+        // Asynchronous download of PDF
+        var loadingTask = pdfjsLib.getDocument(url);
+        loadingTask.promise.then(function (pdf) {
+            console.log('PDF loaded');
+
+            // Fetch the first page
+            var pageNumber = 1;
+            pdf.getPage(pageNumber).then(function (page) {
+                console.log('Page loaded');
+
+                var desiredWidth = window.outerWidth - 100;
+                var viewport = page.getViewport({ scale: 1, });
+                var scale = desiredWidth / viewport.width;
+                var scaledViewport = page.getViewport({ scale: scale, });
+
+                // Prepare canvas using PDF page dimensions
+                var canvas = document.getElementById(id);
+                var context = canvas.getContext('2d');
+                canvas.height = scaledViewport.height;
+                canvas.width = scaledViewport.width;
+
+                // Render PDF page into canvas context
+                var renderContext = {
+                    canvasContext: context,
+                    viewport: scaledViewport
+                };
+                var renderTask = page.render(renderContext);
+                renderTask.promise.then(function () {
+                    console.log('Page rendered');
+                });
+            });
+        }, function (reason) {
+            // PDF loading error
+            console.error(reason);
+        });
+    }
+
+    componentDidMount() {        
+        this.loadPdf();
+    }
+
+    componentDidUpdate() {        
+        this.loadPdf();
+    }
+
+    render() {    
+        var { id } = this.props;
+
+        return (
+            <div ref={el => this.el = el} style={this.props.style} class={this.props.class}>
+                <canvas id={id}></canvas>
+            </div>
+        );
+    }
+}
