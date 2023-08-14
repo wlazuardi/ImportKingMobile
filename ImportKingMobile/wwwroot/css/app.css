@@ -106,12 +106,12 @@ span.select2-selection__arrow {
 }
 
 .modal-dialog {
-     margin-bottom: 80px; 
+    margin-bottom: 80px;
 }
 
-.modal-dialog.modal-fullscreen {
-    margin-bottom: 0px;
-}
+    .modal-dialog.modal-fullscreen {
+        margin-bottom: 0px;
+    }
 
 .icon {
     font-size: 22px !important;
@@ -178,46 +178,48 @@ li.col-4.product-item {
 
 .form-step div.step {
     display: inline-block;
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     border: 1px solid #519120;
     margin: 0px 20px;
-    border-radius: 25px;
+    border-radius: 27.5px;
     padding: 13px;
     background: #ffffff;
     color: #519120;
     position: relative;
 }
 
-    .form-step div.step.active {
-        background: #519120;
-        color: white;
-    }
+.form-step div.step.active {
+    /*background: #519120;*/
+    color: white;
+    border: 2px solid #519120;
+    font-weight: bold;
+}
 
-    .form-step div.step i {
-        margin-bottom: 12px;
-    }
+.form-step div.step i {
+    margin-bottom: 12px;
+}
 
-    .form-step div.step div {
-        color: #519120;
-        margin-left: -18px;
-        width: 60px;
-        text-align: center;
-        margin-top: 7px;
-        font-size: 14px;
-        line-height: 17px;
-    }
+.form-step div.step div {
+    color: #519120;
+    margin-left: -17px;
+    width: 60px;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 17px;
+}
 
-    .form-step div.step:not(:last-child)::before {
-        content: '';
-        width: 40px;
-        height: 1px;
-        background: #519120;
-        display: inline-block;
-        position: absolute;
-        left: 49px;
-        top: 25px;
-    }
+.form-step div.step:not(:last-child)::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: #519120;
+    display: inline-block;
+    position: absolute;
+    left: 53px;
+    top: 25px;
+}
 
 #orderModal .modal-fullscreen-sm-down .modal-footer {
     position: fixed;
@@ -260,8 +262,8 @@ body > .select2-container--open {
     border-top: 1px solid #aaa !important;
     border-top-left-radius: 20px !important;
     border-top-right-radius: 20px !important;
-    /* border-bottom-left-radius: 20px !important; */
-    /* border-bottom-right-radius: 20px !important; */
+    border-bottom-left-radius: 20px !important; 
+    border-bottom-right-radius: 20px !important; 
     height: 400px;
     margin: 0px auto !important;
     position: relative !important;
@@ -314,4 +316,11 @@ body > .select2-container--open {
 
 .input-group .btn {
     z-index: unset;
+}
+
+.step img {
+    margin-top: -5px;
+    margin-left: -4px;
+    width: 33px;
+    height: 33px;
 }

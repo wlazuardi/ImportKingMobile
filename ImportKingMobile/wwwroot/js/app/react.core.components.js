@@ -459,8 +459,10 @@ class PdfViewer extends React.Component {
         this.loadPdf();
     }
 
-    componentDidUpdate() {        
-        this.loadPdf();
+    componentDidUpdate(prevProps) {        
+        if (!prevProps || prevProps.url !== this.props.url) {
+            this.loadPdf();
+        }
     }
 
     render() {    

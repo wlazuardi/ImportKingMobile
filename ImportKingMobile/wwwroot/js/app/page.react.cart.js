@@ -708,7 +708,9 @@ class CartPage extends React.Component {
             })
             .then(result => {
 
-                if ((this.state.user.userType == 0 || this.state.user.userType == 1) && deliveryType != 'cod') {
+                if ((this.state.user.userType == App.Utils.UserType.BasicUser ||
+                    this.state.user.userType == App.Utils.UserType.Dropshipper ||
+                    (this.state.user.userType == App.Utils.UserType.Reseller && isDropshipping == true)) && deliveryType != 'cod') {
                     fetch('https://importking.mooo.com/api/Payments/' + result + '/Token', {
                         method: 'GET',
                         headers: { 'Content-Type': 'application/json' }
@@ -741,7 +743,6 @@ class CartPage extends React.Component {
                                 window.snap.pay(resToken.paymentToken, {
                                     gopayMode: 'deeplink',
                                     onSuccess: function (res) {
-                                        /* You may add your own implementation here */
                                         that.setState({
                                             alert: {
                                                 isShown: true,
@@ -756,7 +757,6 @@ class CartPage extends React.Component {
                                         }, 2000);
                                     },
                                     onError: function (res) {
-                                        /* You may add your own implementation here */
                                         that.setState({
                                             alert: {
                                                 isShown: true,
@@ -771,7 +771,6 @@ class CartPage extends React.Component {
                                         }, 2000);
                                     },
                                     onPending: function (result) {
-                                        /* You may add your own implementation here */
                                         that.setState({
                                             alert: {
                                                 isShown: true,
@@ -786,7 +785,6 @@ class CartPage extends React.Component {
                                         }, 2000);
                                     },
                                     onClose: function () {
-                                        /* You may add your own implementation here */
                                         that.setState({
                                             alert: {
                                                 isShown: true,
@@ -1213,15 +1211,21 @@ class CartPage extends React.Component {
                             <div class="modal-body">
                                 <div class="text-center mb-5 form-step" style={{ display: 'flex', justifyContent: 'center' }}>
                                     <div class={this.state.step >= 1 ? 'step active' : 'step'}>
-                                        <i class="fa fa-truck"></i>
+                                        {
+                                            (this.state.step == 1) ? (<img alt="Shipping Info" src="/images/icon8/icons8-product.gif" />) : (<img alt="Shipping Info" src="/images/icon8/icons8-product-48.png" />)
+                                        }
                                         <div>Shipping Info</div>
                                     </div>
-                                    <div class={this.state.step >= 2 ? 'step active' : 'step'}>
-                                        <i class="fa fa-dollar-sign"></i>
+                                    <div class={this.state.step >= 2 ? 'step active' : 'step'}>                                        
+                                        {
+                                            (this.state.step == 2) ? (<img alt="Payment" src="/images/icon8/icons8-cheque.gif" />) : (<img alt="Payment" src="/images/icon8/icons8-cheque-48.png" />)
+                                        }
                                         <div>Payment</div>
                                     </div>
                                     <div class={this.state.step >= 3 ? 'step active' : 'step'}>
-                                        <i class="fa fa-check"></i>
+                                        {
+                                            (this.state.step == 3) ? (<img alt="Payment" src="/images/icon8/icons8-done.gif" />) : (<img alt="Payment" src="/images/icon8/icons8-done-48.png" />)
+                                        }
                                         <div>Done</div>
                                     </div>
                                 </div>
@@ -1229,7 +1233,7 @@ class CartPage extends React.Component {
                                     {
                                         (this.state.step == 1) ? (
                                             <div>
-                                                <div class="alert alert-info">Please fill and review your shipping information</div>
+                                                <div class="row alert alert-info">Please fill and review your shipping information</div>
                                                 {
                                                     (user != null && user.userType == App.Utils.UserType.Reseller && user.allowDropship == true) ? (
                                                         <div class="mb-3">
@@ -1360,16 +1364,7 @@ class CartPage extends React.Component {
                                                                                 (this.state.deliveryLabelFile) ? (
                                                                                     (this.isPdf(this.state.deliveryLabelFile)) ? (
                                                                                         <div>
-                                                                                            {/*<object type="application/pdf" class="w-100 mt-2" height="400px" data={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />*/}
-                                                                                            {/*<iframe*/}
-                                                                                            {/*    class="mt-2"*/}
-                                                                                            {/*    src={'https://drive.google.com/viewerng/viewer?embedded=true&url=https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile + '#toolbar=0&scrollbar=0'}*/}
-                                                                                            {/*    frameBorder="0"*/}
-                                                                                            {/*    scrolling="auto"*/}
-                                                                                            {/*    height="400px"*/}
-                                                                                            {/*    width="100%"*/}
-                                                                                            {/*></iframe>*/}
-                                                                                                <PdfViewer id="deliveryLabelViewer" url={'https://importking.mooo.com/api/FileHandlers?fileName=' + this.state.deliveryLabelFile} style={{ border: '1px solid #000' }} class="pt-2 mt-2"></PdfViewer>
+                                                                                            <PdfViewer id="deliveryLabelViewer" url={'https://importking.mooo.com/api/FileHandlers?fileName=' + this.state.deliveryLabelFile} style={{ border: '1px solid #000' }} class="pt-2 mt-2"></PdfViewer>
                                                                                         </div>
                                                                                     ) : (
                                                                                         <div>
@@ -1492,7 +1487,14 @@ class CartPage extends React.Component {
                                             </div>
                                         ) : (
                                             <div class="mb-5">
-                                                <div class="alert alert-info">Please review your payment information</div>
+                                                <div class="row alert alert-info">Please review your payment information</div>
+                                                {
+                                                    (user != null && user.userType == App.Utils.UserType.Reseller && !this.state.isDropshipping) ? (
+                                                        <div class="row alert alert-success">You can submit the order and skip the payment, because you order as a reseller</div>
+                                                    ) : (
+                                                        <div></div>
+                                                    )
+                                                }
                                                 {
                                                     (this.state.isDropshipping == true && this.state.deliveryType == 'cod') ? (
                                                         <div>
