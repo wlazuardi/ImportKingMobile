@@ -23,7 +23,7 @@
         $('#spinner').show();
 
         $.ajax({
-            url: 'https://importking.mooo.com/api/Carts?email=' + userMail,
+            url: hostUrl + '/api/Carts?email=' + userMail,
             method: 'GET',
             success: function (data) {
                 var totalList = '';
@@ -119,7 +119,7 @@
                     App.Confirm.show('Confirm', 'Are you sure want to delete this item? ' + '<div>' + rowHtml + '</div>', function () {
                         $('.app-content').progressBar();
                         $.ajax({
-                            url: 'https://importking.mooo.com/api/Carts/' + cartId,
+                            url: hostUrl + '/api/Carts/' + cartId,
                             method: 'DELETE',
                             success: function (data) {
                                 App.Alert.show('success', 'Success', 'Success to remove cart item');                                
@@ -236,7 +236,7 @@
                             formData['status'] = 'New';
                             formData['orderNo'] = 'X';
                             $.ajax({
-                                url: 'https://importking.mooo.com/api/Orders',
+                                url: hostUrl + '/api/Orders',
                                 data: JSON.stringify(formData),
                                 method: 'POST',
                                 dataType: 'JSON',

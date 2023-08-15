@@ -22,7 +22,7 @@
     var userType = 0;
 
     $.ajax({
-        url: 'https://importking.mooo.com/api/Users/GetByEmail/' + userMail,
+        url: hostUrl + '/api/Users/GetByEmail/' + userMail,
         success: function (data) {
             merchantName = data.merchantName;
             userType = data.userType;
@@ -32,7 +32,7 @@
     $('.app-content').progressBar();
 
     $.ajax({
-        url: 'https://importking.mooo.com/api/Categories/Search',
+        url: hostUrl + '/api/Categories/Search',
         success: function (d) {
             //d.results = d.results.filter(e => e.text.toLowerCase().includes('testing') == false);
             $('#categories').select2({
@@ -68,7 +68,7 @@
             $('.app-content').progressBar();
 
             $.ajax({
-                url: 'https://importking.mooo.com/api/Warehouses/0/Categories/' + categoryId + '/Types',
+                url: hostUrl + '/api/Warehouses/0/Categories/' + categoryId + '/Types',
                 success: function (data) {
                     var results = $.map(data, function (item) {
                         return {
@@ -118,7 +118,7 @@
             $('.app-content').progressBar();
 
             $.ajax({
-                url: 'https://importking.mooo.com/api/Warehouses/0/Categories/' + categoryId + '/Types/' + typeId + '/Colors',
+                url: hostUrl + '/api/Warehouses/0/Categories/' + categoryId + '/Types/' + typeId + '/Colors',
                 success: function (data) {
 
                     var results = $.map(data, function (item) {
@@ -198,7 +198,7 @@
                 if (fnArr.length > 1)
                     fn = fnArr[0] + '-small.' + fnArr[1];
                 if (fn)
-                    commImagesStr += '<img class="prd-image rounded me-2 mb-2" src="https://importking.mooo.com/Uploads/' + fn + '">';
+                    commImagesStr += '<img class="prd-image rounded me-2 mb-2" src="' + hostUrl + '/Uploads/' + fn + '">';
             });
 
             var catalogImagesStr = '';
@@ -209,7 +209,7 @@
                 if (fnArr.length > 1)
                     fn = fnArr[0] + '-small.' + fnArr[1];
                 if (fn)
-                    catalogImagesStr += '<img class="prd-image rounded me-2 mb-2" src="https://importking.mooo.com/Uploads/' + fn + '">';
+                    catalogImagesStr += '<img class="prd-image rounded me-2 mb-2" src="' + hostUrl + '/Uploads/' + fn + '">';
             });
 
             var commVideoStr = '';
@@ -337,7 +337,7 @@
                 'Download': function () {
                     var src = $('.carousel-item.active img').attr('src');
                     var fileName = src.split('/').pop();
-                    var url = 'https://importking.mooo.com/api/Attachments?fileName=' + fileName + '&waterMarkString=' + merchantName;
+                    var url = hostUrl + '/api/Attachments?fileName=' + fileName + '&waterMarkString=' + merchantName;
                     window.open(url, '_blank');
                 }
             });
@@ -352,7 +352,7 @@
             $.each(imgs, function (i, item) {
                 var fileName = $(item).attr('src').split('/').pop();
                 fileName = fileName.replace('-small', '');
-                var url = 'https://importking.mooo.com/api/Attachments?fileName=' + fileName + '&waterMarkString=' + merchantName;
+                var url = hostUrl + '/api/Attachments?fileName=' + fileName + '&waterMarkString=' + merchantName;
                 window.open(url, '_blank');
             });
         });
@@ -377,7 +377,7 @@
 
             if (formData.colors && formData.colors != '0') {
                 $.ajax({
-                    url: 'https://importking.mooo.com/api/Catalogs?categoryId=' + formData.categories + '&typeId=' + formData.types + '&colorId=' + formData.colors + '&length=10&start=0',
+                    url: hostUrl + '/api/Catalogs?categoryId=' + formData.categories + '&typeId=' + formData.types + '&colorId=' + formData.colors + '&length=10&start=0',
                     method: 'GET',
                     dataType: 'JSON',
                     success: function (data) {
@@ -411,7 +411,7 @@
             }
             else {
                 $.ajax({
-                    url: 'https://importking.mooo.com/api/Catalogs?categoryId=' + formData.categories + '&typeId=' + formData.types + '&length=100&start=0',
+                    url: hostUrl + '/api/Catalogs?categoryId=' + formData.categories + '&typeId=' + formData.types + '&length=100&start=0',
                     method: 'GET',
                     dataType: 'JSON',
                     success: function (data) {

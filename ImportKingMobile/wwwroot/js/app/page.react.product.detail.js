@@ -41,7 +41,7 @@
     }
 
     getCategory() {
-        var url = 'https://importking.mooo.com';
+        var url = hostUrl;
         fetch(url + '/api/Catalogs/' + userEmail + '/Categories/' + categoryId, {
             method: 'GET'
         })
@@ -64,7 +64,7 @@
     }
 
     constructTyeDataSource() {
-        fetch('https://importking.mooo.com/api/Warehouses/0/Categories/' + categoryId + '/Types')
+        fetch(hostUrl + '/api/Warehouses/0/Categories/' + categoryId + '/Types')
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -108,7 +108,7 @@
     }
 
     constructColorDatasource() {
-        fetch('https://importking.mooo.com/api/Warehouses/0/Categories/' + categoryId + '/Types/' + this.state.typeId + '/Colors')
+        fetch(hostUrl + '/api/Warehouses/0/Categories/' + categoryId + '/Types/' + this.state.typeId + '/Colors')
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -159,7 +159,7 @@
 
         var { typeId } = this.state;
 
-        var url = 'https://importking.mooo.com/api/Catalogs?categoryId=' + categoryId + '&typeId=' + typeId + '&colorId=' + color.id + '&length=100&start=0&userMail=' + userEmail;
+        var url = hostUrl + '/api/Catalogs?categoryId=' + categoryId + '&typeId=' + typeId + '&colorId=' + color.id + '&length=100&start=0&userMail=' + userEmail;
 
         this.setState({
             isLoadingProduct: true
@@ -342,7 +342,7 @@
     }
 
     postCart(data) {
-        fetch('https://importking.mooo.com/api/Carts', {
+        fetch(hostUrl + '/api/Carts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -394,7 +394,7 @@
 
     renderCatalogImages(image, i) {
         var fileName = (image != null) ? image.fileName : '';
-        var url = "https://importking.mooo.com/Uploads/" + fileName;
+        var url = hostUrl + "/Uploads/" + fileName;
 
         if (i == 0) {
             return (
@@ -444,7 +444,7 @@
         if (!fileName) {
             fileName = 'no-image.jpg';
         }
-        var url = "https://importking.mooo.com/Uploads/" + fileName;
+        var url = hostUrl + "/Uploads/" + fileName;
 
         return (
             <div>

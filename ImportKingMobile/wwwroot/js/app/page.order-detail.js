@@ -557,7 +557,7 @@ class OrderDetailPage extends React.Component {
 
     getOrderStockOut(stockOutId) {
         if (stockOutId) {
-            fetch("https://importking.mooo.com/api/StockOuts/" + stockOutId + "/Details")
+            fetch(hostUrl + "/api/StockOuts/" + stockOutId + "/Details")
                 .then((res) => {
                     if (res.status == 200)
                         return res.json();
@@ -594,7 +594,7 @@ class OrderDetailPage extends React.Component {
     }
 
     componentDidMount() {
-        fetch("https://importking.mooo.com/api/Orders/" + orderId)
+        fetch(hostUrl + "/api/Orders/" + orderId)
             .then((res) => {
                 if (res.status == 200)
                     return res.json();
@@ -622,7 +622,7 @@ class OrderDetailPage extends React.Component {
                 });
             });
 
-        fetch("https://importking.mooo.com/api/Orders/" + orderId + "/Detail")
+        fetch(hostUrl + "/api/Orders/" + orderId + "/Detail")
             .then((res) => {
                 if (res.status == 200)
                     return res.json();
@@ -675,7 +675,7 @@ class OrderDetailPage extends React.Component {
             isShownProgress: true
         });
 
-        fetch('https://importking.mooo.com/api/Orders/' + order.data.orderId + '/Reorder', {
+        fetch(hostUrl + '/api/Orders/' + order.data.orderId + '/Reorder', {
             method: 'POST'
         })
             .then(result => {
@@ -722,7 +722,7 @@ class OrderDetailPage extends React.Component {
         var that = this;
 
         if (userType == 0 || userType == 1) {
-            fetch('https://importking.mooo.com/api/Payments/' + order.data.orderId + '/Token', {
+            fetch(hostUrl + '/api/Payments/' + order.data.orderId + '/Token', {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' }
             })
@@ -806,7 +806,7 @@ class OrderDetailPage extends React.Component {
             isShownDeliveryTracking: true
         });
 
-        fetch("https://importking.mooo.com/api/waybills/" + courier + "/" + waybill)
+        fetch(hostUrl + "/api/waybills/" + courier + "/" + waybill)
             .then((res) => {
                 if (res.status == 200)
                     return res.json();

@@ -1,7 +1,7 @@
 ﻿class CategoryPage extends React.Component {
     constructor(props) {
         super(props);
-        this.fetchURL = 'https://importking.mooo.com/api/Catalogs/' + userMail + '/Categories/0';
+        this.fetchURL = hostUrl + '/api/Catalogs/' + userMail + '/Categories/0';
         this.state = {
             isLoading: true,
             categoriesOri: [],
@@ -62,7 +62,7 @@
             }
         }
 
-        var url = 'url("https://importking.mooo.com/Uploads/' + fileName + '")';
+        var url = 'url("' + hostUrl + '/Uploads/' + fileName + '")';
         if (fileName) return (
             <li class="col-6 product-item mb-2">
                 <div class="custom-card">

@@ -27,7 +27,7 @@
         var warehouseId = $('#warehouses').val();
 
         $.ajax({
-            url: 'https://importking.mooo.com/api/StockOutTemps?email=' + userMail + '&warehouseId=' + warehouseId,
+            url: hostUrl + '/api/StockOutTemps?email=' + userMail + '&warehouseId=' + warehouseId,
             method: 'GET',
             success: function (data) {
                 var totalList = '';
@@ -89,7 +89,7 @@
         $('#warehouses').val(2);
 
         $.ajax({
-            url: 'https://importking.mooo.com/api/Warehouses/Search',
+            url: hostUrl + '/api/Warehouses/Search',
             success: function (data) {
                 $('#warehouses').select2({
                     data: data.results,
@@ -206,7 +206,7 @@
                             $('#modal' + modal.id + ' .modal-body').progressBar();
                             
                             $.ajax({
-                                url: 'https://importking.mooo.com/api/StockOutTemps',
+                                url: hostUrl + '/api/StockOutTemps',
                                 data: JSON.stringify(data),
                                 method: 'POST',
                                 dataType: 'JSON',
@@ -234,7 +234,7 @@
                 $('#modal' + modal.id + ' .modal-body').progressBar();
 
                 $.ajax({
-                    url: 'https://importking.mooo.com/api/Warehouses/' + warehouseId + '/Categories',
+                    url: hostUrl + '/api/Warehouses/' + warehouseId + '/Categories',
                     success: function (data) {
                         var results = $.map(data, function (item) {
                             return {
@@ -291,7 +291,7 @@
 
                 if (warehouseId && categoryId) {
                     $.ajax({
-                        url: 'https://importking.mooo.com/api/Warehouses/' + warehouseId + '/Categories/' + categoryId + '/Types',
+                        url: hostUrl + '/api/Warehouses/' + warehouseId + '/Categories/' + categoryId + '/Types',
                         success: function (data) {
                             var results = $.map(data, function (item) {
                                 return {
@@ -321,7 +321,7 @@
 
                 if (warehouseId && categoryId && typeId) {
                     $.ajax({
-                        url: 'https://importking.mooo.com/api/Warehouses/' + warehouseId + '/Categories/' + categoryId + '/Types/' + typeId + '/Colors',
+                        url: hostUrl + '/api/Warehouses/' + warehouseId + '/Categories/' + categoryId + '/Types/' + typeId + '/Colors',
                         success: function (data) {
                             var results = $.map(data, function (item) {
                                 return {
@@ -369,7 +369,7 @@
                 if (warehouseId && categoryId && typeId && colorId) {
                     $('#modal' + modal.id + ' .modal-body').progressBar();
                     $.ajax({
-                        url: 'https://importking.mooo.com/api/Warehouses/' + warehouseId + '/Categories/' + categoryId + '/Types/' + typeId + '/Colors/' + colorId + '/Products',
+                        url: hostUrl + '/api/Warehouses/' + warehouseId + '/Categories/' + categoryId + '/Types/' + typeId + '/Colors/' + colorId + '/Products',
                         success: function (data) {
                             $('#modal' + modal.id + ' .modal-body').progressBar('hide');
                             price = data[0].price;
@@ -411,7 +411,7 @@
                 var stockOutTempId = $(elem).parents('.row').find('[name=stockOutTempId]').val();
                 $('.app-content').progressBar();
                 $.ajax({
-                    url: 'https://importking.mooo.com/api/StockOutTemps',
+                    url: hostUrl + '/api/StockOutTemps',
                     data: JSON.stringify({
                         stockOutTempId: stockOutTempId,
                         qty: qtyEdit,
@@ -468,7 +468,7 @@
             App.Confirm.show('Confirm', 'Are you sure want to delete this item? ' + '<div>' + rowHtml + '</div>', function () {
                 $('.app-content').progressBar();
                 $.ajax({
-                    url: 'https://importking.mooo.com/api/StockOutTemps/' + stockOutTempId,
+                    url: hostUrl + '/api/StockOutTemps/' + stockOutTempId,
                     method: 'DELETE',
                     success: function (data) {
                         App.Alert.show('success', 'Success', 'Success to remove cart item');                        
@@ -506,7 +506,7 @@
                             var warehouseId = $('#warehouses').val();
                             var formData = App.Utils.getFormData($('#submitForm'));
                             $.ajax({
-                                url: 'https://importking.mooo.com/api/StockOutTemps/Submit',
+                                url: hostUrl + '/api/StockOutTemps/Submit',
                                 data: JSON.stringify({
                                     email: userMail,
                                     warehouseId: warehouseId,

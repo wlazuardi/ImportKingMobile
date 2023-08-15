@@ -1,7 +1,7 @@
 ﻿class CategoryPicker extends React.Component {
     constructor(props) {
         super(props);
-        this.fetchURL = 'https://importking.mooo.com/api/Categories';
+        this.fetchURL = hostUrl + '/api/Categories';
         this.state = {
             isLoading: true,
             categories: []
@@ -61,7 +61,7 @@
 
             }
         }
-        var url = 'url("https://importking.mooo.com/Uploads/' + fileName + '")';
+        var url = 'url("' + hostUrl + '/Uploads/' + fileName + '")';
         if (fileName) return (
             <li class="col-4 product-item product-item-sm">
                 <div class="custom-card">

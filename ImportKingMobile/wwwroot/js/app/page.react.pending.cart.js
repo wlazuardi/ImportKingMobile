@@ -14,7 +14,7 @@
             isLoading: true
         });
 
-        fetch('https://importking.mooo.com/api/Carts/GetPendingCart')
+        fetch(hostUrl + '/api/Carts/GetPendingCart')
             .then(res => {
                 if (res.status == 200) {
                     return res.json();

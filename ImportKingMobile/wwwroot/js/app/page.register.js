@@ -45,7 +45,7 @@
                 $('#preloader').show();
 
                 $.ajax({
-                    url: 'https://importking.mooo.com/api/Users',
+                    url: hostUrl + '/api/Users',
                     data: JSON.stringify(formData),
                     method: 'POST',
                     dataType: 'JSON',

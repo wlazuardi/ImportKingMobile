@@ -54,10 +54,10 @@ class OrderPage extends React.Component {
     }
 
     componentDidMount() {
-        var url = "https://importking.mooo.com/api/Orders/GetByEmail/" + userMail;
+        var url = hostUrl + "/api/Orders/GetByEmail/" + userMail;
 
         if (this.props.mode == 'admin' || userType == 3)
-            url = "https://importking.mooo.com/api/Orders/";
+            url = hostUrl + "/api/Orders/";
 
         fetch(url)
             .then((res) => {

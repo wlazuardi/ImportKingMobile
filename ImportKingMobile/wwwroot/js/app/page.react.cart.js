@@ -20,7 +20,7 @@ class CartList extends React.Component {
             isLoading: true
         });
 
-        fetch('https://importking.mooo.com/api/Carts?email=' + userMail)
+        fetch(hostUrl + '/api/Carts?email=' + userMail)
             .then(res => {
                 if (res.status == 200) {
                     return res.json();
@@ -63,7 +63,7 @@ class CartList extends React.Component {
     }
 
     updateCart(cart) {
-        fetch('https://importking.mooo.com/api/Carts/', {
+        fetch(hostUrl + '/api/Carts/', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cart)
@@ -130,7 +130,7 @@ class CartList extends React.Component {
 
         cartList.splice(index, 1);
 
-        fetch('https://importking.mooo.com/api/Carts/' + cart.cartId, {
+        fetch(hostUrl + '/api/Carts/' + cart.cartId, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         })
@@ -386,10 +386,12 @@ class CartPage extends React.Component {
             isLoadingSubmit: false,
             isDropshipping: false,
             dropshipType: 'manual',
-            /*dropshipType: 'marketplace',*/
             deliveryType: 'regular',
             deliveryLabelFile: null,
-            step: 1
+            step: 1,
+            wallet: null,
+            isUseWallet: false,
+            usedWalletAmount: 0
         };
 
         this.myRef = React.createRef();
@@ -402,8 +404,27 @@ class CartPage extends React.Component {
         this.loadLookup();
     }
 
+    loadWallet(userId) {
+        fetch(hostUrl + '/api/Users/' + userId + '/Wallet')
+            .then((result) => {
+                if (result.status == 200) {
+                    return result.json();
+                }
+                else {
+                    throw {
+                        message: result.statusText
+                    }
+                }
+            })
+            .then((result) => {
+                this.setState({
+                    wallet: result
+                });
+            });
+    }
+
     loadUser() {
-        fetch('https://importking.mooo.com/api/Users/GetByEmail/' + userMail)
+        fetch(hostUrl + '/api/Users/GetByEmail/' + userMail)
             .then(res => {
                 if (res.status == 200) {
                     return res.json();
@@ -439,11 +460,13 @@ class CartPage extends React.Component {
                     user: result,
                     deliveryFeeDiscountPercentage: deliveryFeeDiscountPercentage
                 });
+
+                this.loadWallet(result.userId);
             });
     }
 
     loadLookup() {
-        fetch('https://importking.mooo.com/api/Lookups')
+        fetch(hostUrl + '/api/Lookups')
             .then(res => {
                 if (res.status == 200) {
                     return res.json();
@@ -485,16 +508,18 @@ class CartPage extends React.Component {
             dropshipType: e.target.value
         });
 
-        var { orderData, deliveryType } = this.state;
+        var { orderData, deliveryType, deliveryFee } = this.state;
 
         if (e.target.value == 'marketplace') {
+            deliveryFee = 0;
             orderData.courier = '';
             deliveryType = 'regular';
         }
 
         this.setState({
             orderData: orderData,
-            deliveryType
+            deliveryType,
+            deliveryFee
         });
     }
 
@@ -530,7 +555,7 @@ class CartPage extends React.Component {
             var data = new FormData();
             data.append('files', files[0]);
 
-            fetch('https://importking.mooo.com/api/Attachments', {
+            fetch(hostUrl + '/api/Attachments', {
                 method: 'POST',
                 body: data
             }).then(
@@ -583,7 +608,7 @@ class CartPage extends React.Component {
                 isShownProgress: true
             });
 
-            fetch('https://importking.mooo.com/api/Addresses/GetByEmail/' + userMail)
+            fetch(hostUrl + '/api/Addresses/GetByEmail/' + userMail)
                 .then(result => {
                     if (result.status == 200)
                         return result.json();
@@ -636,14 +661,14 @@ class CartPage extends React.Component {
     }
 
     handleSubmitOrderFormCallback(e) {
-        let { user, orderData, selectedAddress, isDropshipping, dropshipType, deliveryType, deliveryLabelFile } = this.state;
-        //let totalPrice = 0;
+        let { user, orderData, selectedAddress, isDropshipping, dropshipType, deliveryType, deliveryLabelFile, totalPayment } = this.state;
 
-        //if (cartList && cartList.length) {
-        //    cartList.forEach(cart => {
-        //        totalPrice += cart.subTotal;
-        //    });
-        //}
+        var isRequiredPayment = user && (
+            user.userType == App.Utils.UserType.BasicUser ||
+            user.userType == App.Utils.UserType.Dropshipper || (
+                user.userType == App.Utils.UserType.Reseller && isDropshipping == true
+            )
+        ) && deliveryType != 'cod' && totalPayment > 0;
 
         var codBillAmount = 0;
         if (orderData.codBillAmount) {
@@ -684,14 +709,16 @@ class CartPage extends React.Component {
             subTotal: this.state.subTotal,
             paymentAmount: this.state.totalPayment,
             senderName: this.state.user.firstName + ' ' + this.state.user.lastName,
-            senderPhone: this.state.user.phoneNumber
+            senderPhone: this.state.user.phoneNumber,
+            isUseWallet: this.state.isUseWallet,
+            walletAmount: this.state.usedWalletAmount
         }
 
         this.setState({
             isShownProgress: true
         });
 
-        fetch('https://importking.mooo.com/api/Orders', {
+        fetch(hostUrl + '/api/Orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
@@ -708,10 +735,8 @@ class CartPage extends React.Component {
             })
             .then(result => {
 
-                if ((this.state.user.userType == App.Utils.UserType.BasicUser ||
-                    this.state.user.userType == App.Utils.UserType.Dropshipper ||
-                    (this.state.user.userType == App.Utils.UserType.Reseller && isDropshipping == true)) && deliveryType != 'cod') {
-                    fetch('https://importking.mooo.com/api/Payments/' + result + '/Token', {
+                if (isRequiredPayment) {
+                    fetch(hostUrl + '/api/Payments/' + result + '/Token', {
                         method: 'GET',
                         headers: { 'Content-Type': 'application/json' }
                     })
@@ -958,7 +983,7 @@ class CartPage extends React.Component {
             courier: orderData.courier
         };
 
-        fetch('https://importking.mooo.com/api/Deliveries/Cost', {
+        fetch(hostUrl + '/api/Deliveries/Cost', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -1057,22 +1082,27 @@ class CartPage extends React.Component {
             codFee,
             totalPayment,
             orderData,
-            codProfitMargin
+            codProfitMargin,
+            wallet,
+            usedWalletAmount,
+            isUseWallet
         } = this.state;
 
         var isValid = this.myRef.current.isValid();
         if (!isValid) return;
 
+        if (step < 3) {
+            step = 2;
+        }
+
         var orderValue = 0;
+
+        var balance = wallet.wltBal;
 
         if (cartList && cartList.length) {
             cartList.forEach(cart => {
                 orderValue += cart.subTotal;
             });
-        }
-
-        if (step < 3) {
-            step++;
         }
 
         deliveryFeeDiscount = parseInt(deliveryFee * deliveryFeeDiscountPercentage);
@@ -1095,6 +1125,18 @@ class CartPage extends React.Component {
             totalPayment = subTotal;
         }
 
+        if (isUseWallet) {
+            if (totalPayment >= balance)
+                usedWalletAmount = balance;
+            else
+                usedWalletAmount = totalPayment;
+
+            totalPayment -= usedWalletAmount;
+        }
+        else {
+            usedWalletAmount = 0;
+        }
+
         this.setState({
             step,
             orderValue,
@@ -1102,7 +1144,8 @@ class CartPage extends React.Component {
             codFee,
             totalPayment,
             codProfitMargin,
-            deliveryFeeDiscount
+            deliveryFeeDiscount,
+            usedWalletAmount
         });
     }
 
@@ -1171,8 +1214,21 @@ class CartPage extends React.Component {
         });
     }
 
+    handleUseWallet(e) {
+        var isUseWallet = e.target.checked;
+
+        this.setState({
+            isUseWallet: isUseWallet
+        });
+
+        var that = this;
+        setTimeout(function () {
+            that.handleNextFormValidated();
+        }, 100);
+    }
+
     render() {
-        var { user, selectedAddress } = this.state;
+        var { user, selectedAddress, wallet, isDropshipping, deliveryType, usedWalletAmount } = this.state;
 
         var anyOutOfStockProduct = false;
 
@@ -1182,6 +1238,13 @@ class CartPage extends React.Component {
                 anyOutOfStockProduct = true;
             }
         }
+
+        var isRequiredPayment = user && (
+            user.userType == App.Utils.UserType.BasicUser ||
+            user.userType == App.Utils.UserType.Dropshipper || (
+                user.userType == App.Utils.UserType.Reseller && isDropshipping == true
+            )
+        ) && deliveryType != 'cod';
 
         return (
             <div>
@@ -1216,7 +1279,7 @@ class CartPage extends React.Component {
                                         }
                                         <div>Shipping Info</div>
                                     </div>
-                                    <div class={this.state.step >= 2 ? 'step active' : 'step'}>                                        
+                                    <div class={this.state.step >= 2 ? 'step active' : 'step'}>
                                         {
                                             (this.state.step == 2) ? (<img alt="Payment" src="/images/icon8/icons8-cheque.gif" />) : (<img alt="Payment" src="/images/icon8/icons8-cheque-48.png" />)
                                         }
@@ -1243,7 +1306,7 @@ class CartPage extends React.Component {
                                                                         checked={this.state.isDropshipping}
                                                                         onChange={this.handleDropshipper.bind(this)}
                                                                     />
-                                                                    <label class="form-check-label" for="dropshipper">Send as Dropshipper</label>
+                                                                    <label class="form-check-label" for="isDropship">Send as Dropshipper</label>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1364,11 +1427,11 @@ class CartPage extends React.Component {
                                                                                 (this.state.deliveryLabelFile) ? (
                                                                                     (this.isPdf(this.state.deliveryLabelFile)) ? (
                                                                                         <div>
-                                                                                            <PdfViewer id="deliveryLabelViewer" url={'https://importking.mooo.com/api/FileHandlers?fileName=' + this.state.deliveryLabelFile} style={{ border: '1px solid #000' }} class="pt-2 mt-2"></PdfViewer>
+                                                                                            <PdfViewer id="deliveryLabelViewer" url={hostUrl + '/api/FileHandlers?fileName=' + this.state.deliveryLabelFile} style={{ border: '1px solid #000' }} class="pt-2 mt-2"></PdfViewer>
                                                                                         </div>
                                                                                     ) : (
                                                                                         <div>
-                                                                                            <img class="w-100 mt-2" src={'https://importking.mooo.com/Uploads/' + this.state.deliveryLabelFile} />
+                                                                                            <img class="w-100 mt-2" src={hostUrl + '/Uploads/' + this.state.deliveryLabelFile} />
                                                                                         </div>
                                                                                     )
                                                                                 ) : (
@@ -1511,6 +1574,28 @@ class CartPage extends React.Component {
                                                         <div></div>
                                                     )
                                                 }
+                                                {
+                                                    (isRequiredPayment && wallet) ? (
+                                                        <div class="mb-3">
+                                                            <div class="row alert alert-success">
+                                                                <div class="form-switch">
+                                                                    <input class="form-check-input me-2" type="checkbox" name="isUseWallet" id="isUseWallet" role="switch"
+                                                                        checked={this.state.isUseWallet}
+                                                                        onChange={this.handleUseWallet.bind(this)} />
+                                                                    <label class="form-check-label" for="dropshipper">Use Remaining Wallet Balance</label>
+                                                                </div>
+                                                                <div class="fw-bold d-flex justify-content-between mt-2">
+                                                                    <div>
+                                                                        <i class="fa fa-wallet me-1"></i>Wallet Balance:
+                                                                    </div>
+                                                                    <div>
+                                                                        IDR. {App.Utils.formatCurrency(wallet.wltBal)}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (<div></div>)
+                                                }
                                                 <div class="row mb-2">
                                                     <div class="col-6 fw-bold">
                                                         Total Product
@@ -1552,14 +1637,6 @@ class CartPage extends React.Component {
                                                 {
                                                     (this.state.isDropshipping == true && this.state.deliveryType == 'cod') ? (
                                                         <div>
-                                                            {/*<div class="row mb-2 fw-bold border-top pt-2">*/}
-                                                            {/*    <div class="col-6">*/}
-                                                            {/*        SubTotal*/}
-                                                            {/*    </div>*/}
-                                                            {/*    <div class="col text-end fw-bold">*/}
-                                                            {/*        IDR. {App.Utils.formatCurrency(this.state.subTotal)}*/}
-                                                            {/*    </div>*/}
-                                                            {/*</div>*/}
                                                             <div class="row mb-2">
                                                                 <div class="col-6">
                                                                     COD Fee<br />({this.state.codPercentage * 100}% from Bill)
@@ -1572,6 +1649,18 @@ class CartPage extends React.Component {
                                                     ) : (
                                                         <div></div>
                                                     )
+                                                }
+                                                {
+                                                    (this.state.isUseWallet) ? (
+                                                        <div class="row mb-2 text-danger">
+                                                            <div class="col-6">
+                                                                Wallet Balance
+                                                            </div>
+                                                            <div class="col text-end">
+                                                                - IDR. {App.Utils.formatCurrency(usedWalletAmount)}
+                                                            </div>
+                                                        </div>
+                                                    ) : (<div />)
                                                 }
                                                 <div class="row mb-2 fw-bold border-top pt-2">
                                                     <div class="col-6">

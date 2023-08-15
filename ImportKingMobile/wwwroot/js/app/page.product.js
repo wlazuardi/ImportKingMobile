@@ -5,7 +5,7 @@
         });
 
         $.ajax({
-            url: 'https://importking.mooo.com/api/Categories/Search',
+            url: hostUrl + '/api/Categories/Search',
             success: function (d) {
                 d.results = d.results.filter(e => e.text.toLowerCase().includes('testing') == false);
                 $('#categories').select2({
@@ -15,7 +15,7 @@
         });
 
         $.ajax({
-            url: 'https://importking.mooo.com/api/Types/Search',
+            url: hostUrl + '/api/Types/Search',
             success: function (d) {
                 d.results = d.results.filter(e => e.text.toLowerCase().includes('testing') == false);
                 $('#types').select2({
@@ -25,7 +25,7 @@
         });
 
         $.ajax({
-            url: 'https://importking.mooo.com/api/Colors/Search',
+            url: hostUrl + '/api/Colors/Search',
             success: function (d) {
                 d.results = d.results.filter(e => e.text.toLowerCase().includes('testing') == false);
 
@@ -60,10 +60,10 @@
 
                 var formData = App.Utils.getFormData($form);
 
-                var url = 'https://importking.mooo.com/api/Catalogs?categoryId=' + formData.categories + '&typeId=' + formData.types + '&length=100&start=0';
+                var url = hostUrl + '/api/Catalogs?categoryId=' + formData.categories + '&typeId=' + formData.types + '&length=100&start=0';
 
                 if (formData.colors && formData.colors != '0') {
-                    url = 'https://importking.mooo.com/api/Catalogs?categoryId=' + formData.categories + '&typeId=' + formData.types + '&colorId=' + formData.colors + '&length=100&start=0';
+                    url = hostUrl + '/api/Catalogs?categoryId=' + formData.categories + '&typeId=' + formData.types + '&colorId=' + formData.colors + '&length=100&start=0';
                 }
 
                 $.ajax({
@@ -148,7 +148,7 @@
 
                                             $('.modal').progressBar();
                                             $.ajax({
-                                                url: 'https://importking.mooo.com/api/Carts',
+                                                url: hostUrl + '/api/Carts',
                                                 method: 'POST',
                                                 data: JSON.stringify({
                                                     email: userEmail,

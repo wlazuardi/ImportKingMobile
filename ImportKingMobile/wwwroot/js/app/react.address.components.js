@@ -18,7 +18,7 @@
             isLoadingAddresses: true
         });
 
-        fetch('https://importking.mooo.com/api/Addresses/GetByEmail/' + userMail)
+        fetch(hostUrl + '/api/Addresses/GetByEmail/' + userMail)
             .then((result) => {
                 if (result.status == 200) {
                     return result.json();
@@ -61,7 +61,7 @@
             isLoadingAll: true
         });
 
-        fetch('https://importking.mooo.com/api/Addresses/' + address.addressId, {
+        fetch(hostUrl + '/api/Addresses/' + address.addressId, {
             method: 'DELETE'
         })
             .then(result => {
@@ -257,7 +257,7 @@ class ModalAddressForm extends React.Component {
             isLoadingAll: true
         });
 
-        fetch('https://importking.mooo.com/api/Deliveries/Province/0')
+        fetch(hostUrl + '/api/Deliveries/Province/0')
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -300,7 +300,7 @@ class ModalAddressForm extends React.Component {
             isLoadingAll: true
         });
 
-        fetch('https://importking.mooo.com/api/Deliveries/Province/' + this.state.formData.provinceId + '/City/0')
+        fetch(hostUrl + '/api/Deliveries/Province/' + this.state.formData.provinceId + '/City/0')
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -345,7 +345,7 @@ class ModalAddressForm extends React.Component {
             isLoadingAll: true
         });
 
-        fetch('https://importking.mooo.com/api/Deliveries/Province/' + this.state.formData.provinceId + '/City/' + this.state.formData.cityId + '/SubDistrict')
+        fetch(hostUrl + '/api/Deliveries/Province/' + this.state.formData.provinceId + '/City/' + this.state.formData.cityId + '/SubDistrict')
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -403,7 +403,7 @@ class ModalAddressForm extends React.Component {
         });
 
         if (formData.addressId) {
-            fetch('https://importking.mooo.com/api/Addresses/', {
+            fetch(hostUrl + '/api/Addresses/', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -436,7 +436,7 @@ class ModalAddressForm extends React.Component {
                 });
         }
         else {
-            fetch('https://importking.mooo.com/api/Addresses/', {
+            fetch(hostUrl + '/api/Addresses/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

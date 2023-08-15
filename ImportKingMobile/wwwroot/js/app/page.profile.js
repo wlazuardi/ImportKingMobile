@@ -31,7 +31,7 @@
                 $('#preloader').show();
 
                 $.ajax({
-                    url: 'https://importking.mooo.com/api/Users',
+                    url: hostUrl + '/api/Users',
                     data: JSON.stringify(formData),
                     method: 'PATCH',
                     dataType: 'JSON',
@@ -49,7 +49,7 @@
         });
 
         $.ajax({
-            url: 'https://importking.mooo.com/api/Users/GetByEmail/' + $('[name=email]').val(),            
+            url: hostUrl + '/api/Users/GetByEmail/' + $('[name=email]').val(),            
             method: 'GET',
             dataType: 'JSON',
             contentType: "application/json; charset=utf-8",

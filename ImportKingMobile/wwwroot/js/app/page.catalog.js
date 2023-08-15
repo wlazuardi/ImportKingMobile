@@ -1,6 +1,6 @@
 ﻿+function () {
     $.ajax({
-        url: 'https://importking.mooo.com/api/Catalogs?length=50',
+        url: hostUrl + '/api/Catalogs?length=50',
         crossDomain: true,
         dataType: 'json',
         success: function (data) {

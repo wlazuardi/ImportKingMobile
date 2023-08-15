@@ -19,7 +19,7 @@
     }
 
     constructCategoryDataSource() {
-        fetch("https://importking.mooo.com/api/Warehouses/0/Categories")
+        fetch(hostUrl + "/api/Warehouses/0/Categories")
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -92,7 +92,7 @@
             return;
         }
 
-        fetch('https://importking.mooo.com/api/Warehouses/0/Categories/' + this.state.categoryId + '/Types')
+        fetch(hostUrl + '/api/Warehouses/0/Categories/' + this.state.categoryId + '/Types')
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -166,7 +166,7 @@
             return;
         }
 
-        fetch('https://importking.mooo.com/api/Warehouses/0/Categories/' + this.state.categoryId + '/Types/' + this.state.typeId + '/Colors')
+        fetch(hostUrl + '/api/Warehouses/0/Categories/' + this.state.categoryId + '/Types/' + this.state.typeId + '/Colors')
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -260,10 +260,10 @@
 
         const { categoryId, typeId, colorId } = this.state;
 
-        var url = 'https://importking.mooo.com/api/Catalogs?categoryId=' + categoryId + '&typeId=' + typeId + '&length=100&start=0&userMail=' + userEmail;
+        var url = hostUrl + '/api/Catalogs?categoryId=' + categoryId + '&typeId=' + typeId + '&length=100&start=0&userMail=' + userEmail;
 
         if (colorId != -1) {
-            url = 'https://importking.mooo.com/api/Catalogs?categoryId=' + categoryId + '&typeId=' + typeId + '&colorId=' + colorId + '&length=100&start=0&userMail=' + userEmail;
+            url = hostUrl + '/api/Catalogs?categoryId=' + categoryId + '&typeId=' + typeId + '&colorId=' + colorId + '&length=100&start=0&userMail=' + userEmail;
         }
 
         this.setState({
@@ -332,7 +332,7 @@
             });
 
             if (categoryId != 0) {
-                fetch("https://importking.mooo.com/api/Categories/" + categoryId)
+                fetch(hostUrl + "/api/Categories/" + categoryId)
                     .then((res) => {
                         if (res.status == 200) {
                             return res.json();
@@ -389,7 +389,7 @@
 
     renderCatalogImages(image, i) {
         var fileName = (image != null) ? image.fileName : '';
-        var url = "https://importking.mooo.com/Uploads/" + fileName;
+        var url = hostUrl + "/Uploads/" + fileName;
 
         if (i == 0) {
             return (
@@ -671,7 +671,7 @@ class ProductPage extends React.Component {
     }
 
     postCart(data) {
-        fetch('https://importking.mooo.com/api/Carts', {
+        fetch(hostUrl + '/api/Carts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)

@@ -17,7 +17,7 @@
             isLoadingHeader: true
         });
 
-        fetch('https://importking.mooo.com/api/Carts?email=' + cartMail)
+        fetch(hostUrl + '/api/Carts?email=' + cartMail)
             .then(res => {
                 if (res.status == 200) {
                     return res.json();
@@ -49,7 +49,7 @@
                 });
             });
 
-        fetch('https://importking.mooo.com/api/Carts/GetPendingCart/' + cartMail)
+        fetch(hostUrl + '/api/Carts/GetPendingCart/' + cartMail)
             .then(res => {
                 if (res.status == 200) {
                     return res.json();
@@ -95,7 +95,7 @@
             isLoading: true
         });
 
-        fetch('https://importking.mooo.com/api/Carts/UpdateChecked', {
+        fetch(hostUrl + '/api/Carts/UpdateChecked', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
