@@ -479,6 +479,16 @@ class OrderHeader extends React.Component {
                                     <div class="col-6 m-0">Admin Fee: </div>
                                     <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.adminFee)}</div>
                                 </div>
+                                {
+                                    (data.walletAmount) ? (
+                                        <div class="row pt-1 card-text small">
+                                            <div class="col-6 m-0">Wallet Amount: </div>
+                                            <div class="col-6 m-0 text-end">IDR {App.Utils.formatCurrency(data.walletAmount)}</div>
+                                        </div>
+                                    ) : (
+                                        <div></div>
+                                    )
+                                }
 
                                 {
                                     (data.codFee) ? (
@@ -721,79 +731,79 @@ class OrderDetailPage extends React.Component {
         var { order } = this.state;
         var that = this;
 
-        if (userType == 0 || userType == 1) {
-            fetch(hostUrl + '/api/Payments/' + order.data.orderId + '/Token', {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
+        //if (userType == 0 || userType == 1) {
+        fetch(hostUrl + '/api/Payments/' + order.data.orderId + '/Token', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(resToken => {
+                if (resToken.status == 200) {
+                    return resToken.json();
+                }
+                else {
+                    throw {
+                        message: resToken.statusText
+                    }
+                }
             })
-                .then(resToken => {
-                    if (resToken.status == 200) {
-                        return resToken.json();
-                    }
-                    else {
-                        throw {
-                            message: resToken.statusText
-                        }
-                    }
-                })
-                .then(resToken => {
-                    window.snap.pay(resToken.paymentToken, {
-                        gopayMode: 'deeplink',
-                        onSuccess: function (result) {
-                            /* You may add your own implementation here */
-                            that.setState({
-                                alert: {
-                                    isShown: true,
-                                    mode: 'success',
-                                    title: 'Payment Succeed',
-                                    message: 'Refreshing the page in 2 seconds.'
-                                }
-                            });
+            .then(resToken => {
+                window.snap.pay(resToken.paymentToken, {
+                    gopayMode: 'deeplink',
+                    onSuccess: function (result) {
+                        /* You may add your own implementation here */
+                        that.setState({
+                            alert: {
+                                isShown: true,
+                                mode: 'success',
+                                title: 'Payment Succeed',
+                                message: 'Refreshing the page in 2 seconds.'
+                            }
+                        });
 
-                            setTimeout(function () {
-                                window.location.reload();
-                            }, 2000);
-                        },
-                        onError: function (result) {
-                            /* You may add your own implementation here */
-                            that.setState({
-                                alert: {
-                                    isShown: true,
-                                    mode: 'danger',
-                                    title: 'Payment Failed',
-                                    message: 'Please try again.'
-                                }
-                            });
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 2000);
+                    },
+                    onError: function (result) {
+                        /* You may add your own implementation here */
+                        that.setState({
+                            alert: {
+                                isShown: true,
+                                mode: 'danger',
+                                title: 'Payment Failed',
+                                message: 'Please try again.'
+                            }
+                        });
 
-                            setTimeout(function () {
-                                window.location.reload();
-                            }, 2000);
-                        },
-                        onPending: function (result) {
-                            /* You may add your own implementation here */
-                            that.setState({
-                                alert: {
-                                    isShown: true,
-                                    mode: 'info',
-                                    title: 'Payment Pending',
-                                    message: 'Please complete payment to process order.'
-                                }
-                            });
-                        },
-                        onClose: function () {
-                            /* You may add your own implementation here */
-                            that.setState({
-                                alert: {
-                                    isShown: true,
-                                    mode: 'warning',
-                                    title: 'Warning',
-                                    message: 'Please complete the payment to proceed the request.'
-                                }
-                            });
-                        }
-                    });
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 2000);
+                    },
+                    onPending: function (result) {
+                        /* You may add your own implementation here */
+                        that.setState({
+                            alert: {
+                                isShown: true,
+                                mode: 'info',
+                                title: 'Payment Pending',
+                                message: 'Please complete payment to process order.'
+                            }
+                        });
+                    },
+                    onClose: function () {
+                        /* You may add your own implementation here */
+                        that.setState({
+                            alert: {
+                                isShown: true,
+                                mode: 'warning',
+                                title: 'Warning',
+                                message: 'Please complete the payment to proceed the request.'
+                            }
+                        });
+                    }
                 });
-        }
+            });
+        //}
     }
 
     handleTrackShipping() {

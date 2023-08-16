@@ -31,7 +31,7 @@
                 $('#preloader').show();
 
                 $.ajax({
-                    url: hostUrl + '/api/Users',
+                    url: hostUrl + '/api/Users/Profile',
                     data: JSON.stringify(formData),
                     method: 'PATCH',
                     dataType: 'JSON',
@@ -49,7 +49,7 @@
         });
 
         $.ajax({
-            url: hostUrl + '/api/Users/GetByEmail/' + $('[name=email]').val(),            
+            url: hostUrl + '/api/Users/GetByEmail/' + $('[name=email]').val(),
             method: 'GET',
             dataType: 'JSON',
             contentType: "application/json; charset=utf-8",
@@ -77,6 +77,31 @@
                         $('[name=userType]').val('Admin');
                         break;
                 }
+
+                $('#preloaderWallet').show();
+                $.ajax({
+                    url: hostUrl + '/api/Users/' + data.userId + '/Wallet',
+                    method: 'GET',
+                    dataType: 'JSON',
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        $('#preloaderWallet').hide();
+                        if (data) {
+                            var balance = App.Utils.formatCurrency(data.wltBal);
+                            $('#walletAmount').text('IDR.' + balance);
+                            $('#walletCode').val(data.wltAcctCode);
+                        }
+                        else {
+                            $('#walletAmount').text('IDR.0');
+                            $('#walletCode').val('');
+                        }
+                    }
+                }).fail(function (xhr, status, error) {
+                    $('#preloaderWallet').hide();
+                    App.Alert.show('danger', "Error", xhr.responseText);
+                    $('#walletAmount').text('IDR.0');
+                    $('#walletCode').val('');
+                });
             }
         }).fail(function (xhr, status, error) {
             $('#preloader').hide();
@@ -103,6 +128,55 @@
             $('[name=lastName]').attr('disabled', 'disabled');
             $('[name=phoneNumber]').attr('disabled', 'disabled');
             $('[name=merchantName]').attr('disabled', 'disabled');
+        });
+
+        $('#transHistoryLink').click(function () {
+            var userId = $('[name=userId]').val();
+            var walletCode = $('#walletCode').val();
+
+            var modal = new App.Modal();
+
+            $('body').progressBar();
+
+            if (!walletCode || !userId) {
+                $('body').progressBar('hide');
+                modal.show('Wallet Transaction', 'No transaction was found', 'modal-on-top');
+                return;
+            }
+
+            $.ajax({
+                url: hostUrl + '/api/Users/' + userId + '/Wallet/' + walletCode + '/Histories',
+                method: 'GET',
+                dataType: 'JSON',
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $('body').progressBar('hide');
+                    var div = '';
+                    if (data) {
+                        $.each(data, function (i, row) {
+                            var classText = row.tType == 'A' ? 'text-success' : 'text-danger';
+                            var amount = App.Utils.formatCurrency(row.tAmt);
+                            var sign = row.tType == 'A' ? '+' : '-';
+                            div += `<li class="list-group-item">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="fw-bold">${row.transNotes}</span>
+                                            <span class="text-end">${App.Utils.formatToShortLocalDate(row.createdDate)}</span>
+                                        </div>
+                                        <span class="text-end ` + classText + `">${sign} IDR. ${amount}</span>
+                                    </li>`;
+                        });
+                        div = '<ul class="list-group">' + div + '</ul>';
+                        modal.show('Wallet Transaction', div, 'modal-on-top');
+                    }
+                    else {
+                        modal.show('Wallet Transaction', 'No transaction was found', 'modal-on-top');
+                    }
+                }
+            }).fail(function (xhr, status, error) {
+                $('body').progressBar('hide');
+                App.Alert.show('danger', "Error", xhr.responseText);
+                modal.show('Wallet Transaction', 'No transaction was found', 'modal-on-top');
+            });
         });
     });
 }();

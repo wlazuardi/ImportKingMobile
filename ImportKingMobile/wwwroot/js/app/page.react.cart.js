@@ -966,7 +966,8 @@ class CartPage extends React.Component {
         if (orderData.courier == 'others') {
             var deliveryServices = [{ id: 'other', text: 'Other', price: 0 }];
             this.setState({
-                deliveryServices
+                deliveryServices,
+                deliveryFee: 0
             });
             return;
         }
@@ -1575,7 +1576,7 @@ class CartPage extends React.Component {
                                                     )
                                                 }
                                                 {
-                                                    (isRequiredPayment && wallet) ? (
+                                                    (isRequiredPayment && wallet && wallet.wltBal) ? (
                                                         <div class="mb-3">
                                                             <div class="row alert alert-success">
                                                                 <div class="form-switch">
@@ -1584,12 +1585,24 @@ class CartPage extends React.Component {
                                                                         onChange={this.handleUseWallet.bind(this)} />
                                                                     <label class="form-check-label" for="dropshipper">Use Remaining Wallet Balance</label>
                                                                 </div>
-                                                                <div class="fw-bold d-flex justify-content-between mt-2">
-                                                                    <div>
+                                                                <div class="fw-bold d-flex justify-content-start mt-2">
+                                                                    <div class="me-2">
                                                                         <i class="fa fa-wallet me-1"></i>Wallet Balance:
                                                                     </div>
                                                                     <div>
                                                                         IDR. {App.Utils.formatCurrency(wallet.wltBal)}
+                                                                        {
+                                                                            (usedWalletAmount) ?
+                                                                            (
+                                                                                <span class="ms-2 text-danger">
+                                                                                    - IDR. {App.Utils.formatCurrency(usedWalletAmount)}
+                                                                                </span>
+                                                                            ) :
+                                                                            (
+                                                                                <span>
+                                                                                </span>
+                                                                            )
+                                                                        }
                                                                     </div>
                                                                 </div>
                                                             </div>

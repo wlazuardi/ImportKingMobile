@@ -1,54 +1,85 @@
-﻿@{ ViewData["Title"] = "Profile"; }
-
-<section class="py-3 px-4">
-
-    <form id="registerForm">
-        <div class="mb-3">
-            <label class="form-label">First Name</label>
+﻿@{
+    ViewData["Title"] = "Profile";
+}
+<div>
+    <div class="py-3 px-4">
+        <span class="text-primary fw-bold">
+            Wallet Information
+        </span>
+        <div class="alert alert-success d-flex justify-content-between mt-2">
             <div>
-                <input type="hidden" name="userId" />
-                <input class="form-control" placeholder="First Name" name="firstName" type="text" disabled="disabled">
+                <i class="fa fa-wallet me-1"></i>
+                <span class="me-2">Remaining Balance:</span>
+            </div>
+            <div class="fw-bold">
+                <div id="preloaderWallet" class="spinner-border spinner-border-sm text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <div id="walletAmount">
+                </div>
+                <input id="walletCode" type="hidden" />
             </div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Last Name</label>
-            <div>
-                <input class="form-control" placeholder="Last Name" name="lastName" type="text" disabled="disabled">
-            </div>
+        <div class="text-center">
+            <a id="transHistoryLink" disabled class="text-link">Show Transaction History</a>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <div>
-                <input class="form-control" placeholder="Email" name="email" type="email" disabled="disabled" value="@ViewBag.User.Email">
+    </div>
+    <hr class="divider" size="10" />
+</div>
+<div>
+    <div class="pt-3 px-4">
+        <span class="text-primary fw-bold">
+            Profile Information
+        </span>
+    </div>
+    <div class="py-3 px-4">
+        <form id="registerForm">
+            <div class="mb-3">
+                <label class="form-label">First Name</label>
+                <div>
+                    <input type="hidden" name="userId" />
+                    <input class="form-control" placeholder="First Name" name="firstName" type="text" disabled="disabled">
+                </div>
             </div>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Phone Number</label>
-            <div>
-                <input class="form-control" placeholder="Phone Number" name="phoneNumber" type="text" disabled="disabled">
+            <div class="mb-3">
+                <label class="form-label">Last Name</label>
+                <div>
+                    <input class="form-control" placeholder="Last Name" name="lastName" type="text" disabled="disabled">
+                </div>
             </div>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">User Type</label>
-            <div>
-                <input class="form-control" name="userTypeId" type="hidden">
-                <input class="form-control" placeholder="User Type" name="userType" type="text" disabled="disabled">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <div>
+                    <input class="form-control" placeholder="Email" name="email" type="email" disabled="disabled" value="@ViewBag.User.Email">
+                </div>
             </div>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Merchant Name</label>
-            <div>
-                <input class="form-control" name="merchantName" type="hidden">
-                <input class="form-control" placeholder="Merchant Name" name="merchantName" type="text" disabled="disabled">
+            <div class="mb-3">
+                <label class="form-label">Phone Number</label>
+                <div>
+                    <input class="form-control" placeholder="Phone Number" name="phoneNumber" type="text" disabled="disabled">
+                </div>
             </div>
-        </div>
-        <button id="btnEdit" type="button" class="btn btn-primary w-100 mb-2">Edit</button>
-        <button id="btnSubmit" type="submit" class="btn btn-primary w-100 mb-2" style="display:none">Submit</button>
-        <button id="btnCancel" type="button" class="btn btn-danger w-100 mb-2" style="display:none">Cancel Edit</button>
-        <a id="btnGoToAddress" href="/User/Address" class="btn btn-outline-primary w-100">Maintain Shipping Address</a>
-    </form>
-
-</section>
+            <div class="mb-3">
+                <label class="form-label">User Type</label>
+                <div>
+                    <input class="form-control" name="userTypeId" type="hidden">
+                    <input class="form-control" placeholder="User Type" name="userType" type="text" disabled="disabled">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Merchant Name</label>
+                <div>
+                    <input class="form-control" name="merchantName" type="hidden">
+                    <input class="form-control" placeholder="Merchant Name" name="merchantName" type="text" disabled="disabled">
+                </div>
+            </div>
+            <button id="btnEdit" type="button" class="btn btn-primary w-100 mb-2">Edit</button>
+            <button id="btnSubmit" type="submit" class="btn btn-primary w-100 mb-2" style="display:none">Submit</button>
+            <button id="btnCancel" type="button" class="btn btn-danger w-100 mb-2" style="display:none">Cancel Edit</button>
+            <a id="btnGoToAddress" href="/User/Address" class="btn btn-outline-primary w-100">Maintain Shipping Address</a>
+        </form>
+    </div>
+</div>
 
 <div class="preloader" id="preloader" style="display:none;">
     <div class="spinner-grow" role="status">
@@ -68,5 +99,6 @@
 
 @section Scripts
 {
+    <script src="~/js/app/plugin.modal.js" asp-append-version="true" type="text/javascript"></script>
     <script src="~/js/app/page.profile.js" asp-append-version="true" type="text/javascript"></script>
 } 

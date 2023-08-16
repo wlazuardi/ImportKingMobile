@@ -35,6 +35,13 @@
         return moment(localDate).format('ddd, DD-MM-YYYY @ HH:mm:ss');
     };
 
+    Utils.prototype.formatToShortLocalDate = function (date) {
+        var utcDate = new Date(date);
+        var offset = new Date().getTimezoneOffset();
+        var localDate = new Date(utcDate.getTime() - (offset * 60000));
+        return moment(localDate).format('DD-MM-YYYY @ HH:mm');
+    };
+
     App.Utils = new Utils();
 
     var Confirm = function () {
