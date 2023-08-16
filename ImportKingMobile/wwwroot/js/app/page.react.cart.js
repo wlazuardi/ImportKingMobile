@@ -700,7 +700,7 @@ class CartPage extends React.Component {
             deliveryLabelFile: deliveryLabelFile,
             dropshipperName: orderData.dropshipperName,
             dropshipperPhone: orderData.dropshipperPhone,
-            codBillAmount: (isDropshipping && deliveryType == 'cod') ? codBillAmount : 0,
+            codBillAmount: (deliveryType == 'cod') ? codBillAmount : 0,
             bookingCode: orderData.bookingCode,
             deliveryFee: this.state.deliveryFee,
             deliveryFeeDiscount: this.state.deliveryFeeDiscount,
@@ -1098,7 +1098,7 @@ class CartPage extends React.Component {
 
         var orderValue = 0;
 
-        var balance = wallet.wltBal;
+        var balance = wallet ? wallet.wltBal : 0;
 
         if (cartList && cartList.length) {
             cartList.forEach(cart => {
@@ -1115,12 +1115,12 @@ class CartPage extends React.Component {
             codFee = Math.ceil(codPercentage * parseInt(codBillAmount));
             totalPayment = subTotal + codFee;
 
-            if (isDropshipping) {
-                codProfitMargin = parseInt(codBillAmount) - totalPayment;
-            }
-            else {
-                codProfitMargin = 0;
-            }
+            // if (isDropshipping) {
+            codProfitMargin = parseInt(codBillAmount) - totalPayment;
+            //}
+            //else {
+            //    codProfitMargin = 0;
+            //}
         }
         else {
             totalPayment = subTotal;
@@ -1500,7 +1500,7 @@ class CartPage extends React.Component {
                                                     )
                                                 }
                                                 {
-                                                    (this.state.isDropshipping == true && this.state.deliveryType == 'cod') ? (
+                                                    (this.state.deliveryType == 'cod') ? (
                                                         <div>
                                                             <div class="mb-3">
                                                                 <label class="form-label">COD Billing Amount</label>
@@ -1560,7 +1560,7 @@ class CartPage extends React.Component {
                                                     )
                                                 }
                                                 {
-                                                    (this.state.isDropshipping == true && this.state.deliveryType == 'cod') ? (
+                                                    (this.state.deliveryType == 'cod') ? (
                                                         <div>
                                                             <div class="row mt-5 mb-2 fw-bold">
                                                                 <div class="col-6">
@@ -1684,7 +1684,7 @@ class CartPage extends React.Component {
                                                     </div>
                                                 </div>
                                                 {
-                                                    (this.state.isDropshipping == true && this.state.deliveryType == 'cod') ? (
+                                                    (this.state.deliveryType == 'cod') ? (
                                                         <div>
                                                             {
                                                                 (this.state.codProfitMargin > 0) ? (
