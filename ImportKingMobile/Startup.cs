@@ -43,9 +43,10 @@ namespace ImportKingMobile
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => {
+                string dataProtectionDir = Configuration.GetValue<string>("DataProtectionDir");
                 options.Cookie.Name = "ImportKingCookie";
                 options.Cookie.SameSite = SameSiteMode.None;
-                options.DataProtectionProvider = DataProtectionProvider.Create(new DirectoryInfo(@"C:/keys"));
+                options.DataProtectionProvider = DataProtectionProvider.Create(new DirectoryInfo(dataProtectionDir));
             })
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
