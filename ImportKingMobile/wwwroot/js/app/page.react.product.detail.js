@@ -43,7 +43,8 @@
     getCategory() {
         var url = hostUrl;
         fetch(url + '/api/Catalogs/' + userEmail + '/Categories/' + categoryId, {
-            method: 'GET'
+            method: 'GET',
+            credentials: 'include'
         })
             .then(result => {
                 if (result.status == 200) {
@@ -64,7 +65,10 @@
     }
 
     constructTyeDataSource() {
-        fetch(hostUrl + '/api/Warehouses/0/Categories/' + categoryId + '/Types')
+        fetch(hostUrl + '/api/Warehouses/0/Categories/' + categoryId + '/Types', {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -108,7 +112,10 @@
     }
 
     constructColorDatasource() {
-        fetch(hostUrl + '/api/Warehouses/0/Categories/' + categoryId + '/Types/' + this.state.typeId + '/Colors')
+        fetch(hostUrl + '/api/Warehouses/0/Categories/' + categoryId + '/Types/' + this.state.typeId + '/Colors', {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -165,7 +172,10 @@
             isLoadingProduct: true
         });
 
-        fetch(url)
+        fetch(url, {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -345,7 +355,8 @@
         fetch(hostUrl + '/api/Carts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'include'
         }).then(res => {
             if (res.status == 200) {
                 return res.json();

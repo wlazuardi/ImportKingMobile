@@ -14,7 +14,10 @@
             isLoading: true
         });
 
-        fetch(hostUrl + '/api/Carts/GetPendingCart')
+        fetch(hostUrl + '/api/Carts/GetPendingCart', {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then(res => {
                 if (res.status == 200) {
                     return res.json();

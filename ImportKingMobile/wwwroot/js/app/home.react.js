@@ -15,7 +15,8 @@
         });
 
         fetch(this.fetchURL, {
-            method: 'GET'
+            method: 'GET',
+            credentials: 'include'
         }).then(result => {
             if (result.status == 200) {
                 return result.json();

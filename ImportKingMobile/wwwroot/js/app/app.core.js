@@ -268,3 +268,14 @@ String.prototype.initCap = function () {
         return m.toUpperCase();
     });
 };
+
+$.ajaxSetup({
+    xhrFields: {
+        withCredentials: true
+    },
+    crossDomain: true
+});
+
+var reqSetup = new Request('', {
+    credentials: 'include'
+});

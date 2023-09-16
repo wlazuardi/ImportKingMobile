@@ -19,7 +19,10 @@
     }
 
     constructCategoryDataSource() {
-        fetch(hostUrl + "/api/Warehouses/0/Categories")
+        fetch(hostUrl + "/api/Warehouses/0/Categories", {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -92,7 +95,10 @@
             return;
         }
 
-        fetch(hostUrl + '/api/Warehouses/0/Categories/' + this.state.categoryId + '/Types')
+        fetch(hostUrl + '/api/Warehouses/0/Categories/' + this.state.categoryId + '/Types', {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -166,7 +172,10 @@
             return;
         }
 
-        fetch(hostUrl + '/api/Warehouses/0/Categories/' + this.state.categoryId + '/Types/' + this.state.typeId + '/Colors')
+        fetch(hostUrl + '/api/Warehouses/0/Categories/' + this.state.categoryId + '/Types/' + this.state.typeId + '/Colors', {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -274,7 +283,10 @@
 
         this.props.onSearch(this.state);
 
-        fetch(url)
+        fetch(url, {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -332,7 +344,10 @@
             });
 
             if (categoryId != 0) {
-                fetch(hostUrl + "/api/Categories/" + categoryId)
+                fetch(hostUrl + "/api/Categories/" + categoryId, {
+                    method: 'GET',
+                    credentials: 'include'
+                })
                     .then((res) => {
                         if (res.status == 200) {
                             return res.json();
@@ -674,7 +689,8 @@ class ProductPage extends React.Component {
         fetch(hostUrl + '/api/Carts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'include'
         }).then(res => {
             if (res.status == 200) {
                 return res.json();

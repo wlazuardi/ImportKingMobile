@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 namespace ImportKingMobile.Controllers
 {
     [AllowAnonymous]
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        public HomeController(IIdentityService identityService, IHttpClientFactory httpClientFactory)
-        { 
+        public HomeController(IIdentityService identityService, IHttpClientFactory httpClientFactory) : base(identityService, httpClientFactory)
+        {
         }
 
         public IActionResult Index()

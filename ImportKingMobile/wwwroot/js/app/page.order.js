@@ -59,7 +59,10 @@ class OrderPage extends React.Component {
         if (this.props.mode == 'admin' || userType == 3)
             url = hostUrl + "/api/Orders/";
 
-        fetch(url)
+        fetch(url, {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();

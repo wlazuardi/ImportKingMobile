@@ -32,11 +32,11 @@ namespace ImportKingMobile.Controllers
             var url = string.Format("https://importking.mooo.com/api/Users/GetByEmail/{0}", emailAddress);
             var client = httpClientFactory.CreateClient();
             var result = await client.GetAsync(url);
-            
+
             if (result.IsSuccessStatusCode)
             {
                 var user = JsonConvert.DeserializeObject<User>(await result.Content.ReadAsStringAsync());
-                if (user != null) 
+                if (user != null)
                 {
                     return user;
                 }
@@ -50,16 +50,21 @@ namespace ImportKingMobile.Controllers
             var user = identityService.GetCurrentUser();
             ViewBag.User = user;
 
-            User userData = (user != null) ? await GetEmployee(user.Email) : null;
+            bool isAnonymous = filterContext.ActionDescriptor.EndpointMetadata.Any(x => x.GetType() == typeof(AllowAnonymousAttribute));
 
-            if (userData == null)
+            if (!isAnonymous)
             {
-                await HttpContext.SignOutAsync("cookie");
-                filterContext.Result = new RedirectResult("https://importkingidentity.mooo.com/Account/Logout");
-            }
-            else if (userData.Status == Constants.UserStatus.Inactive)
-            {
-                filterContext.Result = new RedirectToActionResult("InactiveUser", "Notification", null);
+                User userData = (user != null) ? await GetEmployee(user.Email) : null;
+
+                if (userData == null)
+                {
+                    await HttpContext.SignOutAsync("cookie");
+                    filterContext.Result = new RedirectResult("https://importkingidentity.mooo.com/Account/Logout");
+                }
+                else if (userData.Status == Constants.UserStatus.Inactive)
+                {
+                    filterContext.Result = new RedirectToActionResult("InactiveUser", "Notification", null);
+                }
             }
 
             await base.OnActionExecutionAsync(filterContext, next);

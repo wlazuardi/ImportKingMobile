@@ -20,7 +20,10 @@ class CartList extends React.Component {
             isLoading: true
         });
 
-        fetch(hostUrl + '/api/Carts?email=' + userMail)
+        fetch(hostUrl + '/api/Carts?email=' + userMail, {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then(res => {
                 if (res.status == 200) {
                     return res.json();
@@ -66,7 +69,8 @@ class CartList extends React.Component {
         fetch(hostUrl + '/api/Carts/', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(cart)
+            body: JSON.stringify(cart),
+            credentials: 'include'
         })
             .then(result => {
                 if (result.status == 200) {
@@ -132,7 +136,8 @@ class CartList extends React.Component {
 
         fetch(hostUrl + '/api/Carts/' + cart.cartId, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
         })
             .then(result => {
                 if (result.status == 200) {
@@ -405,7 +410,10 @@ class CartPage extends React.Component {
     }
 
     loadWallet(userId) {
-        fetch(hostUrl + '/api/Users/' + userId + '/Wallet')
+        fetch(hostUrl + '/api/Users/' + userId + '/Wallet', {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((result) => {
                 if (result.status == 200) {
                     return result.json();
@@ -424,7 +432,10 @@ class CartPage extends React.Component {
     }
 
     loadUser() {
-        fetch(hostUrl + '/api/Users/GetByEmail/' + userMail)
+        fetch(hostUrl + '/api/Users/GetByEmail/' + userMail, {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then(res => {
                 if (res.status == 200) {
                     return res.json();
@@ -466,7 +477,10 @@ class CartPage extends React.Component {
     }
 
     loadLookup() {
-        fetch(hostUrl + '/api/Lookups')
+        fetch(hostUrl + '/api/Lookups', {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then(res => {
                 if (res.status == 200) {
                     return res.json();
@@ -557,7 +571,8 @@ class CartPage extends React.Component {
 
             fetch(hostUrl + '/api/Attachments', {
                 method: 'POST',
-                body: data
+                body: data,
+                credentials: 'include'
             }).then(
                 response => response.json() // if the response is a JSON object
             ).then(success => {
@@ -608,7 +623,10 @@ class CartPage extends React.Component {
                 isShownProgress: true
             });
 
-            fetch(hostUrl + '/api/Addresses/GetByEmail/' + userMail)
+            fetch(hostUrl + '/api/Addresses/GetByEmail/' + userMail, {
+                method: 'GET',
+                credentials: 'include'
+            })
                 .then(result => {
                     if (result.status == 200)
                         return result.json();
@@ -721,7 +739,8 @@ class CartPage extends React.Component {
         fetch(hostUrl + '/api/Orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
+            body: JSON.stringify(formData),
+            credentials: 'include'
         })
             .then(result => {
                 if (result.status == 200) {
@@ -738,7 +757,8 @@ class CartPage extends React.Component {
                 if (isRequiredPayment) {
                     fetch(hostUrl + '/api/Payments/' + result + '/Token', {
                         method: 'GET',
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include'
                     })
                         .then(resToken => {
                             if (resToken.status == 200) {
@@ -987,7 +1007,8 @@ class CartPage extends React.Component {
         fetch(hostUrl + '/api/Deliveries/Cost', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'include'
         })
             .then(res => {
                 if (res.status == 200) {

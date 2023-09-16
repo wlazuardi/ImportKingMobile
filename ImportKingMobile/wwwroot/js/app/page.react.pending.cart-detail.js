@@ -17,7 +17,10 @@
             isLoadingHeader: true
         });
 
-        fetch(hostUrl + '/api/Carts?email=' + cartMail)
+        fetch(hostUrl + '/api/Carts?email=' + cartMail, {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then(res => {
                 if (res.status == 200) {
                     return res.json();
@@ -49,7 +52,10 @@
                 });
             });
 
-        fetch(hostUrl + '/api/Carts/GetPendingCart/' + cartMail)
+        fetch(hostUrl + '/api/Carts/GetPendingCart/' + cartMail, {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then(res => {
                 if (res.status == 200) {
                     return res.json();
@@ -101,7 +107,8 @@
             body: JSON.stringify({
                 cartId: cart.cartId,
                 isChecked: !cart.isChecked
-            })
+            }),
+            credentials: 'include'
         }).then(result => {
             if (result.status == 200) {
                 return result.json();

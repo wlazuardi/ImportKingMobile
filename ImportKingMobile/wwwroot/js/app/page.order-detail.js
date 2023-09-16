@@ -567,7 +567,10 @@ class OrderDetailPage extends React.Component {
 
     getOrderStockOut(stockOutId) {
         if (stockOutId) {
-            fetch(hostUrl + "/api/StockOuts/" + stockOutId + "/Details")
+            fetch(hostUrl + "/api/StockOuts/" + stockOutId + "/Details", {
+                method: 'GET',
+                credentials: 'include'
+            })
                 .then((res) => {
                     if (res.status == 200)
                         return res.json();
@@ -604,7 +607,10 @@ class OrderDetailPage extends React.Component {
     }
 
     componentDidMount() {
-        fetch(hostUrl + "/api/Orders/" + orderId)
+        fetch(hostUrl + "/api/Orders/" + orderId, {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200)
                     return res.json();
@@ -632,7 +638,10 @@ class OrderDetailPage extends React.Component {
                 });
             });
 
-        fetch(hostUrl + "/api/Orders/" + orderId + "/Detail")
+        fetch(hostUrl + "/api/Orders/" + orderId + "/Detail", {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200)
                     return res.json();
@@ -686,7 +695,8 @@ class OrderDetailPage extends React.Component {
         });
 
         fetch(hostUrl + '/api/Orders/' + order.data.orderId + '/Reorder', {
-            method: 'POST'
+            method: 'POST',
+            credentials: 'include'
         })
             .then(result => {
                 if (result.status == 200)
@@ -734,7 +744,8 @@ class OrderDetailPage extends React.Component {
         //if (userType == 0 || userType == 1) {
         fetch(hostUrl + '/api/Payments/' + order.data.orderId + '/Token', {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
         })
             .then(resToken => {
                 if (resToken.status == 200) {
@@ -816,7 +827,10 @@ class OrderDetailPage extends React.Component {
             isShownDeliveryTracking: true
         });
 
-        fetch(hostUrl + "/api/waybills/" + courier + "/" + waybill)
+        fetch(hostUrl + "/api/waybills/" + courier + "/" + waybill, {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200)
                     return res.json();

@@ -18,7 +18,10 @@
             isLoadingAddresses: true
         });
 
-        fetch(hostUrl + '/api/Addresses/GetByEmail/' + userMail)
+        fetch(hostUrl + '/api/Addresses/GetByEmail/' + userMail, {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((result) => {
                 if (result.status == 200) {
                     return result.json();
@@ -62,7 +65,8 @@
         });
 
         fetch(hostUrl + '/api/Addresses/' + address.addressId, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         })
             .then(result => {
                 if (result.status == 200) {
@@ -257,7 +261,10 @@ class ModalAddressForm extends React.Component {
             isLoadingAll: true
         });
 
-        fetch(hostUrl + '/api/Deliveries/Province/0')
+        fetch(hostUrl + '/api/Deliveries/Province/0', {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -300,7 +307,10 @@ class ModalAddressForm extends React.Component {
             isLoadingAll: true
         });
 
-        fetch(hostUrl + '/api/Deliveries/Province/' + this.state.formData.provinceId + '/City/0')
+        fetch(hostUrl + '/api/Deliveries/Province/' + this.state.formData.provinceId + '/City/0', {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -345,7 +355,10 @@ class ModalAddressForm extends React.Component {
             isLoadingAll: true
         });
 
-        fetch(hostUrl + '/api/Deliveries/Province/' + this.state.formData.provinceId + '/City/' + this.state.formData.cityId + '/SubDistrict')
+        fetch(hostUrl + '/api/Deliveries/Province/' + this.state.formData.provinceId + '/City/' + this.state.formData.cityId + '/SubDistrict', {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then((res) => {
                 if (res.status == 200) {
                     return res.json();
@@ -406,7 +419,8 @@ class ModalAddressForm extends React.Component {
             fetch(hostUrl + '/api/Addresses/', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
+                credentials: 'include'
             })
                 .then((result) => {
                     if (result.status == 200) {
@@ -439,7 +453,8 @@ class ModalAddressForm extends React.Component {
             fetch(hostUrl + '/api/Addresses/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
+                credentials: 'include'
             })
                 .then((result) => {
                     if (result.status == 200) {

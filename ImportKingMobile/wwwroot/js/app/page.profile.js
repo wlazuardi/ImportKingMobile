@@ -30,7 +30,7 @@
 
                 $('#preloader').show();
 
-                $.ajax({
+                $.ajax({                    
                     url: hostUrl + '/api/Users/Profile',
                     data: JSON.stringify(formData),
                     method: 'PATCH',
@@ -80,7 +80,7 @@
 
                 $('#preloaderWallet').show();
                 $.ajax({
-                    url: hostUrl + '/api/Users/' + data.userId + '/Wallet',
+                    url: hostUrl + '/api/Users/' + data.userId + '/Wallet',                    
                     method: 'GET',
                     dataType: 'JSON',
                     contentType: "application/json; charset=utf-8",
