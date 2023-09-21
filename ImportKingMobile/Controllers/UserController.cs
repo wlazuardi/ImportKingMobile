@@ -1,8 +1,10 @@
 ﻿using ImportKingMobile.Interfaces;
+using ImportKingMobile.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +16,12 @@ namespace ImportKingMobile.Controllers
     public class UserController : BaseController
     {
         IIdentityService identityService;
+        AppSettings appSettings { get; set; }
 
-        public UserController(IIdentityService identityService, IHttpClientFactory httpClientFactory) : base(identityService, httpClientFactory)
+        public UserController(IIdentityService identityService, IHttpClientFactory httpClientFactory, IOptions<AppSettings> appSettings) : base(identityService, httpClientFactory, appSettings)
         {
             this.identityService = identityService;
+            this.appSettings = appSettings.Value;
         }
 
         [AllowAnonymous]
@@ -46,8 +50,8 @@ namespace ImportKingMobile.Controllers
         [Authorize]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync("cookie");
-            return Redirect("https://importkingidentity.mooo.com/Account/Logout");
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Redirect($"{appSettings.IdentityHostUrl}/Account/Logout");
         }
     }
 }

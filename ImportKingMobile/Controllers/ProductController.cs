@@ -14,7 +14,7 @@ namespace ImportKingMobile.Controllers
     {
         AppSettings appSettings;
 
-        public ProductController(IIdentityService identityService, IOptions<AppSettings> appSettings, IHttpClientFactory httpClientFactory) : base(identityService, httpClientFactory)
+        public ProductController(IIdentityService identityService, IOptions<AppSettings> appSettings, IHttpClientFactory httpClientFactory) : base(identityService, httpClientFactory, appSettings)
         {
             this.appSettings = appSettings.Value;
         }

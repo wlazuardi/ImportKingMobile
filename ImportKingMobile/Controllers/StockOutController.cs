@@ -1,12 +1,14 @@
 ﻿using ImportKingMobile.Interfaces;
+using ImportKingMobile.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System.Net.Http;
 
 namespace ImportKingMobile.Controllers
 {
     public class StockOutController : BaseController
     {
-        public StockOutController(IIdentityService identityService, IHttpClientFactory httpClientFactory) : base(identityService, httpClientFactory)
+        public StockOutController(IIdentityService identityService, IHttpClientFactory httpClientFactory, IOptions<AppSettings> appSettings) : base(identityService, httpClientFactory, appSettings)
         { 
         }
 

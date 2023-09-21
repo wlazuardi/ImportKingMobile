@@ -15,7 +15,7 @@ namespace ImportKingMobile.Controllers
         IIdentityService identityService;
         AppSettings appSettings;
 
-        public CartController(IIdentityService identityService, IOptions<AppSettings> appSettings, IHttpClientFactory httpClientFactory) : base(identityService, httpClientFactory)
+        public CartController(IIdentityService identityService, IOptions<AppSettings> appSettings, IHttpClientFactory httpClientFactory) : base(identityService, httpClientFactory, appSettings)
         {
             this.identityService = identityService;
             this.appSettings = appSettings.Value;

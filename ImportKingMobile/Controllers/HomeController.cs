@@ -1,6 +1,8 @@
 ﻿using ImportKingMobile.Interfaces;
+using ImportKingMobile.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +14,7 @@ namespace ImportKingMobile.Controllers
     [AllowAnonymous]
     public class HomeController : BaseController
     {
-        public HomeController(IIdentityService identityService, IHttpClientFactory httpClientFactory) : base(identityService, httpClientFactory)
+        public HomeController(IIdentityService identityService, IHttpClientFactory httpClientFactory, IOptions<AppSettings> appSettings) : base(identityService, httpClientFactory, appSettings)
         {
         }
 

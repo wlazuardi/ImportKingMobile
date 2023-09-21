@@ -2,9 +2,11 @@
 using ImportKingMobile.Models;
 using ImportKingMobile.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,16 +22,18 @@ namespace ImportKingMobile.Controllers
     {
         private readonly IIdentityService identityService;
         private readonly IHttpClientFactory httpClientFactory;
+        private AppSettings appSettings { get; set; }
 
-        public BaseController(IIdentityService identityService, IHttpClientFactory httpClientFactory)
+        public BaseController(IIdentityService identityService, IHttpClientFactory httpClientFactory, IOptions<AppSettings> appSettings)
         {
             this.identityService = identityService;
             this.httpClientFactory = httpClientFactory;
+            this.appSettings = appSettings.Value;
         }
 
         public async Task<User> GetEmployee(string emailAddress)
         {
-            var url = string.Format("https://importking.mooo.com/api/Users/GetByEmail/{0}", emailAddress);
+            var url = string.Format($"{appSettings.HostUrl}/api/Users/GetByEmail/{emailAddress}");
             var client = httpClientFactory.CreateClient();
             var result = await client.GetAsync(url);
 
@@ -49,6 +53,7 @@ namespace ImportKingMobile.Controllers
         {
             var user = identityService.GetCurrentUser();
             ViewBag.User = user;
+            ViewBag.HostUrl = appSettings.HostUrl;
 
             bool isAnonymous = filterContext.ActionDescriptor.EndpointMetadata.Any(x => x.GetType() == typeof(AllowAnonymousAttribute));
 
@@ -58,8 +63,8 @@ namespace ImportKingMobile.Controllers
 
                 if (userData == null)
                 {
-                    await HttpContext.SignOutAsync("cookie");
-                    filterContext.Result = new RedirectResult("https://importkingidentity.mooo.com/Account/Logout");
+                    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                    filterContext.Result = new RedirectResult($"{appSettings.IdentityHostUrl}/Account/Logout");
                 }
                 else if (userData.Status == Constants.UserStatus.Inactive)
                 {
