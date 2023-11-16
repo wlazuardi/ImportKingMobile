@@ -13,9 +13,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace ImportKingMobile
 {
@@ -67,6 +71,40 @@ namespace ImportKingMobile
                 options.ClaimActions.MapJsonKey(ClaimTypes.Role, "role");
                 options.ClaimActions.MapJsonKey(ClaimTypes.GivenName, "givenName");
                 options.ClaimActions.MapJsonKey(ClaimTypes.Surname, "surName");
+
+                options.Events = new OpenIdConnectEvents
+                {
+                    OnTokenValidated = context =>
+                    {
+                        // Here you can access the JWT token in context.SecurityToken
+                        if (context.SecurityToken is JwtSecurityToken jwtToken)
+                        {
+                            // Access the JWT token and its claims
+                            string accessToken = jwtToken.RawData; // The raw JWT token as a string
+                            string subjectClaim = jwtToken.Subject; // The subject claim (usually the user's unique identifier)
+
+                            // You can also access other claims as needed
+                            var nameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+                            var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
+
+                            // Use the JWT token and claims as needed in your application
+                            // For example, you can store them in a user's session or claims principal.
+                            var customTokenClaim = new Claim("CustomToken", accessToken);
+                            context.Principal.AddIdentity(new ClaimsIdentity(
+                                new[]
+                                {
+                                    customTokenClaim
+                                }
+                            ));
+                        }
+
+                        return Task.CompletedTask;
+                    },
+                    OnTokenResponseReceived = context => 
+                    {
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             services.AddScoped<IIdentityService, IdentityService>();
@@ -95,7 +133,11 @@ namespace ImportKingMobile
             app.UseRouting();
 
             app.UseCors(builder => builder
-                .WithOrigins("https://importkingmobile.mooo.com", "https://localhost:44327")
+                .WithOrigins(
+                    "https://importking.mooo.com",
+                    "https://importkingmobile.mooo.com",
+                    "https://localhost:44327"
+                )
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials()
@@ -108,7 +150,7 @@ namespace ImportKingMobile
             {
 
                 MinimumSameSitePolicy = SameSiteMode.None,
-                Secure = CookieSecurePolicy.None,
+                Secure = CookieSecurePolicy.Always,
                 HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always
             });
 

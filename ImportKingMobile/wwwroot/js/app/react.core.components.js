@@ -49,7 +49,7 @@ class Select2 extends React.Component {
         this.$el.select2().empty();
 
         this.$el.select2({
-            data: this.props.dataSource,            
+            data: this.props.dataSource,
             multiple: false,
             dropdownParent: this.$dropdownParent,
             templateResult: this.props.templateResult,
@@ -308,7 +308,7 @@ class Toast extends React.Component {
 
         return (
             <div aria-live="assertive" aria-atomic="true">
-                <div class="toast-container position-fixed pt-5 px-3 top-10 start-50 translate-middle" style={{zIndex: 100000}}>
+                <div class="toast-container position-fixed pt-5 px-3 top-10 start-50 translate-middle" style={{ zIndex: 100000 }}>
                     <div ref={el => this.el = el} class={toastClass} role="alert">
                         <div class="d-flex">
                             <div class="toast-body">
@@ -346,7 +346,7 @@ class FormValidate extends React.Component {
                 if (errors) {
                     validator.errorList[0].element.focus();
                 }
-            } 
+            }
         });
     }
 
@@ -381,7 +381,7 @@ class FormValidate extends React.Component {
                 if (errors) {
                     validator.errorList[0].element.focus();
                 }
-            } 
+            }
         });
     }
 
@@ -403,74 +403,131 @@ class FormValidate extends React.Component {
 }
 
 class PdfViewer extends React.Component {
-    constructor(props) {        
+    constructor(props) {
         super(props);
+
+        this.state = {
+            pageNum: 1
+        };
     }
 
-    loadPdf() {
-        // If absolute URL from the remote server is provided, configure the CORS
-        // header on that server.
-        var { url, id } = this.props;
+    renderPage(pageNumber) {
+        var { id } = this.props;
 
-        // Loaded via <script> tag, create shortcut to access PDF.js exports.
-        var pdfjsLib = window['pdfjs-dist/build/pdf'];
+        this.pdfDoc.getPage(pageNumber).then(function (page) {
 
-        // The workerSrc property shall be specified.
-        pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+            var desiredWidth = window.outerWidth - 100;
+            var viewport = page.getViewport({ scale: 1, });
+            var scale = desiredWidth / viewport.width;
+            var scaledViewport = page.getViewport({ scale: scale, });
 
-        // Asynchronous download of PDF
-        var loadingTask = pdfjsLib.getDocument(url);
-        loadingTask.promise.then(function (pdf) {
-            console.log('PDF loaded');
+            // Prepare canvas using PDF page dimensions
+            var canvas = document.getElementById(id);
+            var context = canvas.getContext('2d');
+            canvas.height = scaledViewport.height;
+            canvas.width = scaledViewport.width;
 
-            // Fetch the first page
-            var pageNumber = 1;
-            pdf.getPage(pageNumber).then(function (page) {
-                console.log('Page loaded');
+            // Render PDF page into canvas context
+            var renderContext = {
+                canvasContext: context,
+                viewport: scaledViewport
+            };
 
-                var desiredWidth = window.outerWidth - 100;
-                var viewport = page.getViewport({ scale: 1, });
-                var scale = desiredWidth / viewport.width;
-                var scaledViewport = page.getViewport({ scale: scale, });
-
-                // Prepare canvas using PDF page dimensions
-                var canvas = document.getElementById(id);
-                var context = canvas.getContext('2d');
-                canvas.height = scaledViewport.height;
-                canvas.width = scaledViewport.width;
-
-                // Render PDF page into canvas context
-                var renderContext = {
-                    canvasContext: context,
-                    viewport: scaledViewport
-                };
-                var renderTask = page.render(renderContext);
-                renderTask.promise.then(function () {
-                    console.log('Page rendered');
-                });
+            var renderTask = page.render(renderContext);
+            renderTask.promise.then(function () {
+                this.pageRendering = false;
+                if (this.pageNumPending !== null) {
+                    // New page rendering is pending
+                    this.renderPage(this.pageNumPending);
+                    this.pageNumPending = null;
+                }
             });
-        }, function (reason) {
-            // PDF loading error
-            console.error(reason);
         });
     }
 
-    componentDidMount() {        
+    queueRenderPage(num) {
+        if (this.pageRendering) {
+            this.pageNumPending = num;
+        } else {
+            this.renderPage(num);
+        }
+    }
+
+    /**
+     * Displays previous page.
+     */
+    onPrevPage() {
+        if (this.pageNum <= 1) {
+            return;
+        }
+        this.pageNum--;
+        this.setState({
+            pageNum: this.pageNum
+        });
+        this.queueRenderPage(this.pageNum);
+    }
+
+    /**
+     * Displays next page.
+     */
+    onNextPage() {
+        if (this.pageNum >= this.pdfDoc.numPages) {
+            return;
+        }
+        this.pageNum++;
+        this.setState({
+            pageNum: this.pageNum
+        });
+        this.queueRenderPage(this.pageNum);
+    }
+
+    loadPdf() {
+        var { url } = this.props;
+
+        // The workerSrc property shall be specified.
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@4.0.189/build/pdf.worker.mjs';
+
+        this.pageNum = 1;
+        this.pageRendering = false;
+        this.pageNumPending = null;
+        this.pdfDoc = null;
+
+        // Asynchronous download of PDF
+        var that = this;
+        var loadingTask = pdfjsLib.getDocument(url).promise.then(function (_pdfDoc) {
+            that.pdfDoc = _pdfDoc;
+
+            that.setState({
+                totalPageNum: that.pdfDoc.numPages
+            });
+
+            // Initial/first page rendering
+            that.renderPage(that.pageNum);
+        });
+    }
+
+    componentDidMount() {
         this.loadPdf();
     }
 
-    componentDidUpdate(prevProps) {        
+    componentDidUpdate(prevProps) {
         if (!prevProps || prevProps.url !== this.props.url) {
             this.loadPdf();
         }
     }
 
-    render() {    
+    render() {
         var { id } = this.props;
+        var { pageNum, totalPageNum } = this.state;
 
         return (
             <div ref={el => this.el = el} style={this.props.style} class={this.props.class}>
                 <canvas id={id}></canvas>
+                <div class="d-flex justify-content-between px-4 mb-2">
+                    <button class="btn btn-sm btn-primary" type="button" onClick={this.onPrevPage.bind(this)}>Prev</button>
+                    <span>{pageNum}/{totalPageNum}</span>
+                    <button class="btn btn-sm btn-primary" type="button" onClick={this.onNextPage.bind(this)}>Next</button>
+                </div>
             </div>
         );
     }
