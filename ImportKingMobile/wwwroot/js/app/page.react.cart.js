@@ -1449,7 +1449,7 @@ class CartPage extends React.Component {
                                                                                 (this.state.deliveryLabelFile) ? (
                                                                                     (this.isPdf(this.state.deliveryLabelFile)) ? (
                                                                                         <div>
-                                                                                            <PdfViewer id="deliveryLabelViewer" url={hostUrl + '/api/FileHandlers?fileName=' + this.state.deliveryLabelFile} style={{ border: '1px solid #000' }} class="pt-2 mt-2"></PdfViewer>
+                                                                                                <PdfViewer id="deliveryLabelViewer" url={hostUrl + '/api/FileHandlers?fileName=' + this.state.deliveryLabelFile} class="pt-2 mt-2 pdf-viewer-container"></PdfViewer>
                                                                                         </div>
                                                                                     ) : (
                                                                                         <div>

@@ -326,6 +326,8 @@ class Toast extends React.Component {
 class FormValidate extends React.Component {
     constructor(props) {
         super(props);
+
+        this.DEFAULT_SCALE_DELTA = 1.1;
     }
 
     componentDidMount() {
@@ -405,129 +407,66 @@ class FormValidate extends React.Component {
 class PdfViewer extends React.Component {
     constructor(props) {
         super(props);
-
+        var instanceId = Date.now();
         this.state = {
-            pageNum: 1
+            instanceId: instanceId
         };
-    }
-
-    renderPage(pageNumber) {
-        var { id } = this.props;
-
-        this.pdfDoc.getPage(pageNumber).then(function (page) {
-
-            var desiredWidth = window.outerWidth - 100;
-            var viewport = page.getViewport({ scale: 1, });
-            var scale = desiredWidth / viewport.width;
-            var scaledViewport = page.getViewport({ scale: scale, });
-
-            // Prepare canvas using PDF page dimensions
-            var canvas = document.getElementById(id);
-            var context = canvas.getContext('2d');
-            canvas.height = scaledViewport.height;
-            canvas.width = scaledViewport.width;
-
-            // Render PDF page into canvas context
-            var renderContext = {
-                canvasContext: context,
-                viewport: scaledViewport
-            };
-
-            var renderTask = page.render(renderContext);
-            renderTask.promise.then(function () {
-                this.pageRendering = false;
-                if (this.pageNumPending !== null) {
-                    // New page rendering is pending
-                    this.renderPage(this.pageNumPending);
-                    this.pageNumPending = null;
-                }
-            });
-        });
-    }
-
-    queueRenderPage(num) {
-        if (this.pageRendering) {
-            this.pageNumPending = num;
-        } else {
-            this.renderPage(num);
-        }
-    }
-
-    /**
-     * Displays previous page.
-     */
-    onPrevPage() {
-        if (this.pageNum <= 1) {
-            return;
-        }
-        this.pageNum--;
-        this.setState({
-            pageNum: this.pageNum
-        });
-        this.queueRenderPage(this.pageNum);
-    }
-
-    /**
-     * Displays next page.
-     */
-    onNextPage() {
-        if (this.pageNum >= this.pdfDoc.numPages) {
-            return;
-        }
-        this.pageNum++;
-        this.setState({
-            pageNum: this.pageNum
-        });
-        this.queueRenderPage(this.pageNum);
     }
 
     loadPdf() {
         var { url } = this.props;
-
-        // The workerSrc property shall be specified.
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@4.0.189/build/pdf.worker.mjs';
-
-        this.pageNum = 1;
-        this.pageRendering = false;
-        this.pageNumPending = null;
-        this.pdfDoc = null;
-
-        // Asynchronous download of PDF
-        var that = this;
-        var loadingTask = pdfjsLib.getDocument(url).promise.then(function (_pdfDoc) {
-            that.pdfDoc = _pdfDoc;
-
-            that.setState({
-                totalPageNum: that.pdfDoc.numPages
-            });
-
-            // Initial/first page rendering
-            that.renderPage(that.pageNum);
-        });
     }
 
     componentDidMount() {
-        this.loadPdf();
+        if (this.props.url) {
+            PDFViewerApplication.initUI(this.state.instanceId);
+            PDFViewerApplication.open({
+                url: this.props.url,
+            });
+        }
     }
 
     componentDidUpdate(prevProps) {
         if (!prevProps || prevProps.url !== this.props.url) {
-            this.loadPdf();
+            PDFViewerApplication.initUI(this.state.instanceId);
+            PDFViewerApplication.open({
+                url: this.props.url,
+            });
         }
     }
 
     render() {
         var { id } = this.props;
-        var { pageNum, totalPageNum } = this.state;
+        var { instanceId } = this.state;
 
         return (
             <div ref={el => this.el = el} style={this.props.style} class={this.props.class}>
-                <canvas id={id}></canvas>
-                <div class="d-flex justify-content-between px-4 mb-2">
-                    <button class="btn btn-sm btn-primary" type="button" onClick={this.onPrevPage.bind(this)}>Prev</button>
-                    <span>{pageNum}/{totalPageNum}</span>
-                    <button class="btn btn-sm btn-primary" type="button" onClick={this.onNextPage.bind(this)}>Next</button>
+                <div id={"viewerContainer" + instanceId} class="viewerContainer">
+                    <div id="viewer" class="pdfViewer"></div>
                 </div>
+
+                <div id={"loadingBar" + instanceId} class="loadingBar">
+                    <div class="progress"></div>
+                    <div class="glimmer"></div>
+                </div>
+
+                <footer>
+                    <button type="button" class="toolbarButton pageUp" title="Previous Page" id={"previous" + instanceId}>
+                        <i class="fa fa-arrow-up"></i>
+                    </button>
+                    <button type="button" class="toolbarButton pageDown" title="Next Page" id={"next" + instanceId}>
+                        <i class="fa fa-arrow-down"></i>
+                    </button>
+
+                    <input type="number" id={"pageNumber" + instanceId} class="toolbarField pageNumber" value="1" size="4" min="1" />
+
+                    <button type="button" class="toolbarButton zoomOut" title="Zoom Out" id={"zoomOut" + instanceId}>
+                        <i class="fa fa-search-minus"></i>
+                    </button>
+                    <button type="button" class="toolbarButton zoomIn" title="Zoom In" id={"zoomIn" + instanceId}>
+                        <i class="fa fa-search-plus"></i>
+                    </button>
+                </footer>
             </div>
         );
     }
