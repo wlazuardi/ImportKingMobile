@@ -57,11 +57,10 @@ class OrderPage extends React.Component {
         var url = hostUrl + "/api/Orders/GetByEmail/" + userMail;
 
         if (this.props.mode == 'admin' || userType == 3)
-            url = hostUrl + "/api/Orders/";
+            url = hostUrl + "/api/Orders/" + userMail;
 
         fetch(url, {
-            method: 'GET',
-            credentials: 'include'
+            method: 'GET'
         })
             .then((res) => {
                 if (res.status == 200) {

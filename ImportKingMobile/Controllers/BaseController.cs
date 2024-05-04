@@ -4,10 +4,12 @@ using ImportKingMobile.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +22,7 @@ namespace ImportKingMobile.Controllers
     [DefaultAuthFilter]
     public class BaseController : Controller
     {
+        IHttpContextAccessor httpContext;
         private readonly IIdentityService identityService;
         private readonly IHttpClientFactory httpClientFactory;
         private AppSettings appSettings { get; set; }
@@ -70,6 +73,9 @@ namespace ImportKingMobile.Controllers
                 {
                     filterContext.Result = new RedirectToActionResult("InactiveUser", "Notification", null);
                 }
+
+                var customToken = HttpContext.User.Claims.Where(x => x.Type == "CustomToken").FirstOrDefault();
+                ViewBag.CustomToken = customToken.Value;
             }
 
             await base.OnActionExecutionAsync(filterContext, next);
