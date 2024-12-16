@@ -77,6 +77,7 @@
             <button id="btnSubmit" type="submit" class="btn btn-primary w-100 mb-2" style="display:none">Submit</button>
             <button id="btnCancel" type="button" class="btn btn-danger w-100 mb-2" style="display:none">Cancel Edit</button>
             <a id="btnGoToAddress" href="/User/Address" class="btn btn-outline-primary w-100">Maintain Shipping Address</a>
+            <button id="btnDeleteAccount" type="button" class="btn btn-outline-danger w-100 mt-2">Delete Account</button>
         </form>
     </div>
 </div>
@@ -95,10 +96,38 @@
 
 <p class="text-center mx-3" id="result"></p>
 
+<div id="modalConfirmDeleteAccount" class="modal" tabindex="-1" aria-modal="true" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form id="deleteAccountForm" novalidate="novalidate">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Account?</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span>×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label class="form-label">Are you sure want to delete your account?</label>
+                        <div>
+                            <input class="form-control" placeholder="Confirm E-mail" id="confirmEmail" name="confirmEmail" type="text">
+                        </div>
+                        <div class="mt-2">
+                            <input class="form-control" placeholder="Confirm Password" id="confirmPassword" name="confirmPassword" type="password">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-yes btn-primary">Yes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <br>
 
 @section Scripts
-{
+    {
     <script src="~/js/app/plugin.modal.js" asp-append-version="true" type="text/javascript"></script>
     <script src="~/js/app/page.profile.js" asp-append-version="true" type="text/javascript"></script>
 } 

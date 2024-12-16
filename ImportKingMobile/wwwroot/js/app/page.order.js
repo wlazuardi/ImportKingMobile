@@ -53,14 +53,26 @@ class OrderPage extends React.Component {
         };
     }
 
-    componentDidMount() {
-        var url = hostUrl + "/api/Orders/GetByEmail/" + userMail;
+    fetchAdminMode() {
+        var url = hostUrl + "/api/Orders/Search/" + userMail;
 
-        if (this.props.mode == 'admin' || userType == 3)
-            url = hostUrl + "/api/Orders/" + userMail;
+        var searchParam = {
+            orderNo: '',
+            startDate: '',
+            endDate: '',
+            status: '',
+            isRegular: false,
+            isMarketplace: false,
+            isDropship: false,
+            isCOD: false
+        };
 
         fetch(url, {
-            method: 'GET'
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(searchParam)
         })
             .then((res) => {
                 if (res.status == 200) {
@@ -94,7 +106,58 @@ class OrderPage extends React.Component {
                         error
                     });
                 }
-            )
+            );
+    }
+
+    fetchBasicUserMode() {
+        var url = hostUrl + "/api/Orders/GetByEmail/" + userMail;
+
+        fetch(url, {
+            method: 'GET',
+        })
+            .then((res) => {
+                if (res.status == 200) {
+                    return res.json();
+                }
+                else {
+                    throw {
+                        message: res.statusText
+                    };
+                }
+            })
+            .then(
+                (result) => {
+                    // Order by updated date desc
+                    result.sort(function (a, b) {
+                        var aDate = (new Date(a.updatedDate)).getTime();
+                        var bDate = (new Date(b.updatedDate)).getTime();
+                        return bDate - aDate;
+                    });
+
+                    this.setState({
+                        isLoaded: true,
+                        items: result,
+                        filteredItems: result
+                    });
+                    console.log(result);
+                },
+                (error) => {
+                    this.setState({
+                        isLoaded: true,
+                        error
+                    });
+                }
+            );
+    }
+
+
+    componentDidMount() {
+        if (this.props.mode == 'admin' || userType == 3) {
+            this.fetchAdminMode();
+        }
+        else {
+            this.fetchBasicUserMode();
+        }
     }
 
     filter = () => {

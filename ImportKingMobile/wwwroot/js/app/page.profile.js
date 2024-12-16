@@ -30,7 +30,7 @@
 
                 $('#preloader').show();
 
-                $.ajax({                    
+                $.ajax({
                     url: hostUrl + '/api/Users/Profile',
                     data: JSON.stringify(formData),
                     method: 'PATCH',
@@ -44,7 +44,7 @@
                 }).fail(function (xhr, status, error) {
                     $('#preloader').hide();
                     App.Alert.show('danger', "Error", xhr.responseText);
-                });;
+                });
             }
         });
 
@@ -80,7 +80,7 @@
 
                 $('#preloaderWallet').show();
                 $.ajax({
-                    url: hostUrl + '/api/Users/' + data.userId + '/Wallet',                    
+                    url: hostUrl + '/api/Users/' + data.userId + '/Wallet',
                     method: 'GET',
                     dataType: 'JSON',
                     contentType: "application/json; charset=utf-8",
@@ -176,6 +176,53 @@
                 $('body').progressBar('hide');
                 App.Alert.show('danger', "Error", xhr.responseText);
                 modal.show('Wallet Transaction', 'No transaction was found', 'modal-on-top');
+            });
+        });
+
+        $('#btnDeleteAccount').click(function () {
+            $('#modalConfirmDeleteAccount').modal('show');
+
+            $('#deleteAccountForm').validate({
+                rules: {
+                    confirmEmail: {
+                        required: true
+                    },
+                    confirmPassword: {
+                        required: true
+                    }
+                },
+                submitHandler: function () {
+                    var isValid = $('#deleteAccountForm').valid();
+                    if (isValid) {
+                        var formData = App.Utils.getFormData($('#deleteAccountForm'));
+
+                        var userData = {};
+                        userData.email = formData.confirmEmail;
+                        userData.password = formData.confirmPassword;
+
+                        $.ajax({
+                            url: hostUrl + '/api/Users/DeleteAccount',
+                            data: JSON.stringify(userData),
+                            method: 'DELETE',
+                            dataType: 'JSON',
+                            contentType: "application/json; charset=utf-8",
+                            success: function () {
+                                $('#preloader').hide();
+                                $('#modalConfirmDeleteAccount').modal('hide');
+                                App.Alert.show('success', 'Success', 'User account successfully deleted');
+                                setTimeout(function () {
+                                    window.location.href = 'Logout';
+                                }, 3000);
+                            }
+                        }).fail(function (xhr, status, error) {
+                            $('#preloader').hide();
+                            App.Alert.show('danger', "Error", xhr.statusText);
+                        });
+                    }
+                    else {
+                        console.log('Invalid form');
+                    }
+                }
             });
         });
     });

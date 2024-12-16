@@ -74,8 +74,8 @@ namespace ImportKingMobile.Controllers
                     filterContext.Result = new RedirectToActionResult("InactiveUser", "Notification", null);
                 }
 
-                var customToken = HttpContext.User.Claims.Where(x => x.Type == "CustomToken").FirstOrDefault();
-                ViewBag.CustomToken = customToken.Value;
+                //var customToken = HttpContext.User.Claims.Where(x => x.Type == "CustomToken").FirstOrDefault();
+                //ViewBag.CustomToken = customToken.Value;
             }
 
             await base.OnActionExecutionAsync(filterContext, next);

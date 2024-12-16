@@ -35,6 +35,17 @@ namespace ImportKingMobile.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public IActionResult DeleteAccount()
+        {
+            if (identityService.GetCurrentUser() != null)
+            {
+                return RedirectToAction("Index", "Home", null);
+            }
+
+            return View();
+        }
+
         [Authorize]
         public IActionResult Profile()
         {
